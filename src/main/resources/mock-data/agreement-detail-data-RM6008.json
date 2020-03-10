@@ -1,0 +1,69 @@
+{
+	"number": "RM6008",
+	"name": "Management Consultancy Framework Two (MCF2)",
+	"description": "MCF2 complements RM3745 Management Consultancy Framework (MCF), offering a range of consultancy services. MCF2 provides a compliant, cost effective way for central government and the wider public sector to access a variety of consultancy advice from a range of suppliers. This brochure provides an overview of the management consultancy portfolio within CCS.",
+	"startDate": "2018-09-04",
+	"endDate": "2021-09-03",
+	"detailUrl": "https://www.crowncommercial.gov.uk/agreements/RM6008",
+	"sectors": [
+		"SectorA",
+		"SectorB"
+	],
+	"benefits": [
+		"Wide range of suppliers from SMEs to large multinationals",
+		"All suppliers are Cyber Essentials accredited",
+		"Standard terms and conditions",
+		"Financial monitoring of suppliers giving peace of mind",
+		"Maximum rates capped for the life of the framework and your project providing budgetary control",
+		"No minimum or maximum value thresholds mean you can use the framework regardless of project size",
+		"Comprehensive customer guidance and templates",
+		"Support from a dedicated and knowledgeable team in CCS",
+		"Choice of pricing models including – fixed, risk & reward, or time & materials (T&M)",
+		"A tool to help you shortlist suitable suppliers."
+	],
+	"lots": [
+		{
+			"number": "1",
+			"name": "Business Consultancy Services"
+		},
+		{
+			"number": "2",
+			"name": "Procurement, Supply Chain And Commercial Consultancy Services"
+		},
+		{
+			"number": "3",
+			"name": "Complex And Transformation Consultancy Services"
+		},
+		{
+			"number": "4",
+			"name": "Strategic Consultancy Services"
+		}
+	],
+	"documents": [
+		{
+			"url": "https://assets.crowncommercial.gov.uk/wp-content/uploads/RM6008-MCF2-Customer-Guidance.pdf",
+			"name": "RM6008 MCF2 customer guidance",
+			"version": 1
+		},
+		{
+			"url": "https://assets.crowncommercial.gov.uk/wp-content/uploads/RM6008-MCF2-Call-off-order-form-v5.docx",
+			"name": "RM6008 MCF2 Call-off order form v5",
+			"version": 1
+		},
+		{
+			"url": "https://assets.crowncommercial.gov.uk/wp-content/uploads/RM6008-MCF2-Call-off-terms-v61.pdf",
+			"name": "RM6008 MCF2 call-off terms v61",
+			"version": 1
+		},
+		{
+			"url": "https://assets.crowncommercial.gov.uk/wp-content/uploads/RM6008%20MCF2%20Framework%20agreement%20v2.pdf",
+			"name": "RM6008 MCF2 framework agreement v2",
+			"version": 1
+		},
+		{
+			"url": "https://assets.crowncommercial.gov.uk/wp-content/uploads/RM6008%20MCF2%20Framework%20Specification.pdf",
+			"name": "RM6008 MCF2 framework specification",
+			"version": 1
+		}
+	]
+}

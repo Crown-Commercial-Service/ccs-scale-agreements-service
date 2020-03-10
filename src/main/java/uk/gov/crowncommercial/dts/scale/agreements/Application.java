@@ -1,4 +1,4 @@
-package uk.gov.crowncommercial.dts.scale;
+package uk.gov.crowncommercial.dts.scale.agreements;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
