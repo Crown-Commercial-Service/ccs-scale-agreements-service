@@ -1,5 +1,6 @@
 package uk.gov.crowncommercial.dts.scale.service.agreements.model;
 
+import java.math.BigDecimal;
 import java.util.Collection;
 
 import lombok.Data;
@@ -33,12 +34,12 @@ public class LotDetail {
 	/**
 	 * The minimum value for which this Lot applies.
 	 */
-	private Double minimumValue;
+	private BigDecimal minimumValue;
 
 	/**
 	 * The maximum value for which this Lot applies.
 	 */
-	private Double maximumValue;
+	private BigDecimal maximumValue;
 
 	/**
 	 * PLACEHOLDER. Needs to be an anyOf for National:Regional or individual Regions
