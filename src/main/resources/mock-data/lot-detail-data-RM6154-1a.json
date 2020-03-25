@@ -1,0 +1,90 @@
+{
+	"number": "1a",
+	"name": "Linen Hire with Standard Wash Linen and Laundry Services",
+	"description": "Test Description",
+	"type": "SERVICE",
+	"minimumValue": 1,
+	"maximumValue": 999,
+	"location": "Everywhere",
+	"minContractLength": {
+		"unit": "day",
+		"length": 1
+	},
+	"maxContractLength": {
+		"unit": "day",
+		"length": 999
+	},
+	"minQuantity": {
+		"unit": "widget",
+		"value": 1
+	},
+	"maxQuantity": {
+		"unit": "widget",
+		"value": 999
+	},
+	"services": [
+		{
+			"name": "Service A",
+			"description": "Service A description"
+		},
+		{
+			"name": "Service B",
+			"description": "Service B description"
+		}
+	],
+	"products": [
+		{
+			"name": "Product A",
+			"description": "Product A description"
+		},
+		{
+			"name": "Product B",
+			"description": "Product B description"
+		}
+	],
+	"suppliers": [
+		{
+			"id": "1",
+			"name": "Supplier A",
+			"contactName": "Jim Beam",
+			"contactEmail": "jb@suppliera.com"
+		},
+		{
+			"id": "2",
+			"name": "Supplier B",
+			"contactName": "Jack Daniels",
+			"contactEmail": "jd@supplierb.com"
+		}
+	],
+	"buyingMethods": {
+		"allowsDirectAward": true,
+		"allowsFurtherCompetition": false,
+		"allowsMarketplace": true,
+		"allowsEAuction": false
+	},
+	"buyingSystemUrl": "http://buyingsystemurl",
+	"termsAndConditions": {
+		"url": "http://termsandconditions",
+		"name": "Terms and Conditions",
+		"version": 1
+	},
+	"documents": [
+		{
+			"url": "http://docA",
+			"name": "Document A",
+			"version": 1
+		},
+		{
+			"url": "http://docB",
+			"name": "Document B",
+			"version": 1
+		}
+	],
+	"buyerNeeds": [
+		{
+			"id": 1,
+			"name": "Buyer Need",
+			"text": "Buyer need text"
+		}
+	]
+}

@@ -1,0 +1,62 @@
+{
+	"number": "RM6089",
+	"name": "Workplace Services (FM Marketplace Phase 2)",
+	"description": "This agreement provides access to: specialist security suppliers for the provision of both physical and technical security housing management and maintenance services specialist defence FM and housing services (for defence customers only.) Our suppliers cover up to 40 geographical regions of the UK (Nomenclature of Territorial Units for Statistics (NUTS) 2 regions), providing you with regional and national coverage depending on your needs. For defence lots, suppliers can offer regional or national coverage. In some cases, suppliers may also be able to provide international coverage Contracts can be let under this agreement for an initial length of up-to 7 years. This is inclusive of the mobilisation period, and a maximum duration (including extensions) of 10 years. Any call-off will have an initial maximum duration of up to 7 years. You are allowed as many extensions as you need but the maximum call-off time should not be for more than 10 years. This includes the initial call-off duration as well as the possibility of one or more extensions. Suppliers can provide all mandatory services and as well as a number of non-mandatory FM services on the following lots: lot 1a (security) lot 1b (technical) lot 2c (housing maintenance and management) The documents below give more details about the full scope of services available under this agreement.",
+	"startDate": "2019-01-25",
+	"endDate": "2023-01-24",
+	"detailUrl": "https://www.crowncommercial.gov.uk/agreements/RM6089",
+	"sectors": [
+		"SectorA",
+		"SectorB"
+	],
+	"benefits": [
+		"reduces procurement resource needs",
+		"aggregation and leverage of central government buying power (find out more)",
+		"helps SMEs to bid for public sector contracts, supporting the government’s aspiration for £1 in every £3 to be spent with SMEs by 2022",
+		"regional lot structure means you can procure services locally",
+		"suppliers can tailor their offer to match your social value priorities and measurable local benefits, such as: an efficient and sustainable public estate, support for diversity and inclusion, improved competency and capacity",
+		"it is mandatory for all suppliers to comply with CPNI and NSCS guidance for security",
+		"supports the wider public sector in its management of property to achieve business objectives meeting the Government’s Decent Home Standard"
+	],
+	"lots": [
+		{
+			"number": "1a",
+			"name": "Security"
+		},
+		{
+			"number": "1b",
+			"name": "Technical"
+		},
+		{
+			"number": "2c",
+			"name": "Housing maintenance and management"
+		}
+	],
+	"documents": [
+		{
+			"url": "https://assets.crowncommercial.gov.uk/wp-content/uploads/RM6089-Attachment-3-Annex-D-Lot-1a-Paymech-v1.1.xlsx",
+			"name": "RM6089 Attachment 3 Annex D Lot 1a pay mech v1.1",
+			"version": 1
+		},
+		{
+			"url": "https://assets.crowncommercial.gov.uk/wp-content/uploads/RM6089-Supplement-to-Attachment-3-Annex-D-Pay-Mech-Instructions-lot-1a-v2.0.docx",
+			"name": "RM6089 Supplement to attachment 3 Annex D Pay mech Instructions lot 1a v2",
+			"version": 1
+		},
+		{
+			"url": "https://assets.crowncommercial.gov.uk/wp-content/uploads/Bid-Pack-Lot-2a-2b-and-3-v2.0-1.zip",
+			"name": "RM6089 Bid pack lot 2a,2b and 3 v2.0",
+			"version": 1
+		},
+		{
+			"url": "https://assets.crowncommercial.gov.uk/wp-content/uploads/Bid-Pack-Lot-2a-2b-and-3-v2.01.zip",
+			"name": "RM6089 Bid pack lot2a,2b and 3 v2.0",
+			"version": 1
+		},
+		{
+			"url": "https://assets.crowncommercial.gov.uk/wp-content/uploads/RM6089-Bid-pack-lot-2a-2b-and-3.zip",
+			"name": "RM6089 Bid pack lot 2a, 2b and 3",
+			"version": 1
+		}
+	]
+}

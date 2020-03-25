@@ -1,0 +1,70 @@
+{
+	"number": "RM6103",
+	"name": "Education Technology",
+	"description": "This agreement is available to all public sector educational organisations including: schools, academies, multi academy trusts, colleges, universities, other educational establishments",
+	"startDate": "2019-06-10",
+	"endDate": "2022-06-10",
+	"detailUrl": "https://www.crowncommercial.gov.uk/agreements/RM6103",
+	"sectors": [
+		"SectorA",
+		"SectorB"
+	],
+	"benefits": [
+		"single route to market for your IT needs",
+		"available to all educational establishments",
+		"customers can call-off for up to a maximum of 5 years",
+		"further competition is available",
+		"flexibility of services",
+		"uses the CCS Public Sector Contract",
+		"diverse suppliers including small to medium enterprises and large companies"
+	],
+	"lots": [
+		{
+			"number": "1",
+			"name": "ICT Solutions"
+		},
+		{
+			"number": "2",
+			"name": "Broadband Fibre Infrastructure"
+		},
+		{
+			"number": "3",
+			"name": "Broadband Services"
+		},
+		{
+			"number": "4",
+			"name": "Hardware"
+		},
+		{
+			"number": "5",
+			"name": "Audio Visual"
+		}
+	],
+	"documents": [
+		{
+			"url": "https://assets.crowncommercial.gov.uk/wp-content/uploads/RM6103-Supplier-contact-matrix-v10.ods",
+			"name": "RM6103 Supplier contact matrix v10",
+			"version": 1
+		},
+		{
+			"url": "https://assets.crowncommercial.gov.uk/wp-content/uploads/RM6103-Framework-Schedules-.zip",
+			"name": "RM6103 Framework schedules",
+			"version": 1
+		},
+		{
+			"url": "https://assets.crowncommercial.gov.uk/wp-content/uploads/RM6103-Call-Off-Schedules.zip",
+			"name": "RM6103 Call-off schedules",
+			"version": 1
+		},
+		{
+			"url": "https://assets.crowncommercial.gov.uk/wp-content/uploads/RM6103-Joint-Schedules-.zip",
+			"name": "RM6103 Joint schedules",
+			"version": 1
+		},
+		{
+			"url": "https://assets.crowncommercial.gov.uk/wp-content/uploads/Order-Form-for-Lot-1-2-3-Template-and-Call-Off-Schedules-V3.docx",
+			"name": "RM6103 Order form for lot 1, 2, 3 template and call-off schedules v3",
+			"version": 1
+		}
+	]
+}
