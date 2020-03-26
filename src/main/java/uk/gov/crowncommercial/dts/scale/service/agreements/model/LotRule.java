@@ -6,6 +6,21 @@ import lombok.Data;
 
 /**
  * Lot Rule.
+ * 
+ * Rules such as 'Prices may not rise more than {x} times in any consecutive {y}
+ * day period' can be included in the 'other' element - in this case 2
+ * data-points would be required.
+ * 
+ * In the above example:
+ * 
+ * name="max number of prices rises in period"
+ * ruleId="maxNumberPriceChangesInPeriod" lotAttributes=[
+ * {"numberOfTimes","integer",,3,},{"daysInPeriod" ,"integer",,7,}]
+ * transactionData= ["priceRisesLastPeriod","product.priceRises"]
+ * evaluationType="complex"
+ * 
+ * as here specific logic is required to obtain the number of price rises before
+ * evaluating.
  */
 @Data
 public class LotRule {

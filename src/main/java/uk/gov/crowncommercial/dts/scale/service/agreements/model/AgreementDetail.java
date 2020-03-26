@@ -42,11 +42,6 @@ public class AgreementDetail {
 	private String detailUrl;
 
 	/**
-	 * A sector permitted to buy using the Agreement.
-	 */
-	private Collection<String> sectors;
-
-	/**
 	 * Short description of the benefit.
 	 */
 	private Collection<String> benefits;
