@@ -3,25 +3,6 @@
 	"name": "Linen Hire with Standard Wash Linen and Laundry Services",
 	"description": "Test Description",
 	"type": "SERVICE",
-	"minimumValue": 1,
-	"maximumValue": 999,
-	"location": "Everywhere",
-	"minContractLength": {
-		"unit": "day",
-		"length": 1
-	},
-	"maxContractLength": {
-		"unit": "day",
-		"length": 999
-	},
-	"minQuantity": {
-		"unit": "widget",
-		"value": 1
-	},
-	"maxQuantity": {
-		"unit": "widget",
-		"value": 999
-	},
 	"services": [
 		{
 			"name": "Service A",
@@ -56,13 +37,6 @@
 			"contactEmail": "jd@supplierb.com"
 		}
 	],
-	"buyingMethods": {
-		"allowsDirectAward": true,
-		"allowsFurtherCompetition": false,
-		"allowsMarketplace": true,
-		"allowsEAuction": false
-	},
-	"buyingSystemUrl": "http://buyingsystemurl",
 	"termsAndConditions": {
 		"url": "http://termsandconditions",
 		"name": "Terms and Conditions",
@@ -85,6 +59,54 @@
 			"id": 1,
 			"name": "Buyer Need",
 			"text": "Buyer need text"
+		}
+	],
+	"routesToMarket": [
+		{
+			"buyingMethod": "DIRECT_AWARD",
+			"buyingSystemUrl": "http://buyingsystemurl",
+			"minimumValue": 1,
+			"maximumValue": 999,
+			"location": "Everywhere",
+			"minContractLength": {
+				"unit": "day",
+				"length": 1
+			},
+			"maxContractLength": {
+				"unit": "day",
+				"length": 999
+			},
+			"minQuantity": {
+				"unit": "widget",
+				"value": 1
+			},
+			"maxQuantity": {
+				"unit": "widget",
+				"value": 999
+			}
+		}
+	],
+	"sectors": [
+		"SectorA",
+		"SectorB"
+	],
+	"rules": [
+		{
+			"ruleId": "maxNumberPriceChangesInPeriod",
+			"name": "max number of prices rises in period",
+			"lotAttributes": [
+				{
+					"name": "numberOfTimes",
+					"valueInteger": 3
+				}
+			],
+			"transactionData": [
+				{
+					"name": "priceRisesLastPeriod",
+					"location": "product.priceRises"
+				}
+			],
+			"evaluationType": "COMPLEX"
 		}
 	]
 }

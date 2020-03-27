@@ -1,6 +1,5 @@
 package uk.gov.crowncommercial.dts.scale.service.agreements.model;
 
-import java.math.BigDecimal;
 import java.util.Collection;
 
 import lombok.Data;
@@ -32,42 +31,6 @@ public class LotDetail {
 	private LotType type;
 
 	/**
-	 * The minimum value for which this Lot applies.
-	 */
-	private BigDecimal minimumValue;
-
-	/**
-	 * The maximum value for which this Lot applies.
-	 */
-	private BigDecimal maximumValue;
-
-	/**
-	 * PLACEHOLDER. Needs to be an anyOf for National:Regional or individual Regions
-	 * or even lowest level NUTS2
-	 */
-	private String location;
-
-	/**
-	 * Minimum contract length.
-	 */
-	private ContractLength minContractLength;
-
-	/**
-	 * Maximum contract length.
-	 */
-	private ContractLength maxContractLength;
-
-	/**
-	 * Minimum quantity.
-	 */
-	private Quantity minQuantity;
-
-	/**
-	 * Maximum quantity.
-	 */
-	private Quantity maxQuantity;
-
-	/**
 	 * Service offered by lot.
 	 */
 	private Collection<Service> services;
@@ -83,15 +46,14 @@ public class LotDetail {
 	private Collection<Organisation> suppliers;
 
 	/**
-	 * Available buying methods.
+	 * Routes to Market in lot.
 	 */
-	private BuyingMethods buyingMethods;
+	private Collection<RouteToMarket> routesToMarket;
 
 	/**
-	 * The URL to use for the system to progress the procurement (e.g. BaT, CaT,
-	 * other).
+	 * A sector permitted to buy using the Agreement.
 	 */
-	private String buyingSystemUrl;
+	private Collection<String> sectors;
 
 	/**
 	 * Terms & conditions.
@@ -107,5 +69,10 @@ public class LotDetail {
 	 * Buyer needs.
 	 */
 	private Collection<BuyerNeed> buyerNeeds;
+
+	/**
+	 * Rules.
+	 */
+	private Collection<LotRule> rules;
 
 }
