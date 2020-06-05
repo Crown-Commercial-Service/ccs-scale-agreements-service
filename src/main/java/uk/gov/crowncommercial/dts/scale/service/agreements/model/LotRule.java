@@ -49,4 +49,10 @@ public class LotRule {
 	 * Evaluation Type.
 	 */
 	private EvaluationType evaluationType;
+
+	/**
+	 * Name of the service to which the rule applies (in future the Agreement
+	 * Service may only return rules for the requested services)
+	 */
+	private String service;
 }

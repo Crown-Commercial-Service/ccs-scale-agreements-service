@@ -61,5 +61,11 @@
 			"name": "RM6008 MCF2 framework specification",
 			"version": 1
 		}
+	],
+	"contactDetails": [
+		{
+			"email": "Category.Manager@crowncommercial.gov.uk",
+			"type": "CCSCategoryManager"
+		}
 	]
 }

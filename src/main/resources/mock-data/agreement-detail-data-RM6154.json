@@ -63,5 +63,11 @@
 			"name": "RM6154 Joint schedules",
 			"version": 1
 		}
+	],
+	"contactDetails": [
+		{
+			"email": "Category.Manager@crowncommercial.gov.uk",
+			"type": "CCSCategoryManager"
+		}
 	]
 }

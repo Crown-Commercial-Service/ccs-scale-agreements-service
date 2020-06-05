@@ -14,7 +14,7 @@ public class AgreementSummary {
 	private String number;
 
 	/**
-	 * Commercial Agreement Name e.g. "Linen and Laundry Services".
+	 * Commercial Agreement Name e.g. "Technology Products 2".
 	 */
 	private String name;
 }

@@ -9,7 +9,9 @@ import lombok.extern.slf4j.Slf4j;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.AgreementDetail;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.AgreementSummary;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.AgreementUpdate;
+import uk.gov.crowncommercial.dts.scale.service.agreements.model.Document;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.LotDetail;
+import uk.gov.crowncommercial.dts.scale.service.agreements.model.Organisation;
 
 /**
  * Mock Implementation of a Repository which just pulls static data from json
@@ -43,6 +45,23 @@ public class AgreementRepositoryMock {
 	public Collection<AgreementUpdate> getAgreementUpdates(final String caNumber) {
 		log.debug("getAgreementUpdates: {}", caNumber);
 		return loader.convertJsonToList("mock-data/agreement-updates-data.json", AgreementUpdate.class);
+	}
+
+	public Collection<Document> getAgreementDocuments(String caNumber) {
+		log.debug("getAgreementDocuments: {}", caNumber);
+		return loader.convertJsonToList("mock-data/agreement-documents-data-" + caNumber + ".json", Document.class);
+	}
+
+	public Collection<Organisation> getLotSuppliers(String caNumber, String lotNumber) {
+		log.debug("getLotSuppliers: caNumber={}, lotNumber={}", caNumber, lotNumber);
+		return loader.convertJsonToList("mock-data/lot-suppliers-data-" + caNumber + "-" + lotNumber + ".json",
+				Organisation.class);
+	}
+
+	public Collection<Document> getLotDocuments(String caNumber, String lotNumber) {
+		log.debug("getLotDocuments: caNumber={}, lotNumber={}", caNumber, lotNumber);
+		return loader.convertJsonToList("mock-data/lot-documents-data-" + caNumber + "-" + lotNumber + ".json",
+				Document.class);
 	}
 
 }

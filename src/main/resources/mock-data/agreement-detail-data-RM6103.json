@@ -62,5 +62,11 @@
 			"name": "RM6103 Order form for lot 1, 2, 3 template and call-off schedules v3",
 			"version": 1
 		}
+	],
+	"contactDetails": [
+		{
+			"email": "Category.Manager@crowncommercial.gov.uk",
+			"type": "CCSCategoryManager"
+		}
 	]
 }

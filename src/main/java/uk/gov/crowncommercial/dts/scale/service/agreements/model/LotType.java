@@ -1,8 +1,18 @@
 package uk.gov.crowncommercial.dts.scale.service.agreements.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 /**
  * LotType.
  */
 public enum LotType {
-	PRODUCT, SERVICE, PRODUCT_AND_SERVICE
+
+	@JsonProperty("product")
+	PRODUCT,
+
+	@JsonProperty("service")
+	SERVICE,
+
+	@JsonProperty("product and service")
+	PRODUCT_AND_SERVICE
 }

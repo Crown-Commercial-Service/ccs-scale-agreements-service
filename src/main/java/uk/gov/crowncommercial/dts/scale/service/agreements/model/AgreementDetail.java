@@ -17,7 +17,7 @@ public class AgreementDetail {
 	private String number;
 
 	/**
-	 * Commercial Agreement Name e.g. "Linen and Laundry Services".
+	 * Commercial Agreement Name e.g. "Technology Products 2".
 	 */
 	private String name;
 
@@ -40,6 +40,11 @@ public class AgreementDetail {
 	 * Effective start date of Commercial Agreement.
 	 */
 	private String detailUrl;
+
+	/**
+	 * Contact details.
+	 */
+	private Collection<ContactDetail> contactDetails;
 
 	/**
 	 * Short description of the benefit.

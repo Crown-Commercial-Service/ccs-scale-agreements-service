@@ -14,9 +14,14 @@ public class Organisation {
 	private String id;
 
 	/**
-	 * Company name.
+	 * Company registered name.
 	 */
 	private String name;
+
+	/**
+	 * Company trading name for this Lot
+	 */
+	private String tradingName;
 
 	/**
 	 * Contact name for this context.

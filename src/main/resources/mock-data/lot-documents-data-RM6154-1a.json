@@ -1,0 +1,14 @@
+[
+	{
+		"url": "http://docA",
+		"name": "Document A",
+		"version": "1",
+		"documentType": "contract"
+	},
+	{
+		"url": "http://docB",
+		"name": "Document B",
+		"version": "1",
+		"documentType": "contract"
+	}
+]
