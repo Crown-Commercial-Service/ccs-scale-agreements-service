@@ -9,7 +9,9 @@ import lombok.extern.slf4j.Slf4j;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.AgreementDetail;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.AgreementSummary;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.AgreementUpdate;
+import uk.gov.crowncommercial.dts.scale.service.agreements.model.Document;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.LotDetail;
+import uk.gov.crowncommercial.dts.scale.service.agreements.model.Organisation;
 import uk.gov.crowncommercial.dts.scale.service.agreements.repository.AgreementRepositoryMock;
 
 /**
@@ -41,6 +43,21 @@ public class AgreementService {
 	public Collection<AgreementUpdate> getAgreementUpdates(final String caNumber) {
 		log.debug("getAgreementUpdates: {}", caNumber);
 		return repository.getAgreementUpdates(caNumber);
+	}
+
+	public Collection<Document> getAgreementDocuments(final String caNumber) {
+		log.debug("getAgreementDocuments: {}", caNumber);
+		return repository.getAgreementDocuments(caNumber);
+	}
+
+	public Collection<Organisation> getLotSuppliers(final String caNumber, final String lotNumber) {
+		log.debug("getLotSuppliers: {},{}", caNumber, lotNumber);
+		return repository.getLotSuppliers(caNumber, lotNumber);
+	}
+
+	public Collection<Document> getLotDocuments(final String caNumber, final String lotNumber) {
+		log.debug("getLotDocuments: {},{}", caNumber, lotNumber);
+		return repository.getLotDocuments(caNumber, lotNumber);
 	}
 
 }

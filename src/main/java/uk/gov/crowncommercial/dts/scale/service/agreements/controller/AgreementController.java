@@ -11,7 +11,9 @@ import lombok.extern.slf4j.Slf4j;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.AgreementDetail;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.AgreementSummary;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.AgreementUpdate;
+import uk.gov.crowncommercial.dts.scale.service.agreements.model.Document;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.LotDetail;
+import uk.gov.crowncommercial.dts.scale.service.agreements.model.Organisation;
 import uk.gov.crowncommercial.dts.scale.service.agreements.service.AgreementService;
 
 /**
@@ -37,11 +39,31 @@ public class AgreementController {
 		return service.getAgreement(caNumber);
 	}
 
+	@GetMapping("/agreements/{ca-number}/documents")
+	public Collection<Document> getAgreementDocuments(@PathVariable(value = "ca-number") String caNumber) {
+		log.debug("getAgreementDocuments: {}", caNumber);
+		return service.getAgreementDocuments(caNumber);
+	}
+
 	@GetMapping("/agreements/{ca-number}/lots/{lot-number}")
 	public LotDetail getLot(@PathVariable(value = "ca-number") String caNumber,
 			@PathVariable(value = "lot-number") String lotNumber) {
 		log.debug("getLot: caNumber={}, lotNumber={}", caNumber, lotNumber);
 		return service.getLot(caNumber, lotNumber);
+	}
+
+	@GetMapping("/agreements/{ca-number}/lots/{lot-number}/suppliers")
+	public Collection<Organisation> getLotSuppliers(@PathVariable(value = "ca-number") String caNumber,
+			@PathVariable(value = "lot-number") String lotNumber) {
+		log.debug("getLotSuppliers: caNumber={}, lotNumber={}", caNumber, lotNumber);
+		return service.getLotSuppliers(caNumber, lotNumber);
+	}
+
+	@GetMapping("/agreements/{ca-number}/lots/{lot-number}/documents")
+	public Collection<Document> getLotDocuments(@PathVariable(value = "ca-number") String caNumber,
+			@PathVariable(value = "lot-number") String lotNumber) {
+		log.debug("getLotDocuments: caNumber={}, lotNumber={}", caNumber, lotNumber);
+		return service.getLotDocuments(caNumber, lotNumber);
 	}
 
 	@GetMapping("/agreements/{ca-number}/updates")

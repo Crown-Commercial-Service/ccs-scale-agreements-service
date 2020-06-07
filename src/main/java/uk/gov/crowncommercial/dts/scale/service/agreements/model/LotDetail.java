@@ -31,21 +31,6 @@ public class LotDetail {
 	private LotType type;
 
 	/**
-	 * Service offered by lot.
-	 */
-	private Collection<Service> services;
-
-	/**
-	 * Products offered by lot.
-	 */
-	private Collection<Product> products;
-
-	/**
-	 * Suppliers in lot.
-	 */
-	private Collection<Organisation> suppliers;
-
-	/**
 	 * Routes to Market in lot.
 	 */
 	private Collection<RouteToMarket> routesToMarket;
@@ -56,14 +41,10 @@ public class LotDetail {
 	private Collection<String> sectors;
 
 	/**
-	 * Terms & conditions.
+	 * A simple reference to a related Agreement/Lot combination and relationship
+	 * type.
 	 */
-	private Document termsAndConditions;
-
-	/**
-	 * Associated documents.
-	 */
-	private Collection<Document> documents;
+	private Collection<RelatedAgreementLot> relatedAgreementLots;
 
 	/**
 	 * Buyer needs.

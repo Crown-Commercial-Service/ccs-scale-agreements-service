@@ -54,5 +54,11 @@
 			"name": "RM6089 Bid pack lot 2a, 2b and 3",
 			"version": 1
 		}
+	],
+	"contactDetails": [
+		{
+			"email": "Category.Manager@crowncommercial.gov.uk",
+			"type": "CCSCategoryManager"
+		}
 	]
 }
