@@ -1,6 +1,8 @@
 package uk.gov.crowncommercial.dts.scale.service.agreements.service;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 import org.springframework.stereotype.Service;
 
@@ -12,7 +14,9 @@ import uk.gov.crowncommercial.dts.scale.service.agreements.model.AgreementUpdate
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.Document;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.LotDetail;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.Organisation;
+import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.CommercialAgreement;
 import uk.gov.crowncommercial.dts.scale.service.agreements.repository.AgreementRepositoryMock;
+import uk.gov.crowncommercial.dts.scale.service.agreements.repository.CommercialAgreementRepo;
 
 /**
  * Agreement Service.
@@ -24,10 +28,21 @@ import uk.gov.crowncommercial.dts.scale.service.agreements.repository.AgreementR
 public class AgreementService {
 
 	private final AgreementRepositoryMock repository;
+	private final CommercialAgreementRepo commercialAgreementRepo;
 
 	public Collection<AgreementSummary> getAgreements() {
 		log.debug("getAgreements");
-		return repository.getAgreements();
+
+		List<CommercialAgreement> agreements = commercialAgreementRepo.findAll();
+
+		// TODO: streamy stuff
+		List<AgreementSummary> summaries = new ArrayList<>();
+
+		for (CommercialAgreement ca : agreements) {
+			summaries.add(convertToAgreementSummary(ca));
+		}
+
+		return summaries;
 	}
 
 	public AgreementDetail getAgreement(final String caNumber) {
@@ -60,4 +75,10 @@ public class AgreementService {
 		return repository.getLotDocuments(caNumber, lotNumber);
 	}
 
+	private AgreementSummary convertToAgreementSummary(CommercialAgreement ca) {
+		AgreementSummary summary = new AgreementSummary();
+		summary.setName(ca.getName());
+		summary.setNumber(ca.getNumber());
+		return summary;
+	}
 }
