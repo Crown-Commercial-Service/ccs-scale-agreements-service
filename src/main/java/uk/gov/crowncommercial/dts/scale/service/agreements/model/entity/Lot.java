@@ -1,12 +1,16 @@
 package uk.gov.crowncommercial.dts.scale.service.agreements.model.entity;
 
 import java.time.LocalDate;
+import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 import org.hibernate.annotations.Immutable;
@@ -48,9 +52,12 @@ public class Lot {
 	@JoinColumn(name = "commercial_agreement_id")
 	CommercialAgreement agreement;
 
-	// @ManyToMany
-	// @JoinTable(name = "lot_sectors", joinColumns = @JoinColumn(name = "lot_id"),
-	// inverseJoinColumns = @JoinColumn(name = "sector_code"))
-	// Set<Sector> sectors;
+	@ManyToMany
+	@JoinTable(name = "lot_sectors", joinColumns = @JoinColumn(name = "lot_id"), inverseJoinColumns = @JoinColumn(name = "sector_code"))
+	Set<Sector> sectors;
+
+	@OneToMany
+	@JoinColumn(name = "lot_id")
+	Set<LotRouteToMarket> routesToMarket;
 
 }

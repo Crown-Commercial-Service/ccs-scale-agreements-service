@@ -13,21 +13,15 @@ import lombok.experimental.FieldDefaults;
 
 @Entity
 @Immutable
-@Table(name = "sectors")
+@Table(name = "route_to_market")
 @Data
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class Sector {
+public class RouteToMarket {
 
 	@Id
-	@Column(name = "sector_code")
-	String code;
-
-	@Column(name = "sector_name")
+	@Column(name = "route_to_market_name")
 	String name;
 
-	@Column(name = "sector_description")
+	@Column(name = "route_to_market_description")
 	String description;
-
-	// @ManyToMany(mappedBy = "sectors")
-	// Set<Lot> lots;
 }

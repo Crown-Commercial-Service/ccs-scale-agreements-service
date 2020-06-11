@@ -38,7 +38,7 @@ public class CommercialAgreement {
 	@Column(name = "commercial_agreement_owner")
 	String owner;
 
-	@Column(name = "description")
+	@Column(name = "commercial_agreement_description")
 	String description;
 
 	@Column(name = "start_date")

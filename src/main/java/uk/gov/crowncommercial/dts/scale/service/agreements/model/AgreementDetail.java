@@ -1,7 +1,7 @@
 package uk.gov.crowncommercial.dts.scale.service.agreements.model;
 
+import java.time.LocalDate;
 import java.util.Collection;
-import java.util.Date;
 
 import lombok.Data;
 
@@ -29,12 +29,12 @@ public class AgreementDetail {
 	/**
 	 * Effective start date of Commercial Agreement.
 	 */
-	private Date startDate;
+	private LocalDate startDate;
 
 	/**
 	 * Effective end date of Commercial Agreement.
 	 */
-	private Date endDate;
+	private LocalDate endDate;
 
 	/**
 	 * Effective start date of Commercial Agreement.
