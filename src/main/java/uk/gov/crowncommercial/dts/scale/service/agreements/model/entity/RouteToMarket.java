@@ -4,9 +4,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
-
 import org.hibernate.annotations.Immutable;
-
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.experimental.FieldDefaults;
@@ -18,10 +16,10 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class RouteToMarket {
 
-	@Id
-	@Column(name = "route_to_market_name")
-	String name;
+  @Id
+  @Column(name = "route_to_market_name")
+  String name;
 
-	@Column(name = "route_to_market_description")
-	String description;
+  @Column(name = "route_to_market_description")
+  String description;
 }

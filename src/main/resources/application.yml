@@ -9,6 +9,9 @@ logging:
     
  
 spring:
+  jackson:
+    default-property-inclusion: non-null
+    property-naming-strategy: LOWER_CAMEL_CASE 
   jpa:
     database: postgresql
     show-sql: true
