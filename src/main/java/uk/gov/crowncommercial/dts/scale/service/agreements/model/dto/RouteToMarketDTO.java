@@ -7,7 +7,7 @@ import lombok.Data;
  * Route to Market.
  */
 @Data
-public class RouteToMarket {
+public class RouteToMarketDTO {
 
   /**
    * Buying method.

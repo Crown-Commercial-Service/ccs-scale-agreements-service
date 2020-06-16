@@ -32,7 +32,7 @@ public class LotDetail {
   /**
    * Routes to Market in lot.
    */
-  private Collection<RouteToMarket> routesToMarket;
+  private Collection<RouteToMarketDTO> routesToMarket;
 
   /**
    * A sector permitted to buy using the Agreement.

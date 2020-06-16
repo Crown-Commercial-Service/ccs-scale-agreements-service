@@ -10,7 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import lombok.extern.slf4j.Slf4j;
@@ -75,7 +75,7 @@ public class GlobalErrorHandler implements ErrorController {
     return new ApiErrors(Arrays.asList(apiError));
   }
 
-  @RequestMapping("/error")
+  @GetMapping(value = "/error")
   public ResponseEntity<ApiErrors> handleError(final HttpServletRequest request,
       final HttpServletResponse response) {
 

@@ -35,8 +35,6 @@ public class AgreementConverter {
     Converter<String, LotType> stringToLotTypeConverter = new AbstractConverter<String, LotType>() {
       @Override
       protected LotType convert(String type) {
-
-        // Temporary code until Trevor aligns data enums with Dave's API enums
         if ("Products".equalsIgnoreCase(type)) {
           return LotType.PRODUCT;
         } else if ("Services".equalsIgnoreCase(type)) {
@@ -44,7 +42,6 @@ public class AgreementConverter {
         } else if ("Products and Services".equalsIgnoreCase(type)) {
           return LotType.PRODUCT_AND_SERVICE;
         }
-
         return null;
       }
     };
