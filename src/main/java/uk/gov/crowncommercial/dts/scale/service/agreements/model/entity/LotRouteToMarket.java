@@ -14,6 +14,9 @@ import lombok.AccessLevel;
 import lombok.Data;
 import lombok.experimental.FieldDefaults;
 
+/**
+ * Route To Market/Lot link table.
+ */
 @Entity
 @Immutable
 @Table(name = "lot_route_to_market")

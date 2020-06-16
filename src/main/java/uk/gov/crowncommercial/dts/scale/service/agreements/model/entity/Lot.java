@@ -14,10 +14,15 @@ import javax.persistence.Table;
 import org.hibernate.annotations.Immutable;
 import lombok.AccessLevel;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.experimental.FieldDefaults;
 
+/**
+ * Lot.
+ */
 @Entity
 @Immutable
+@EqualsAndHashCode(exclude = "agreement")
 @Table(name = "lots")
 @Data
 @FieldDefaults(level = AccessLevel.PRIVATE)

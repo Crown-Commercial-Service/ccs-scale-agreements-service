@@ -9,6 +9,9 @@ import lombok.AccessLevel;
 import lombok.Data;
 import lombok.experimental.FieldDefaults;
 
+/**
+ * Route To Market.
+ */
 @Entity
 @Immutable
 @Table(name = "route_to_market")

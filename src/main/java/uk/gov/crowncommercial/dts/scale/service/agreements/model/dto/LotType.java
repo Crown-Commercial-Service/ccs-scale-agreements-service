@@ -15,4 +15,5 @@ public enum LotType {
 
   @JsonProperty("product and service")
   PRODUCT_AND_SERVICE
+
 }

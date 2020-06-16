@@ -21,16 +21,34 @@ public class AgreementService {
   private final CommercialAgreementRepo commercialAgreementRepo;
   private final LotRepo lotRepo;
 
+  /**
+   * Get all agreements.
+   * 
+   * @return list of agreements
+   */
   public List<CommercialAgreement> getAgreements() {
     log.debug("getAgreements");
     return commercialAgreementRepo.findAll();
   }
 
+  /**
+   * Get a specific agreement.
+   * 
+   * @param caNumber Commercial Agreement number
+   * @return CommercialAgreement
+   */
   public CommercialAgreement getAgreement(final String caNumber) {
     log.debug("getAgreement: {}", caNumber);
     return commercialAgreementRepo.findAgreementByNumber(caNumber);
   }
 
+  /**
+   * Get a specific Lot.
+   * 
+   * @param caNumber Commercial Agreement number
+   * @param lotNumber Lot number
+   * @return Lot
+   */
   public Lot getLot(final String caNumber, final String lotNumber) {
     log.debug("getLot: {},{}", caNumber, lotNumber);
     return lotRepo.findLotByNumber(caNumber, lotNumber);

@@ -4,8 +4,8 @@ import java.time.LocalDate;
 import java.util.Set;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import org.hibernate.annotations.Immutable;
@@ -13,6 +13,9 @@ import lombok.AccessLevel;
 import lombok.Data;
 import lombok.experimental.FieldDefaults;
 
+/**
+ * Commercial Agreement.
+ */
 @Entity
 @Immutable
 @Table(name = "commercial_agreements")
@@ -45,7 +48,6 @@ public class CommercialAgreement {
   @Column(name = "agreement_url")
   String detailUrl;
 
-  @OneToMany
-  @JoinColumn(name = "commercial_agreement_id")
+  @OneToMany(fetch = FetchType.LAZY, mappedBy = "agreement")
   Set<Lot> lots;
 }

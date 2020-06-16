@@ -9,6 +9,9 @@ import lombok.AccessLevel;
 import lombok.Data;
 import lombok.experimental.FieldDefaults;
 
+/**
+ * Sector.
+ */
 @Entity
 @Immutable
 @Table(name = "sectors")

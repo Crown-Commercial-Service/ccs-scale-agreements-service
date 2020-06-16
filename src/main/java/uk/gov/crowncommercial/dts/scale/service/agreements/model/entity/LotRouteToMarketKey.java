@@ -5,6 +5,9 @@ import javax.persistence.Column;
 import javax.persistence.Embeddable;
 import lombok.Data;
 
+/**
+ * Compound Key.
+ */
 @Data
 @Embeddable
 public class LotRouteToMarketKey implements Serializable {
