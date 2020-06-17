@@ -1,0 +1,31 @@
+server:
+  port: 9010
+
+logging:
+  level:
+    uk.gov.crowncommercial.dts.scale: DEBUG
+    org.springframework: INFO
+#    org.hibernate.sql: DEBUG
+#    org.hibernate.type: TRACE
+    
+ 
+spring:
+  jackson:
+    default-property-inclusion: non-null
+    property-naming-strategy: LOWER_CAMEL_CASE 
+  jpa:
+    database: postgresql
+    show-sql: true
+    hibernate:
+      ddl-auto: validate
+    
+---
+spring:
+  profiles: local
+  datasource:
+    # Credentials via environment variables ONLY.
+    url: jdbc:postgresql://localhost:5432/agreements  
+  
+server:
+  servlet:
+    context-path: /agreements-service
