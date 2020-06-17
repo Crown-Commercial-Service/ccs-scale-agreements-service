@@ -5,7 +5,8 @@ logging:
   level:
     uk.gov.crowncommercial.dts.scale: DEBUG
     org.springframework: INFO
-    # org.hibernate: DEBUG
+#    org.hibernate.sql: DEBUG
+#    org.hibernate.type: TRACE
     
  
 spring:

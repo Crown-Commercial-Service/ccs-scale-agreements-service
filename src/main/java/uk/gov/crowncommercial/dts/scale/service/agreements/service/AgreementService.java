@@ -39,7 +39,7 @@ public class AgreementService {
    */
   public CommercialAgreement getAgreement(final String caNumber) {
     log.debug("getAgreement: {}", caNumber);
-    return commercialAgreementRepo.findAgreementByNumber(caNumber);
+    return commercialAgreementRepo.findByNumber(caNumber);
   }
 
   /**
@@ -51,7 +51,7 @@ public class AgreementService {
    */
   public Lot getLot(final String caNumber, final String lotNumber) {
     log.debug("getLot: {},{}", caNumber, lotNumber);
-    return lotRepo.findLotByNumber(caNumber, lotNumber);
+    return lotRepo.findByAgreementNumberAndNumber(caNumber, lotNumber);
   }
 
 }
