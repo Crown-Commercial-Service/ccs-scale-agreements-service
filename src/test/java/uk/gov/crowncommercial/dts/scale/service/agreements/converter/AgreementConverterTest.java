@@ -7,6 +7,7 @@ import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
 import org.junit.jupiter.api.Test;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -32,7 +33,7 @@ import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.RouteToM
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.Sector;
 import uk.gov.crowncommercial.dts.scale.service.agreements.service.AgreementService;
 
-@SpringBootTest
+@SpringBootTest(classes = {AgreementConverter.class, ModelMapper.class})
 @ActiveProfiles("test")
 public class AgreementConverterTest {
 
