@@ -56,7 +56,7 @@ public class AgreementControllerTest {
     AgreementDetail agreement = new AgreementDetail();
     agreement.setNumber(AGREEMENT_NUMBER);
 
-    when(service.getAgreement(AGREEMENT_NUMBER)).thenReturn(mockCommercialAgreement);
+    when(service.findAgreementByNumber(AGREEMENT_NUMBER)).thenReturn(mockCommercialAgreement);
     when(converter.convertAgreementToDTO(mockCommercialAgreement)).thenReturn(agreement);
     this.mockMvc.perform(get("/agreements/" + AGREEMENT_NUMBER)).andExpect(status().isOk())
         .andExpect(content().string(containsString(AGREEMENT_NUMBER)));
@@ -64,7 +64,7 @@ public class AgreementControllerTest {
 
   @Test
   public void testGetAgreementNotFound() throws Exception {
-    when(service.getAgreement(AGREEMENT_NUMBER)).thenReturn(null);
+    when(service.findAgreementByNumber(AGREEMENT_NUMBER)).thenReturn(null);
     this.mockMvc.perform(get("/agreements/" + AGREEMENT_NUMBER))
         .andExpect(status().is4xxClientError())
         .andExpect(content().string(containsString("Agreement number 'RM1000' not found")));
@@ -72,7 +72,7 @@ public class AgreementControllerTest {
 
   @Test
   public void testGetAgreementUnexpectedError() throws Exception {
-    when(service.getAgreement(AGREEMENT_NUMBER))
+    when(service.findAgreementByNumber(AGREEMENT_NUMBER))
         .thenThrow(new RuntimeException("Something is amiss"));
     this.mockMvc.perform(get("/agreements/" + AGREEMENT_NUMBER))
         .andExpect(status().is5xxServerError())
@@ -84,7 +84,8 @@ public class AgreementControllerTest {
     LotDetail lot = new LotDetail();
     lot.setNumber(LOT_NUMBER);
 
-    when(service.getLot(AGREEMENT_NUMBER, LOT_NUMBER)).thenReturn(mockLot);
+    when(service.findLotByAgreementNumberAndLotNumber(AGREEMENT_NUMBER, LOT_NUMBER))
+        .thenReturn(mockLot);
     when(converter.convertLotToDTO(mockLot)).thenReturn(lot);
     this.mockMvc.perform(get("/agreements/" + AGREEMENT_NUMBER + "/lots/" + LOT_NUMBER))
         .andExpect(status().isOk()).andExpect(content().string(containsString(LOT_NUMBER)));
@@ -92,7 +93,8 @@ public class AgreementControllerTest {
 
   @Test
   public void testGetLotNotFound() throws Exception {
-    when(service.getLot(AGREEMENT_NUMBER, LOT_NUMBER)).thenReturn(null);
+    when(service.findLotByAgreementNumberAndLotNumber(AGREEMENT_NUMBER, LOT_NUMBER))
+        .thenReturn(null);
     this.mockMvc.perform(get("/agreements/" + AGREEMENT_NUMBER + "/lots/" + LOT_NUMBER))
         .andExpect(status().is4xxClientError()).andExpect(content()
             .string(containsString("Lot number 'Lot 1' for agreement number 'RM1000' not found")));
@@ -100,7 +102,7 @@ public class AgreementControllerTest {
 
   @Test
   public void testGetLotUnexpectedError() throws Exception {
-    when(service.getLot(AGREEMENT_NUMBER, LOT_NUMBER))
+    when(service.findLotByAgreementNumberAndLotNumber(AGREEMENT_NUMBER, LOT_NUMBER))
         .thenThrow(new RuntimeException("Something is amiss"));
     this.mockMvc.perform(get("/agreements/" + AGREEMENT_NUMBER + "/lots/" + LOT_NUMBER))
         .andExpect(status().is5xxServerError())

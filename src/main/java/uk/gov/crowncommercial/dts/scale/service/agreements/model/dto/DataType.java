@@ -11,5 +11,8 @@ public enum DataType {
   INTEGER,
 
   @JsonProperty("number")
-  NUMBER
+  NUMBER,
+
+  @JsonProperty("date")
+  DATE
 }

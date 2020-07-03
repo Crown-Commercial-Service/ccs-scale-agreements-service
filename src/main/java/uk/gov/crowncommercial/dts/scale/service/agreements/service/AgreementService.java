@@ -50,7 +50,8 @@ public class AgreementService {
    * @return Lot
    */
   public Lot findLotByAgreementNumberAndLotNumber(final String caNumber, final String lotNumber) {
-    log.debug("findLotByAgreementNumberAndLotNumber: {},{}", caNumber, lotNumber);
+    log.debug("findLotByAgreementNumberAndLotNumber: caNumber={},lotNumber={}", caNumber,
+        lotNumber);
     return lotRepo.findByAgreementNumberAndNumber(caNumber, lotNumber);
   }
 

@@ -52,4 +52,5 @@ public class CommercialAgreement {
 
   @OneToMany(mappedBy = "commercialAgreementId")
   Set<CommercialAgreementContact> contactDetails;
+
 }

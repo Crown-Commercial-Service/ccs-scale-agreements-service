@@ -57,7 +57,7 @@ public class AgreementController {
   @GetMapping("/agreements/{ca-number}/lots/{lot-number}")
   public LotDetail getLot(@PathVariable(value = "ca-number") String caNumber,
       @PathVariable(value = "lot-number") String lotNumber) {
-    log.debug("getLot: caNumber={}, lotNumber={}", caNumber, lotNumber);
+    log.debug("getLot: caNumber={},lotNumber={}", caNumber, lotNumber);
     Lot lot = service.findLotByAgreementNumberAndLotNumber(caNumber, lotNumber);
     if (lot == null) {
       throw new ResourceNotFoundException(String

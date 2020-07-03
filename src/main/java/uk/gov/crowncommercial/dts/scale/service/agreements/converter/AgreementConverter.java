@@ -9,6 +9,8 @@ import org.springframework.stereotype.Component;
 import lombok.RequiredArgsConstructor;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.AgreementDetail;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.AgreementSummary;
+import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.DataType;
+import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.EvaluationType;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.LotDetail;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.LotType;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.RelatedAgreementLot;
@@ -53,6 +55,43 @@ public class AgreementConverter {
       }
     };
 
+    Converter<String, EvaluationType> stringToEvaluationTypeConverter =
+        new AbstractConverter<String, EvaluationType>() {
+          @Override
+          protected EvaluationType convert(String type) {
+            if ("flag".equalsIgnoreCase(type)) {
+              return EvaluationType.FLAG;
+            } else if ("complex".equalsIgnoreCase(type)) {
+              return EvaluationType.COMPLEX;
+            } else if ("equal".equalsIgnoreCase(type)) {
+              return EvaluationType.EQUAL;
+            } else if ("greater".equalsIgnoreCase(type)) {
+              return EvaluationType.GREATER;
+            } else if ("less".equalsIgnoreCase(type)) {
+              return EvaluationType.LESS;
+            }
+            return null;
+          }
+        };
+
+    Converter<String, DataType> stringToDataTypeConverter =
+        new AbstractConverter<String, DataType>() {
+          @Override
+          protected DataType convert(String type) {
+            if ("integer".equalsIgnoreCase(type)) {
+              return DataType.INTEGER;
+            } else if ("number".equalsIgnoreCase(type)) {
+              return DataType.NUMBER;
+            } else if ("string".equalsIgnoreCase(type)) {
+              return DataType.STRING;
+            } else if ("date".equalsIgnoreCase(type)) {
+              return DataType.DATE;
+            }
+            return null;
+          }
+        };
+
+
     Converter<LotRelatedLot, RelatedAgreementLot> relatedLotConverter =
         new AbstractConverter<LotRelatedLot, RelatedAgreementLot>() {
           @Override
@@ -73,6 +112,8 @@ public class AgreementConverter {
 
     modelMapper.addConverter(sectorToStringConverter);
     modelMapper.addConverter(stringToLotTypeConverter);
+    modelMapper.addConverter(stringToEvaluationTypeConverter);
+    modelMapper.addConverter(stringToDataTypeConverter);
     modelMapper.addConverter(relatedLotConverter);
   }
 

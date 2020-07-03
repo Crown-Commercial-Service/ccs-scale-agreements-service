@@ -33,5 +33,4 @@ public class LotRelatedLot implements Serializable {
   @ManyToOne
   @JoinColumn(name = "lot_rule_id")
   LotRule rule;
-
 }
