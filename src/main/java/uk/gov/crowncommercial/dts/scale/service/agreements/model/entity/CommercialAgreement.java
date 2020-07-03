@@ -4,7 +4,6 @@ import java.time.LocalDate;
 import java.util.Set;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
@@ -48,6 +47,9 @@ public class CommercialAgreement {
   @Column(name = "agreement_url")
   String detailUrl;
 
-  @OneToMany(fetch = FetchType.LAZY, mappedBy = "agreement")
+  @OneToMany(mappedBy = "agreement")
   Set<Lot> lots;
+
+  @OneToMany(mappedBy = "commercialAgreementId")
+  Set<CommercialAgreementContact> contactDetails;
 }

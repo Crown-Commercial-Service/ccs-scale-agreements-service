@@ -6,22 +6,29 @@ import org.modelmapper.Converter;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import lombok.RequiredArgsConstructor;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.AgreementDetail;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.AgreementSummary;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.LotDetail;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.LotType;
+import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.RelatedAgreementLot;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.CommercialAgreement;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.Lot;
+import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.LotRelatedLot;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.Sector;
+import uk.gov.crowncommercial.dts.scale.service.agreements.service.AgreementService;
 
 /**
  * Encapsulates conversion logic between DTOs and Entities.
  */
+@RequiredArgsConstructor
 @Component
 public class AgreementConverter {
 
   @Autowired
   private ModelMapper modelMapper;
+
+  private final AgreementService service;
 
   @PostConstruct
   public void init() {
@@ -46,8 +53,27 @@ public class AgreementConverter {
       }
     };
 
+    Converter<LotRelatedLot, RelatedAgreementLot> relatedLotConverter =
+        new AbstractConverter<LotRelatedLot, RelatedAgreementLot>() {
+          @Override
+          protected RelatedAgreementLot convert(LotRelatedLot source) {
+            /*
+             * Introduced this explicit call as a workaround to automated bidirectional mapping
+             * issues (infinite loop issues). Couldn't get a more elegant solution to work in the
+             * time frame.
+             */
+            Lot lot = service.getLot(source.getRule().getLotId());
+            RelatedAgreementLot ral = new RelatedAgreementLot();
+            ral.setCaNumber(lot.getAgreement().getNumber());
+            ral.setLotNumber(lot.getNumber());
+            ral.setRelationship(source.getRelationship());
+            return ral;
+          }
+        };
+
     modelMapper.addConverter(sectorToStringConverter);
     modelMapper.addConverter(stringToLotTypeConverter);
+    modelMapper.addConverter(relatedLotConverter);
   }
 
   public AgreementDetail convertAgreementToDTO(CommercialAgreement ca) {

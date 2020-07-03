@@ -63,4 +63,11 @@ public class Lot {
   @JoinColumn(name = "lot_id")
   Set<LotRouteToMarket> routesToMarket;
 
+  @OneToMany
+  @JoinColumn(name = "lot_id")
+  Set<LotRule> rules;
+
+  @OneToMany
+  @JoinColumn(name = "lot_id")
+  Set<LotRelatedLot> relatedAgreementLots;
 }

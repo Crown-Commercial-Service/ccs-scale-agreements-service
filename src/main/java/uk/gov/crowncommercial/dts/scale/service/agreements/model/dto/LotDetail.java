@@ -52,6 +52,6 @@ public class LotDetail {
   /**
    * Rules.
    */
-  private Collection<LotRule> rules;
+  private Collection<LotRuleDTO> rules;
 
 }

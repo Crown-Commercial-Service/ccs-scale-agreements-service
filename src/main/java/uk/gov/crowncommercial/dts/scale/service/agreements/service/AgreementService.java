@@ -32,26 +32,36 @@ public class AgreementService {
   }
 
   /**
-   * Get a specific agreement.
+   * Find a specific agreement by number.
    * 
    * @param caNumber Commercial Agreement number
    * @return CommercialAgreement
    */
-  public CommercialAgreement getAgreement(final String caNumber) {
-    log.debug("getAgreement: {}", caNumber);
+  public CommercialAgreement findAgreementByNumber(final String caNumber) {
+    log.debug("findAgreementByNumber: {}", caNumber);
     return commercialAgreementRepo.findByNumber(caNumber);
   }
 
   /**
-   * Get a specific Lot.
+   * Find a specific Lot using Agreement Number and Lot Number.
    * 
    * @param caNumber Commercial Agreement number
    * @param lotNumber Lot number
    * @return Lot
    */
-  public Lot getLot(final String caNumber, final String lotNumber) {
-    log.debug("getLot: {},{}", caNumber, lotNumber);
+  public Lot findLotByAgreementNumberAndLotNumber(final String caNumber, final String lotNumber) {
+    log.debug("findLotByAgreementNumberAndLotNumber: {},{}", caNumber, lotNumber);
     return lotRepo.findByAgreementNumberAndNumber(caNumber, lotNumber);
   }
 
+  /**
+   * Get Lot by id.
+   * 
+   * @param lotId Lot id
+   * @return Lot
+   */
+  public Lot getLot(final Integer lotId) {
+    log.debug("getLot: {}", lotId);
+    return lotRepo.getOne(lotId);
+  }
 }
