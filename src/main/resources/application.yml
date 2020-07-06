@@ -5,17 +5,15 @@ logging:
   level:
     uk.gov.crowncommercial.dts.scale: DEBUG
     org.springframework: INFO
-#    org.hibernate.sql: DEBUG
-#    org.hibernate.type: TRACE
-    
- 
+    org.hibernate: INFO
+
 spring:
   jackson:
-    default-property-inclusion: non-null
+    default-property-inclusion: non-empty
     property-naming-strategy: LOWER_CAMEL_CASE 
   jpa:
     database: postgresql
-    show-sql: true
+    show-sql: false
     hibernate:
       ddl-auto: validate
     
@@ -25,7 +23,9 @@ spring:
   datasource:
     # Credentials via environment variables ONLY.
     url: jdbc:postgresql://localhost:5432/agreements  
-  
+  jpa:
+    show-sql: false
+    
 server:
   servlet:
     context-path: /agreements-service

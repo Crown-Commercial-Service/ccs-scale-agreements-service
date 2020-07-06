@@ -42,7 +42,7 @@ public class AgreementServiceTest {
   public void testGetAgreement() throws Exception {
     when(mockCommercialAgreementRepo.findByNumber(AGREEMENT_NUMBER))
         .thenReturn(mockCommercialAgreement);
-    assertEquals(mockCommercialAgreement, service.getAgreement(AGREEMENT_NUMBER));
+    assertEquals(mockCommercialAgreement, service.findAgreementByNumber(AGREEMENT_NUMBER));
   }
 
   @Test
@@ -55,6 +55,7 @@ public class AgreementServiceTest {
   public void testGetLot() throws Exception {
     when(mockLotRepo.findByAgreementNumberAndNumber(AGREEMENT_NUMBER, LOT_NUMBER))
         .thenReturn(mockLot);
-    assertEquals(mockLot, service.getLot(AGREEMENT_NUMBER, LOT_NUMBER));
+    assertEquals(mockLot,
+        service.findLotByAgreementNumberAndLotNumber(AGREEMENT_NUMBER, LOT_NUMBER));
   }
 }

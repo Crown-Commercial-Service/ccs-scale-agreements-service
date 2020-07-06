@@ -18,7 +18,7 @@ import lombok.Data;
  * as here specific logic is required to obtain the number of price rises before evaluating.
  */
 @Data
-public class LotRule {
+public class LotRuleDTO {
 
   /**
    * Unique identifier of the rule.

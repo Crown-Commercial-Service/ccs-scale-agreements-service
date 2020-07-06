@@ -1,5 +1,7 @@
 package uk.gov.crowncommercial.dts.scale.service.agreements.model.dto;
 
+import java.math.BigDecimal;
+import java.time.LocalDate;
 import lombok.Data;
 
 /**
@@ -20,6 +22,7 @@ public class NameValueType {
 
   private String valueText;
   private Integer valueInteger;
-  private Double valueNumber;
+  private BigDecimal valueNumber;
+  private LocalDate valueDate;
 
 }
