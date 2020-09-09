@@ -34,4 +34,27 @@ module "deploy" {
 }
 ```
 
+In addition, a code build project needs to exist in the Management account that contains the necessary details to act on GitHub Webhook triggers and kick off the necessary deployment. 
+
+This is all under Terraform control, contained in the bootstrap ... TODO
+
+
+```
+module "codebuild_sbx1_agreements_service" {
+  source                      = "../modules/codebuild/containers"
+  codebuild_buildspecs_bucket = aws_s3_bucket.codebuild_buildspecs.id
+  environment                 = "sbx1"
+  project                     = "agreements-service"
+  github_url                  = local.github_repos.agreements_service
+  github_branch               = "develop"
+  codebuild_service_role_arn  = aws_iam_role.codebuild_iam_role.arn
+  ecr_repository              = module.ecr.repo_agreements_service_name
+  ecs_account                 = "569646375982"
+  ecs_cluster                 = "SCALE-EU2-SBX1-APP-ECS_Shared"
+  ecs_service                 = "SCALE-EU2-SBX1-APP-ECS_Service_Agreements"
+  version_suffix              = "snapshot"
+  buildspec_filename          = "buildspec-latest.yaml"
+}
+```
+
 This means that whenever a merge to develop is made - the latest version is pushed to the Fargate service.
