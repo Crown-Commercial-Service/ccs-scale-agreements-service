@@ -11,17 +11,17 @@ It is deployed as part of the Terraform AWS environment provisioning scripts in 
 ### Creating a Docker Image
 The [DEV-agreements-service](https://eu-west-2.console.aws.amazon.com/codesuite/codebuild/016776319009/projects/DEV-agreements-service) CodeBuild project in the Management account will trigger on a merge to `develop`. It will build a docker image and push it to the [scale/agreements-service](https://eu-west-2.console.aws.amazon.com/ecr/repositories/scale/agreements-service/?region=eu-west-2) ECR repository.
 
-The image tag contains the short version of the Git commit hash.
+The image tag contains the short version of the Git commit hash, with a `-candidate` label suffix.
 
 ### Deploying the new Docker Image to DEV
-The Terraform script at [ccs-scale-infra-services-shared/blob/develop/terraform/modules/configs/deploy-all/variables.tf](https://github.com/Crown-Commercial-Service/ccs-scale-infra-services-shared/blob/develop/terraform/modules/configs/deploy-all/variables.tf) needs updating with the new docker image (update the `ecr_image_id_agreements` variable).
+The Terraform script at [ccs-scale-infra-services-shared/terraform/modules/configs/deploy-all/variables.tf](https://github.com/Crown-Commercial-Service/ccs-scale-infra-services-shared/blob/develop/terraform/modules/configs/deploy-all/variables.tf) needs updating with the new docker image (update the `ecr_image_id_agreements` variable).
 
 The [ccs-scale-infrastructure-shared](https://eu-west-2.console.aws.amazon.com/codesuite/codepipeline/pipelines/ccs-scale-infrastructure-shared/view?region=eu-west-2) CodePipeline can then be triggered to deploy the change, initially to DEV, and then also up through the environments. Approval is required at each stage.
 
 ### Automating deployment to an SBX environment
 It is possible to automatically update the Fargate task on a merge to `develop` to speed up development. This is usually only recommended for SBX environments.
 
-To do this - we just need to override the docker image tag that environment references to be `latest`. This needs to to be done in the relevant environment script in [ccs-scale-infra-services-shared/tree/develop/terraform/environments](https://github.com/Crown-Commercial-Service/ccs-scale-infra-services-shared/tree/develop/terraform/environments)
+To do this - we just need to override the docker image tag that environment references to be `latest`. This needs to to be done in the relevant environment script in [ccs-scale-infra-services-shared/terraform/environments](https://github.com/Crown-Commercial-Service/ccs-scale-infra-services-shared/tree/develop/terraform/environments)
 
 An example is shown below - the `ecr_image_id_agreements` variable needs to be added to the `deploy` module and set to `latest`.
 ```
@@ -36,25 +36,15 @@ module "deploy" {
 
 In addition, a code build project needs to exist in the Management account that contains the necessary details to act on GitHub Webhook triggers and kick off the necessary deployment. 
 
-This is all under Terraform control, contained in the bootstrap ... TODO
+This is all under Terraform control, contained in the bootstrap script that provisions the Management account at [ccs-scale-bootstrap/terraform/environments/mgt/main.tf](https://github.com/Crown-Commercial-Service/ccs-scale-bootstrap/blob/develop/terraform/environments/mgt/main.tf). 
 
-
+The key properties to watch out for on the CodeBuild project are shown below. This will trigger on merges to `develop`. The `buildspec-latest.yaml` means it will build an image with the `latest` tag, and then tell the fargate task in the specific `ecs_service` and `ecs_account` to update itself, which if the change above was made to make it reference the `latest` tag means it will pull the image just built.
 ```
-module "codebuild_sbx1_agreements_service" {
-  source                      = "../modules/codebuild/containers"
-  codebuild_buildspecs_bucket = aws_s3_bucket.codebuild_buildspecs.id
-  environment                 = "sbx1"
-  project                     = "agreements-service"
-  github_url                  = local.github_repos.agreements_service
-  github_branch               = "develop"
-  codebuild_service_role_arn  = aws_iam_role.codebuild_iam_role.arn
-  ecr_repository              = module.ecr.repo_agreements_service_name
-  ecs_account                 = "569646375982"
-  ecs_cluster                 = "SCALE-EU2-SBX1-APP-ECS_Shared"
-  ecs_service                 = "SCALE-EU2-SBX1-APP-ECS_Service_Agreements"
-  version_suffix              = "snapshot"
-  buildspec_filename          = "buildspec-latest.yaml"
-}
-```
+github_branch               = "develop"
 
-This means that whenever a merge to develop is made - the latest version is pushed to the Fargate service.
+ecs_account                 = "569646375982"
+ecs_cluster                 = "SCALE-EU2-SBX1-APP-ECS_Shared"
+ecs_service                 = "SCALE-EU2-SBX1-APP-ECS_Service_Agreements"
+
+buildspec_filename          = "buildspec-latest.yaml"
+```
