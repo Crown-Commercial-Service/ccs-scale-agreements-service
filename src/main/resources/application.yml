@@ -3,7 +3,7 @@ server:
 
 logging:
   level:
-    uk.gov.crowncommercial.dts.scale: DEBUG
+    uk.gov.crowncommercial.dts.scale: INFO
     org.springframework: INFO
     org.hibernate: INFO
 
