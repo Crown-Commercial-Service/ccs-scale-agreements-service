@@ -16,7 +16,7 @@ import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.AgreementSu
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.AgreementUpdate;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.Document;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.LotDetail;
-import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.Organisation;
+import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.Organization;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.CommercialAgreement;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.Lot;
 import uk.gov.crowncommercial.dts.scale.service.agreements.service.AgreementService;
@@ -90,7 +90,7 @@ public class AgreementController {
   }
 
   @GetMapping("/agreements/{ca-number}/lots/{lot-number}/suppliers")
-  public Collection<Organisation> getLotSuppliers(
+  public Collection<Organization> getLotSuppliers(
       @PathVariable(value = "ca-number") String caNumber,
       @PathVariable(value = "lot-number") String lotNumber) {
     log.debug("getLotSuppliers: caNumber={}, lotNumber={}", caNumber, lotNumber);
