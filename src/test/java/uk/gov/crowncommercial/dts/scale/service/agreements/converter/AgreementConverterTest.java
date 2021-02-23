@@ -4,6 +4,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.when;
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 import org.junit.jupiter.api.Test;
@@ -114,10 +116,35 @@ public class AgreementConverterTest {
   @Test
   public void testLotDetailProduct() {
     LotDetail lotDetail = converter.convertLotToDTO(createTestLot("Products"));
+    testLot(lotDetail);
+  }
+
+  @Test
+  public void testLotDetailService() {
+    LotDetail lotDetail = converter.convertLotToDTO(createTestLot("Services"));
+    assertEquals(LotType.SERVICE, lotDetail.getType());
+  }
+
+  @Test
+  public void testLotDetailProductAndService() {
+    LotDetail lotDetail = converter.convertLotToDTO(createTestLot("Products and Services"));
+    assertEquals(LotType.PRODUCT_AND_SERVICE, lotDetail.getType());
+  }
+
+  @Test
+  public void testLotDetailProductCollection() {
+    Collection<LotDetail> lots =
+        converter.convertLotsToDTOs(Arrays.asList(createTestLot("Products")));
+    testLot(lots.stream().findFirst().get());
+  }
+
+  private void testLot(LotDetail lotDetail) {
     assertEquals(LOT_NAME, lotDetail.getName());
     assertEquals(LOT_NUMBER, lotDetail.getNumber());
     assertEquals(LotType.PRODUCT, lotDetail.getType());
     assertEquals(LOT_DESCRIPTION, lotDetail.getDescription());
+    assertEquals(START_DATE, lotDetail.getStartDate());
+    assertEquals(END_DATE, lotDetail.getEndDate());
 
     String sector = lotDetail.getSectors().stream().findFirst().get();
     assertEquals(SECTOR_NAME, sector);
@@ -147,18 +174,6 @@ public class AgreementConverterTest {
     assertEquals(RELATED_AGREEMENT_NUMBER, related.getCaNumber());
     assertEquals(RELATED_LOT_NUMBER, related.getLotNumber());
     assertEquals(RELATED_LOT_RELATIONSHIP, related.getRelationship());
-  }
-
-  @Test
-  public void testLotDetailService() {
-    LotDetail lotDetail = converter.convertLotToDTO(createTestLot("Services"));
-    assertEquals(LotType.SERVICE, lotDetail.getType());
-  }
-
-  @Test
-  public void testLotDetailProductAndService() {
-    LotDetail lotDetail = converter.convertLotToDTO(createTestLot("Products and Services"));
-    assertEquals(LotType.PRODUCT_AND_SERVICE, lotDetail.getType());
   }
 
   private Lot createTestLot(String type) {

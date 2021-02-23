@@ -6,6 +6,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import java.util.Arrays;
+import java.util.Collection;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -75,6 +76,36 @@ public class AgreementControllerTest {
     when(service.findAgreementByNumber(AGREEMENT_NUMBER))
         .thenThrow(new RuntimeException("Something is amiss"));
     this.mockMvc.perform(get("/agreements/" + AGREEMENT_NUMBER))
+        .andExpect(status().is5xxServerError())
+        .andExpect(content().string(containsString("An error occurred processing the request")));
+  }
+
+  @Test
+  public void testGetAgreementLotsSuccess() throws Exception {
+    LotDetail lot = new LotDetail();
+    lot.setNumber(LOT_NUMBER);
+    Collection<Lot> mockLots = Arrays.asList(mockLot);
+    when(service.findAgreementByNumber(AGREEMENT_NUMBER)).thenReturn(mockCommercialAgreement);
+    when(service.findLotsByAgreementNumber(AGREEMENT_NUMBER)).thenReturn(mockLots);
+    when(converter.convertLotsToDTOs(mockLots)).thenReturn(Arrays.asList(lot));
+    this.mockMvc.perform(get("/agreements/" + AGREEMENT_NUMBER + "/lots"))
+        .andExpect(status().isOk()).andExpect(content().string(containsString(LOT_NUMBER)));
+  }
+
+  @Test
+  public void testGetAgreementLotsNotFound() throws Exception {
+    when(service.findAgreementByNumber(AGREEMENT_NUMBER)).thenReturn(null);
+    this.mockMvc.perform(get("/agreements/" + AGREEMENT_NUMBER))
+        .andExpect(status().is4xxClientError())
+        .andExpect(content().string(containsString("Agreement number 'RM1000' not found")));
+  }
+
+  @Test
+  public void testGetAgreementLotsUnexpectedError() throws Exception {
+    when(service.findAgreementByNumber(AGREEMENT_NUMBER)).thenReturn(mockCommercialAgreement);
+    when(service.findLotsByAgreementNumber(AGREEMENT_NUMBER))
+        .thenThrow(new RuntimeException("Something is amiss"));
+    this.mockMvc.perform(get("/agreements/" + AGREEMENT_NUMBER + "/lots"))
         .andExpect(status().is5xxServerError())
         .andExpect(content().string(containsString("An error occurred processing the request")));
   }

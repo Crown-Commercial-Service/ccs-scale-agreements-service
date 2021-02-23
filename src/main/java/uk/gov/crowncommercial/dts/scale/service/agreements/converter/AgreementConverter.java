@@ -1,5 +1,7 @@
 package uk.gov.crowncommercial.dts.scale.service.agreements.converter;
 
+import java.util.Collection;
+import java.util.stream.Collectors;
 import javax.annotation.PostConstruct;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,6 +48,10 @@ public class AgreementConverter {
 
   public LotDetail convertLotToDTO(Lot lot) {
     return modelMapper.map(lot, LotDetail.class);
+  }
+
+  public Collection<LotDetail> convertLotsToDTOs(Collection<Lot> lots) {
+    return lots.stream().map(l -> modelMapper.map(l, LotDetail.class)).collect(Collectors.toList());
   }
 
 }

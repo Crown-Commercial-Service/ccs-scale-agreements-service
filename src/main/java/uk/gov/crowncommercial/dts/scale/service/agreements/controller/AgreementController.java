@@ -54,6 +54,20 @@ public class AgreementController {
     return converter.convertAgreementToDTO(ca);
   }
 
+  @GetMapping("/agreements/{ca-number}/lots")
+  public Collection<LotDetail> getAgreementLots(
+      @PathVariable(value = "ca-number") String caNumber) {
+    log.debug("getAgreementLots: caNumber={", caNumber);
+    // Throw a 404 if agreement number is invalid
+    CommercialAgreement ca = service.findAgreementByNumber(caNumber);
+    if (ca == null) {
+      throw new ResourceNotFoundException(
+          String.format("Agreement number '%s' not found", caNumber));
+    }
+    Collection<Lot> lot = service.findLotsByAgreementNumber(caNumber);
+    return converter.convertLotsToDTOs(lot);
+  }
+
   @GetMapping("/agreements/{ca-number}/lots/{lot-number}")
   public LotDetail getLot(@PathVariable(value = "ca-number") String caNumber,
       @PathVariable(value = "lot-number") String lotNumber) {

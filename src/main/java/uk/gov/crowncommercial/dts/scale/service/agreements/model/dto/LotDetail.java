@@ -1,5 +1,6 @@
 package uk.gov.crowncommercial.dts.scale.service.agreements.model.dto;
 
+import java.time.LocalDate;
 import java.util.Collection;
 import lombok.Data;
 
@@ -18,6 +19,16 @@ public class LotDetail {
    * Lot name e.g. "Finance".
    */
   private String name;
+
+  /**
+   * Effective start date of Lot.
+   */
+  private LocalDate startDate;
+
+  /**
+   * Effective end date of Lot.
+   */
+  private LocalDate endDate;
 
   /**
    * Short textual description of the Lot.

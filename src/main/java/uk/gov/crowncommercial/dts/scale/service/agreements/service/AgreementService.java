@@ -1,5 +1,6 @@
 package uk.gov.crowncommercial.dts.scale.service.agreements.service;
 
+import java.util.Collection;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import lombok.RequiredArgsConstructor;
@@ -40,6 +41,17 @@ public class AgreementService {
   public CommercialAgreement findAgreementByNumber(final String caNumber) {
     log.debug("findAgreementByNumber: {}", caNumber);
     return commercialAgreementRepo.findByNumber(caNumber);
+  }
+
+  /**
+   * Find all Lots using Agreement Number.
+   * 
+   * @param caNumber Commercial Agreement number
+   * @return list of Lots
+   */
+  public Collection<Lot> findLotsByAgreementNumber(final String caNumber) {
+    log.debug("findLotByAgreementNumberAndLotNumber: caNumber={},lotNumber={}", caNumber);
+    return lotRepo.findByAgreementNumber(caNumber);
   }
 
   /**
