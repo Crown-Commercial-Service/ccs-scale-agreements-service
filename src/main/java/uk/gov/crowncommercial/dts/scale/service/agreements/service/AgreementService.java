@@ -50,7 +50,7 @@ public class AgreementService {
    * @return list of Lots
    */
   public Collection<Lot> findLotsByAgreementNumber(final String caNumber) {
-    log.debug("findLotByAgreementNumberAndLotNumber: caNumber={},lotNumber={}", caNumber);
+    log.debug("findLotsByAgreementNumber: caNumber={}", caNumber);
     return lotRepo.findByAgreementNumber(caNumber);
   }
 

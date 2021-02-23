@@ -57,7 +57,7 @@ public class AgreementController {
   @GetMapping("/agreements/{ca-number}/lots")
   public Collection<LotDetail> getAgreementLots(
       @PathVariable(value = "ca-number") String caNumber) {
-    log.debug("getAgreementLots: caNumber={", caNumber);
+    log.debug("getAgreementLots: caNumber={}", caNumber);
     // Throw a 404 if agreement number is invalid
     CommercialAgreement ca = service.findAgreementByNumber(caNumber);
     if (ca == null) {
