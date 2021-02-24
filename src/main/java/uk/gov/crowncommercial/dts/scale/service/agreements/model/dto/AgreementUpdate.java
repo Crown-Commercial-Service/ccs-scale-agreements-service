@@ -1,6 +1,6 @@
 package uk.gov.crowncommercial.dts.scale.service.agreements.model.dto;
 
-import java.util.Date;
+import java.time.LocalDate;
 import lombok.Data;
 
 /**
@@ -12,12 +12,12 @@ public class AgreementUpdate {
   /**
    * Date that the update was added.
    */
-  private Date date;
+  private LocalDate date;
 
   /**
    * Link to further information regarding the update.
    */
-  private String url;
+  private String linkUrl;
 
   /**
    * Actual update text.

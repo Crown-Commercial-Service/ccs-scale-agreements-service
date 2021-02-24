@@ -2,7 +2,6 @@ package uk.gov.crowncommercial.dts.scale.service.agreements.model.entity;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
-import java.time.LocalDate;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -40,8 +39,5 @@ public class LotRuleAttribute implements Serializable {
 
   @Column(name = "value_text")
   String valueText;
-
-  @Column(name = "value_date")
-  LocalDate valueDate;
 
 }
