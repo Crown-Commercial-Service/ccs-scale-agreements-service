@@ -9,8 +9,10 @@ import org.springframework.stereotype.Component;
 import lombok.RequiredArgsConstructor;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.AgreementDetail;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.AgreementSummary;
+import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.AgreementUpdate;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.LotDetail;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.CommercialAgreement;
+import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.CommercialAgreementUpdate;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.Lot;
 
 /**
@@ -28,6 +30,7 @@ public class AgreementConverter {
   private final SectorConverter sectorConverter;
   private final DataTypeConverter dataTypeConverter;
   private final RelatedLotConverter relatedLotConverter;
+  private final AgreementUpdateConverter agreementUpdateConverter;
 
   @PostConstruct
   public void init() {
@@ -36,6 +39,7 @@ public class AgreementConverter {
     modelMapper.addConverter(evaluationTypeConverter);
     modelMapper.addConverter(dataTypeConverter);
     modelMapper.addConverter(relatedLotConverter);
+    modelMapper.addConverter(agreementUpdateConverter);
   }
 
   public AgreementDetail convertAgreementToDTO(CommercialAgreement ca) {
@@ -48,6 +52,12 @@ public class AgreementConverter {
 
   public LotDetail convertLotToDTO(Lot lot) {
     return modelMapper.map(lot, LotDetail.class);
+  }
+
+  public Collection<AgreementUpdate> convertAgreementUpdatesToDTO(
+      Collection<CommercialAgreementUpdate> updates) {
+    return updates.stream().map(u -> modelMapper.map(u, AgreementUpdate.class))
+        .collect(Collectors.toList());
   }
 
   public Collection<LotDetail> convertLotsToDTOs(Collection<Lot> lots) {

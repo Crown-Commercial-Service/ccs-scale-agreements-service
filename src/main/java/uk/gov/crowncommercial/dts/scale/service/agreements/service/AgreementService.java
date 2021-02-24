@@ -6,8 +6,10 @@ import org.springframework.stereotype.Service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.CommercialAgreement;
+import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.CommercialAgreementUpdate;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.Lot;
 import uk.gov.crowncommercial.dts.scale.service.agreements.repository.CommercialAgreementRepo;
+import uk.gov.crowncommercial.dts.scale.service.agreements.repository.CommercialAgreementUpdateRepo;
 import uk.gov.crowncommercial.dts.scale.service.agreements.repository.LotRepo;
 
 /**
@@ -20,6 +22,7 @@ import uk.gov.crowncommercial.dts.scale.service.agreements.repository.LotRepo;
 public class AgreementService {
 
   private final CommercialAgreementRepo commercialAgreementRepo;
+  private final CommercialAgreementUpdateRepo commercialAgreementUpdateRepo;
   private final LotRepo lotRepo;
 
   /**
@@ -76,5 +79,17 @@ public class AgreementService {
   public Lot getLot(final Integer lotId) {
     log.debug("getLot: {}", lotId);
     return lotRepo.getOne(lotId);
+  }
+
+  /**
+   * Find a specific agreement by number.
+   * 
+   * @param caNumber Commercial Agreement number
+   * @return CommercialAgreement
+   */
+  public Collection<CommercialAgreementUpdate> findAgreementUpdateByAgreementNumber(
+      final String caNumber) {
+    log.debug("findAgreementUpdateByAgreementNumber: {}", caNumber);
+    return commercialAgreementUpdateRepo.findByAgreementNumber(caNumber);
   }
 }

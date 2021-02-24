@@ -50,7 +50,4 @@ public class CommercialAgreement {
   @OneToMany(mappedBy = "agreement")
   Set<Lot> lots;
 
-  @OneToMany(mappedBy = "commercialAgreementId")
-  Set<CommercialAgreementContact> contactDetails;
-
 }

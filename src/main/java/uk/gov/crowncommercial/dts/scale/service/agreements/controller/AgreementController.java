@@ -18,6 +18,7 @@ import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.Document;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.LotDetail;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.Organisation;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.CommercialAgreement;
+import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.CommercialAgreementUpdate;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.Lot;
 import uk.gov.crowncommercial.dts.scale.service.agreements.service.AgreementService;
 
@@ -91,7 +92,15 @@ public class AgreementController {
   public Collection<AgreementUpdate> getAgreementUpdates(
       @PathVariable(value = "ca-number") String caNumber) {
     log.debug("getAgreementUpdates: {}", caNumber);
-    throw new MethodNotImplementedException(METHOD_NOT_IMPLEMENTED_MSG);
+    // Throw a 404 if agreement number is invalid
+    CommercialAgreement ca = service.findAgreementByNumber(caNumber);
+    if (ca == null) {
+      throw new ResourceNotFoundException(
+          String.format("Agreement number '%s' not found", caNumber));
+    }
+    Collection<CommercialAgreementUpdate> updates =
+        service.findAgreementUpdateByAgreementNumber(caNumber);
+    return converter.convertAgreementUpdatesToDTO(updates);
   }
 
   @GetMapping("/agreements/{ca-number}/lots/{lot-number}/suppliers")
