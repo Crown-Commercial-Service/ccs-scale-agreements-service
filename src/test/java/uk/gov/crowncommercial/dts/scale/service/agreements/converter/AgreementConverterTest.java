@@ -3,7 +3,10 @@ package uk.gov.crowncommercial.dts.scale.service.agreements.converter;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.when;
 import java.math.BigDecimal;
+import java.sql.Timestamp;
+import java.time.Instant;
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
@@ -15,6 +18,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.AgreementDetail;
+import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.AgreementUpdate;
+import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.Document;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.LotDetail;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.LotRuleDTO;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.LotSummary;
@@ -24,6 +29,8 @@ import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.RelatedAgre
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.RouteToMarketDTO;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.TransactionData;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.CommercialAgreement;
+import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.CommercialAgreementDocument;
+import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.CommercialAgreementUpdate;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.Lot;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.LotRelatedLot;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.LotRouteToMarket;
@@ -37,7 +44,7 @@ import uk.gov.crowncommercial.dts.scale.service.agreements.service.AgreementServ
 
 @SpringBootTest(classes = {AgreementConverter.class, ModelMapper.class, LotTypeConverter.class,
     DataTypeConverter.class, EvaluationTypeConverter.class, RelatedLotConverter.class,
-    SectorConverter.class})
+    SectorConverter.class, AgreementUpdateConverter.class})
 @ActiveProfiles("test")
 public class AgreementConverterTest {
 
@@ -76,6 +83,17 @@ public class AgreementConverterTest {
   private static final String RELATED_AGREEMENT_NUMBER = "RM666";
   private static final String RELATED_LOT_NUMBER = "Lot 4";
   private static final String RELATED_LOT_RELATIONSHIP = "FurtherCompetitionWhenBudgetExceeded";
+
+  private static final String UPDATE_NAME = "Update Name";
+  private static final LocalDate UPDATE_PUBLISHED_DATE = LocalDate.now();
+  private static final Timestamp UPDATE_PUBLISHED_DATE_TS = Timestamp
+      .from(Instant.from(UPDATE_PUBLISHED_DATE.atStartOfDay(ZoneId.systemDefault()).toInstant()));
+  private static final String UPDATE_URL = "http://update";
+
+  private static final String DOCUMENT_TYPE = "Document Type";
+  private static final String DOCUMENT_NAME = "Document Name";
+  private static final String DOCUMENT_URL = "http://document";
+  private static final Integer DOCUMENT_VERSION = 1;
 
   @Autowired
   AgreementConverter converter;
@@ -139,16 +157,23 @@ public class AgreementConverterTest {
 
   @Test
   public void testAgreementUpdateCollection() {
-    // Collection<LotDetail> lots =
-    // converter.convertLotsToDTOs(Arrays.asList(createTestLot("Products")));
-    // testLot(lots.stream().findFirst().get());
+    Collection<AgreementUpdate> updates =
+        converter.convertAgreementUpdatesToDTO(Arrays.asList(createCommercialAgreementUpdate()));
+    AgreementUpdate update = updates.stream().findFirst().get();
+    assertEquals(UPDATE_NAME, update.getText());
+    assertEquals(UPDATE_PUBLISHED_DATE, update.getDate());
+    assertEquals(UPDATE_URL, update.getLinkUrl());
   }
 
   @Test
   public void testAgreementDocumentCollection() {
-    // Collection<LotDetail> lots =
-    // converter.convertLotsToDTOs(Arrays.asList(createTestLot("Products")));
-    // testLot(lots.stream().findFirst().get());
+    Collection<Document> documents = converter
+        .convertAgreementDocumentsToDTOs(Arrays.asList(createCommercialAgreementDocument()));
+    Document document = documents.stream().findFirst().get();
+    assertEquals(DOCUMENT_TYPE, document.getDocumentType());
+    assertEquals(DOCUMENT_NAME, document.getName());
+    assertEquals(DOCUMENT_URL, document.getUrl());
+    assertEquals(DOCUMENT_VERSION, document.getVersion());
   }
 
   private void testLot(LotDetail lotDetail) {
@@ -311,5 +336,22 @@ public class AgreementConverterTest {
     relatedLot.setAgreement(relatedAgreement);
 
     return relatedLot;
+  }
+
+  private CommercialAgreementUpdate createCommercialAgreementUpdate() {
+    CommercialAgreementUpdate update = new CommercialAgreementUpdate();
+    update.setName(UPDATE_NAME);
+    update.setPublishedDate(UPDATE_PUBLISHED_DATE_TS);
+    update.setUrl(UPDATE_URL);
+    return update;
+  }
+
+  private CommercialAgreementDocument createCommercialAgreementDocument() {
+    CommercialAgreementDocument document = new CommercialAgreementDocument();
+    document.setDocumentType(DOCUMENT_TYPE);
+    document.setName(DOCUMENT_NAME);
+    document.setUrl(DOCUMENT_URL);
+    document.setVersion(DOCUMENT_VERSION);
+    return document;
   }
 }

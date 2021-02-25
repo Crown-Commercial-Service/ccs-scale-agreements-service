@@ -50,4 +50,9 @@ public class CommercialAgreement {
   @OneToMany(mappedBy = "agreement")
   Set<Lot> lots;
 
+  @OneToMany(mappedBy = "agreement")
+  Set<CommercialAgreementDocument> documents;
+
+  @OneToMany(mappedBy = "agreement")
+  Set<CommercialAgreementUpdate> updates;
 }

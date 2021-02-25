@@ -10,6 +10,7 @@ import javax.persistence.Table;
 import org.hibernate.annotations.Immutable;
 import lombok.AccessLevel;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.experimental.FieldDefaults;
 
 /**
@@ -17,6 +18,7 @@ import lombok.experimental.FieldDefaults;
  */
 @Entity
 @Immutable
+@EqualsAndHashCode(exclude = "agreement")
 @Table(name = "commercial_agreement_updates")
 @Data
 @FieldDefaults(level = AccessLevel.PRIVATE)

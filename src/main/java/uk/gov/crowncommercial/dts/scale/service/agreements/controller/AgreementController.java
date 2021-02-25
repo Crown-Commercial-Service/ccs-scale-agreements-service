@@ -18,8 +18,6 @@ import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.Document;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.LotDetail;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.Organisation;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.CommercialAgreement;
-import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.CommercialAgreementDocument;
-import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.CommercialAgreementUpdate;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.Lot;
 import uk.gov.crowncommercial.dts.scale.service.agreements.service.AgreementService;
 
@@ -46,9 +44,9 @@ public class AgreementController {
   }
 
   @GetMapping("/agreements/{ca-number}")
-  public AgreementDetail getAgreement(@PathVariable(value = "ca-number") String caNumber) {
+  public AgreementDetail getAgreementDetail(@PathVariable(value = "ca-number") String caNumber) {
     log.debug("getAgreement: {}", caNumber);
-    CommercialAgreement ca = validateAgreement(caNumber);
+    CommercialAgreement ca = getAgreement(caNumber);
     return converter.convertAgreementToDTO(ca);
   }
 
@@ -56,9 +54,8 @@ public class AgreementController {
   public Collection<LotDetail> getAgreementLots(
       @PathVariable(value = "ca-number") String caNumber) {
     log.debug("getAgreementLots: caNumber={}", caNumber);
-    validateAgreement(caNumber);
-    Collection<Lot> lot = service.findLotsByAgreementNumber(caNumber);
-    return converter.convertLotsToDTOs(lot);
+    CommercialAgreement ca = getAgreement(caNumber);
+    return converter.convertLotsToDTOs(ca.getLots());
   }
 
   @GetMapping("/agreements/{ca-number}/lots/{lot-number}")
@@ -77,20 +74,16 @@ public class AgreementController {
   public Collection<Document> getAgreementDocuments(
       @PathVariable(value = "ca-number") String caNumber) {
     log.debug("getAgreementDocuments: {}", caNumber);
-    validateAgreement(caNumber);
-    Collection<CommercialAgreementDocument> updates =
-        service.findAgreementDocumentsByAgreementNumber(caNumber);
-    return converter.convertAgreementDocumentsToDTOs(updates);
+    CommercialAgreement ca = getAgreement(caNumber);
+    return converter.convertAgreementDocumentsToDTOs(ca.getDocuments());
   }
 
   @GetMapping("/agreements/{ca-number}/updates")
   public Collection<AgreementUpdate> getAgreementUpdates(
       @PathVariable(value = "ca-number") String caNumber) {
     log.debug("getAgreementUpdates: {}", caNumber);
-    validateAgreement(caNumber);
-    Collection<CommercialAgreementUpdate> updates =
-        service.findAgreementUpdatesByAgreementNumber(caNumber);
-    return converter.convertAgreementUpdatesToDTO(updates);
+    CommercialAgreement ca = getAgreement(caNumber);
+    return converter.convertAgreementUpdatesToDTO(ca.getUpdates());
   }
 
   @GetMapping("/agreements/{ca-number}/lots/{lot-number}/suppliers")
@@ -108,8 +101,7 @@ public class AgreementController {
     throw new MethodNotImplementedException(METHOD_NOT_IMPLEMENTED_MSG);
   }
 
-  private CommercialAgreement validateAgreement(final String caNumber) {
-    // Throw a 404 if agreement number is invalid
+  private CommercialAgreement getAgreement(final String caNumber) {
     CommercialAgreement ca = service.findAgreementByNumber(caNumber);
     if (ca == null) {
       throw new ResourceNotFoundException(
