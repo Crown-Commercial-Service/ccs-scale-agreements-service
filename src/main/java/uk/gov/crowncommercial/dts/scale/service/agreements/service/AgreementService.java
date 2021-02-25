@@ -6,8 +6,10 @@ import org.springframework.stereotype.Service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.CommercialAgreement;
+import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.CommercialAgreementDocument;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.CommercialAgreementUpdate;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.Lot;
+import uk.gov.crowncommercial.dts.scale.service.agreements.repository.CommercialAgreementDocumentRepo;
 import uk.gov.crowncommercial.dts.scale.service.agreements.repository.CommercialAgreementRepo;
 import uk.gov.crowncommercial.dts.scale.service.agreements.repository.CommercialAgreementUpdateRepo;
 import uk.gov.crowncommercial.dts.scale.service.agreements.repository.LotRepo;
@@ -23,6 +25,7 @@ public class AgreementService {
 
   private final CommercialAgreementRepo commercialAgreementRepo;
   private final CommercialAgreementUpdateRepo commercialAgreementUpdateRepo;
+  private final CommercialAgreementDocumentRepo commercialAgreementDocumentRepo;
   private final LotRepo lotRepo;
 
   /**
@@ -82,14 +85,26 @@ public class AgreementService {
   }
 
   /**
-   * Find a specific agreement by number.
+   * Find all updates for an agreement.
    * 
    * @param caNumber Commercial Agreement number
    * @return CommercialAgreement
    */
-  public Collection<CommercialAgreementUpdate> findAgreementUpdateByAgreementNumber(
+  public Collection<CommercialAgreementUpdate> findAgreementUpdatesByAgreementNumber(
       final String caNumber) {
-    log.debug("findAgreementUpdateByAgreementNumber: {}", caNumber);
+    log.debug("findAgreementUpdatesByAgreementNumber: {}", caNumber);
     return commercialAgreementUpdateRepo.findByAgreementNumber(caNumber);
+  }
+
+  /**
+   * Find all documents for an agreement.
+   * 
+   * @param caNumber Commercial Agreement number
+   * @return CommercialAgreement
+   */
+  public Collection<CommercialAgreementDocument> findAgreementDocumentsByAgreementNumber(
+      final String caNumber) {
+    log.debug("findAgreementDocumentsByAgreementNumber: {}", caNumber);
+    return commercialAgreementDocumentRepo.findByAgreementNumber(caNumber);
   }
 }

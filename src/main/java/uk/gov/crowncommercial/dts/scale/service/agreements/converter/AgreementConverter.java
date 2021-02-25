@@ -10,8 +10,10 @@ import lombok.RequiredArgsConstructor;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.AgreementDetail;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.AgreementSummary;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.AgreementUpdate;
+import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.Document;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.LotDetail;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.CommercialAgreement;
+import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.CommercialAgreementDocument;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.CommercialAgreementUpdate;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.Lot;
 
@@ -64,4 +66,8 @@ public class AgreementConverter {
     return lots.stream().map(l -> modelMapper.map(l, LotDetail.class)).collect(Collectors.toList());
   }
 
+  public Collection<Document> convertAgreementDocumentsToDTOs(
+      Collection<CommercialAgreementDocument> lots) {
+    return lots.stream().map(l -> modelMapper.map(l, Document.class)).collect(Collectors.toList());
+  }
 }

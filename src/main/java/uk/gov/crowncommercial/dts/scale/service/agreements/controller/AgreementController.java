@@ -18,6 +18,7 @@ import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.Document;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.LotDetail;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.Organisation;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.CommercialAgreement;
+import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.CommercialAgreementDocument;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.CommercialAgreementUpdate;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.Lot;
 import uk.gov.crowncommercial.dts.scale.service.agreements.service.AgreementService;
@@ -47,11 +48,7 @@ public class AgreementController {
   @GetMapping("/agreements/{ca-number}")
   public AgreementDetail getAgreement(@PathVariable(value = "ca-number") String caNumber) {
     log.debug("getAgreement: {}", caNumber);
-    CommercialAgreement ca = service.findAgreementByNumber(caNumber);
-    if (ca == null) {
-      throw new ResourceNotFoundException(
-          String.format("Agreement number '%s' not found", caNumber));
-    }
+    CommercialAgreement ca = validateAgreement(caNumber);
     return converter.convertAgreementToDTO(ca);
   }
 
@@ -59,12 +56,7 @@ public class AgreementController {
   public Collection<LotDetail> getAgreementLots(
       @PathVariable(value = "ca-number") String caNumber) {
     log.debug("getAgreementLots: caNumber={}", caNumber);
-    // Throw a 404 if agreement number is invalid
-    CommercialAgreement ca = service.findAgreementByNumber(caNumber);
-    if (ca == null) {
-      throw new ResourceNotFoundException(
-          String.format("Agreement number '%s' not found", caNumber));
-    }
+    validateAgreement(caNumber);
     Collection<Lot> lot = service.findLotsByAgreementNumber(caNumber);
     return converter.convertLotsToDTOs(lot);
   }
@@ -85,21 +77,19 @@ public class AgreementController {
   public Collection<Document> getAgreementDocuments(
       @PathVariable(value = "ca-number") String caNumber) {
     log.debug("getAgreementDocuments: {}", caNumber);
-    throw new MethodNotImplementedException(METHOD_NOT_IMPLEMENTED_MSG);
+    validateAgreement(caNumber);
+    Collection<CommercialAgreementDocument> updates =
+        service.findAgreementDocumentsByAgreementNumber(caNumber);
+    return converter.convertAgreementDocumentsToDTOs(updates);
   }
 
   @GetMapping("/agreements/{ca-number}/updates")
   public Collection<AgreementUpdate> getAgreementUpdates(
       @PathVariable(value = "ca-number") String caNumber) {
     log.debug("getAgreementUpdates: {}", caNumber);
-    // Throw a 404 if agreement number is invalid
-    CommercialAgreement ca = service.findAgreementByNumber(caNumber);
-    if (ca == null) {
-      throw new ResourceNotFoundException(
-          String.format("Agreement number '%s' not found", caNumber));
-    }
+    validateAgreement(caNumber);
     Collection<CommercialAgreementUpdate> updates =
-        service.findAgreementUpdateByAgreementNumber(caNumber);
+        service.findAgreementUpdatesByAgreementNumber(caNumber);
     return converter.convertAgreementUpdatesToDTO(updates);
   }
 
@@ -116,6 +106,16 @@ public class AgreementController {
       @PathVariable(value = "lot-number") String lotNumber) {
     log.debug("getLotDocuments: caNumber={}, lotNumber={}", caNumber, lotNumber);
     throw new MethodNotImplementedException(METHOD_NOT_IMPLEMENTED_MSG);
+  }
+
+  private CommercialAgreement validateAgreement(final String caNumber) {
+    // Throw a 404 if agreement number is invalid
+    CommercialAgreement ca = service.findAgreementByNumber(caNumber);
+    if (ca == null) {
+      throw new ResourceNotFoundException(
+          String.format("Agreement number '%s' not found", caNumber));
+    }
+    return ca;
   }
 
 }

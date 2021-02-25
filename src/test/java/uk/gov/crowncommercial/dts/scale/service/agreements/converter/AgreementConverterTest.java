@@ -60,7 +60,6 @@ public class AgreementConverterTest {
   private static final String LOT_RULE_EVALUATION_TYPE = "flag";
   private static final String LOT_RULE_ATT_NAME = "Lot Rule Attribute";
   private static final String LOT_RULE_ATT_TYPE = "number";
-  private static final LocalDate LOT_RULE_ATT_VALUE_DATE = LocalDate.now();
   private static final String LOT_RULE_ATT_VALUE_TEXT = "Rule Value Text";
   private static final BigDecimal LOT_RULE_ATT_VALUE_NUMBER = new BigDecimal(123);
 
@@ -138,6 +137,20 @@ public class AgreementConverterTest {
     testLot(lots.stream().findFirst().get());
   }
 
+  @Test
+  public void testAgreementUpdateCollection() {
+    // Collection<LotDetail> lots =
+    // converter.convertLotsToDTOs(Arrays.asList(createTestLot("Products")));
+    // testLot(lots.stream().findFirst().get());
+  }
+
+  @Test
+  public void testAgreementDocumentCollection() {
+    // Collection<LotDetail> lots =
+    // converter.convertLotsToDTOs(Arrays.asList(createTestLot("Products")));
+    // testLot(lots.stream().findFirst().get());
+  }
+
   private void testLot(LotDetail lotDetail) {
     assertEquals(LOT_NAME, lotDetail.getName());
     assertEquals(LOT_NUMBER, lotDetail.getNumber());
@@ -163,7 +176,6 @@ public class AgreementConverterTest {
     assertEquals(LOT_RULE_ATT_NAME, att.getName());
     assertEquals(LOT_RULE_ATT_TYPE, att.getDataType().toString().toLowerCase());
     assertEquals(LOT_RULE_ATT_VALUE_NUMBER, att.getValueNumber());
-    assertEquals(LOT_RULE_ATT_VALUE_DATE, att.getValueDate());
     assertEquals(LOT_RULE_ATT_VALUE_TEXT, att.getValueText());
 
     TransactionData object = rule.getTransactionData().stream().findFirst().get();
@@ -236,7 +248,6 @@ public class AgreementConverterTest {
     att.setName(LOT_RULE_ATT_NAME);
     att.setRuleId(LOT_RULE_ID);
     att.setDataType(LOT_RULE_ATT_TYPE);
-    att.setValueDate(LOT_RULE_ATT_VALUE_DATE);
     att.setValueNumber(LOT_RULE_ATT_VALUE_NUMBER);
     att.setValueText(LOT_RULE_ATT_VALUE_TEXT);
     return att;
