@@ -97,13 +97,6 @@ public class AgreementController {
     throw new MethodNotImplementedException(METHOD_NOT_IMPLEMENTED_MSG);
   }
 
-  @GetMapping("/agreements/{ca-number}/lots/{lot-number}/documents")
-  public Collection<Document> getLotDocuments(@PathVariable(value = "ca-number") String caNumber,
-      @PathVariable(value = "lot-number") String lotNumber) {
-    log.debug("getLotDocuments: caNumber={}, lotNumber={}", caNumber, lotNumber);
-    throw new MethodNotImplementedException(METHOD_NOT_IMPLEMENTED_MSG);
-  }
-
   private CommercialAgreement getAgreement(final String caNumber) {
     CommercialAgreement ca = service.findAgreementByNumber(caNumber);
     if (ca == null) {
