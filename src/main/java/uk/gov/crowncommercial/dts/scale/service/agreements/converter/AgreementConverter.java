@@ -56,7 +56,7 @@ public class AgreementConverter {
     return modelMapper.map(lot, LotDetail.class);
   }
 
-  public Collection<AgreementUpdate> convertAgreementUpdatesToDTO(
+  public Collection<AgreementUpdate> convertAgreementUpdatesToDTOs(
       Collection<CommercialAgreementUpdate> updates) {
     return updates.stream().map(u -> modelMapper.map(u, AgreementUpdate.class))
         .collect(Collectors.toList());

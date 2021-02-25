@@ -158,7 +158,7 @@ public class AgreementConverterTest {
   @Test
   public void testAgreementUpdateCollection() {
     Collection<AgreementUpdate> updates =
-        converter.convertAgreementUpdatesToDTO(Arrays.asList(createCommercialAgreementUpdate()));
+        converter.convertAgreementUpdatesToDTOs(Arrays.asList(createCommercialAgreementUpdate()));
     AgreementUpdate update = updates.stream().findFirst().get();
     assertEquals(UPDATE_NAME, update.getText());
     assertEquals(UPDATE_PUBLISHED_DATE, update.getDate());

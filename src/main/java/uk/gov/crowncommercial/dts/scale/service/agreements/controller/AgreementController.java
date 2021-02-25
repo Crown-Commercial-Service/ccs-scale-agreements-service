@@ -83,7 +83,7 @@ public class AgreementController {
       @PathVariable(value = "ca-number") String caNumber) {
     log.debug("getAgreementUpdates: {}", caNumber);
     CommercialAgreement ca = getAgreement(caNumber);
-    return converter.convertAgreementUpdatesToDTO(ca.getUpdates());
+    return converter.convertAgreementUpdatesToDTOs(ca.getUpdates());
   }
 
   @GetMapping("/agreements/{ca-number}/lots/{lot-number}/suppliers")

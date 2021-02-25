@@ -173,7 +173,7 @@ public class AgreementControllerTest {
         new HashSet<>(Arrays.asList(mockCommercialAgreementUpdate));
     when(service.findAgreementByNumber(AGREEMENT_NUMBER)).thenReturn(mockCommercialAgreement);
     when(mockCommercialAgreement.getUpdates()).thenReturn(mockUpdates);
-    when(converter.convertAgreementUpdatesToDTO(mockUpdates)).thenReturn(Arrays.asList(update));
+    when(converter.convertAgreementUpdatesToDTOs(mockUpdates)).thenReturn(Arrays.asList(update));
     this.mockMvc.perform(get("/agreements/" + AGREEMENT_NUMBER + "/updates"))
         .andExpect(status().isOk())
         .andExpect(content().string(containsString(AGREEMENT_UPDATE_TEXT)));
