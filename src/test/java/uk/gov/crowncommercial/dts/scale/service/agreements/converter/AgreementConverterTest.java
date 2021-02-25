@@ -44,7 +44,7 @@ import uk.gov.crowncommercial.dts.scale.service.agreements.service.AgreementServ
 
 @SpringBootTest(classes = {AgreementConverter.class, ModelMapper.class, LotTypeConverter.class,
     DataTypeConverter.class, EvaluationTypeConverter.class, RelatedLotConverter.class,
-    SectorConverter.class, AgreementUpdateConverter.class})
+    SectorConverter.class, AgreementUpdateConverter.class, RouteToMarketConverter.class})
 @ActiveProfiles("test")
 public class AgreementConverterTest {
 

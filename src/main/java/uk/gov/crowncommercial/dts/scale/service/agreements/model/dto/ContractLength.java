@@ -1,11 +1,13 @@
 package uk.gov.crowncommercial.dts.scale.service.agreements.model.dto;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
 
 /**
  * Contract Length.
  */
 @Data
+@AllArgsConstructor
 public class ContractLength {
 
   /**
@@ -16,5 +18,5 @@ public class ContractLength {
   /**
    * The number of units.
    */
-  private Integer length;
+  private Short length;
 }

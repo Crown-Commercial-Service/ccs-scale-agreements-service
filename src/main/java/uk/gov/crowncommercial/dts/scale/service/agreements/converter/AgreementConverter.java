@@ -33,6 +33,7 @@ public class AgreementConverter {
   private final DataTypeConverter dataTypeConverter;
   private final RelatedLotConverter relatedLotConverter;
   private final AgreementUpdateConverter agreementUpdateConverter;
+  private final RouteToMarketConverter routeToMarketConverter;
 
   @PostConstruct
   public void init() {
@@ -42,6 +43,7 @@ public class AgreementConverter {
     modelMapper.addConverter(dataTypeConverter);
     modelMapper.addConverter(relatedLotConverter);
     modelMapper.addConverter(agreementUpdateConverter);
+    modelMapper.addConverter(routeToMarketConverter);
   }
 
   public AgreementDetail convertAgreementToDTO(CommercialAgreement ca) {
