@@ -8,14 +8,14 @@ import lombok.Data;
 import lombok.experimental.FieldDefaults;
 
 /**
- * Contact point - CA organisation role (M:M join entity)
+ * Contact point - Lot person role (M:M join entity)
  */
 @Entity
 @Immutable
-@Table(name = "contact_point_commercial_agreement_ors")
+@Table(name = "contact_point_lot_prs")
 @Data
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class ContactPointCommercialAgreementOrgRole {
+public class ContactPointLotPersonRole {
 
   @Id
   @Column(name = "contact_point_id")

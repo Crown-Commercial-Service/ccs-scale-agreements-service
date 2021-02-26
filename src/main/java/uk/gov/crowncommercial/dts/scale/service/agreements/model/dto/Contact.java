@@ -1,5 +1,6 @@
 package uk.gov.crowncommercial.dts.scale.service.agreements.model.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
 /**
@@ -8,7 +9,8 @@ import lombok.Data;
 @Data
 public class Contact {
 
-  ContactPoint contact;
+  @JsonProperty("contact")
+  ContactPoint contactPoint;
 
   String contactId;
 

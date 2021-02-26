@@ -9,34 +9,34 @@ import lombok.Data;
 import lombok.experimental.FieldDefaults;
 
 /**
- * Lot organisation role
+ * Lot person role
  */
 @Entity
 @Immutable
-@Table(name = "lot_organisation_roles")
+@Table(name = "lot_people_roles")
 @Data
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class LotOrganisationRole {
+public class LotPersonRole {
 
   @Id
-  @Column(name = "lot_organisation_role_id")
+  @Column(name = "lot_person_role_id")
   Integer id;
 
   @ManyToOne
-  @JoinColumn(name = "organisation_id")
-  Organisation organisation;
+  @JoinColumn(name = "person_id")
+  Person person;
 
   @ManyToOne
   @JoinColumn(name = "role_type_id")
   RoleType roleType;
-
-  @OneToMany(fetch = FetchType.LAZY)
-  @JoinColumn(name = "lot_organisation_role_id")
-  Set<ContactPointLotOrgRole> contactPointLotOrgRole;
 
   @Column(name = "start_date")
   LocalDate startDate;
 
   @Column(name = "end_date")
   LocalDate endDate;
+
+  @OneToMany(fetch = FetchType.LAZY)
+  @JoinColumn(name = "lot_person_role_id")
+  Set<ContactPointLotPersonRole> contactPointLotPersonRole;
 }

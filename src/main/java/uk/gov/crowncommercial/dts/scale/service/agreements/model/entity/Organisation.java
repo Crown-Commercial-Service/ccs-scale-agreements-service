@@ -1,10 +1,8 @@
 package uk.gov.crowncommercial.dts.scale.service.agreements.model.entity;
 
 import java.time.LocalDate;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import java.util.Set;
+import javax.persistence.*;
 import org.hibernate.annotations.Immutable;
 import lombok.AccessLevel;
 import lombok.Data;
@@ -50,5 +48,8 @@ public class Organisation {
 
   @Column(name = "active")
   Boolean active;
+
+  @OneToMany(mappedBy = "organisation")
+  Set<Person> people;
 
 }

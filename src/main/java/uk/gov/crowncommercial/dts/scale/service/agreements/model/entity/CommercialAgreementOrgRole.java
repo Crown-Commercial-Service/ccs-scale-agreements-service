@@ -9,17 +9,23 @@ import lombok.Data;
 import lombok.experimental.FieldDefaults;
 
 /**
- * Lot organisation role
+ * Commercial agreement organisation role
  */
 @Entity
 @Immutable
-@Table(name = "lot_organisation_roles")
+@Table(name = "commercial_agreement_organisation_roles")
 @Data
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class LotOrganisationRole {
+public class CommercialAgreementOrgRole {
+
+  /*
+   * commercial_agreement_organisation_role_id SERIAL NOT NULL PRIMARY KEY, commercial_agreement_id
+   * INTEGER NOT NULL, organisation_id INTEGER NOT NULL, role_type_id INTEGER NOT NULL, start_date
+   * DATE NOT NULL, end_date DATE );
+   */
 
   @Id
-  @Column(name = "lot_organisation_role_id")
+  @Column(name = "commercial_agreement_organisation_role_id")
   Integer id;
 
   @ManyToOne
@@ -31,12 +37,13 @@ public class LotOrganisationRole {
   RoleType roleType;
 
   @OneToMany(fetch = FetchType.LAZY)
-  @JoinColumn(name = "lot_organisation_role_id")
-  Set<ContactPointLotOrgRole> contactPointLotOrgRole;
+  @JoinColumn(name = "commercial_agreement_organisation_role_id")
+  Set<ContactPointCommercialAgreementOrgRole> contactPointCommercialAgreementOrgRole;
 
   @Column(name = "start_date")
   LocalDate startDate;
 
   @Column(name = "end_date")
   LocalDate endDate;
+
 }
