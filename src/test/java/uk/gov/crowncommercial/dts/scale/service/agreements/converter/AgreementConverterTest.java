@@ -3,7 +3,12 @@ package uk.gov.crowncommercial.dts.scale.service.agreements.converter;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.when;
 import java.math.BigDecimal;
+import java.sql.Timestamp;
+import java.time.Instant;
 import java.time.LocalDate;
+import java.time.ZoneId;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 import org.junit.jupiter.api.Test;
@@ -13,6 +18,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.AgreementDetail;
+import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.AgreementUpdate;
+import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.BuyingMethod;
+import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.Document;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.LotDetail;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.LotRuleDTO;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.LotSummary;
@@ -22,6 +30,8 @@ import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.RelatedAgre
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.RouteToMarketDTO;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.TransactionData;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.CommercialAgreement;
+import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.CommercialAgreementDocument;
+import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.CommercialAgreementUpdate;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.Lot;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.LotRelatedLot;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.LotRouteToMarket;
@@ -35,7 +45,7 @@ import uk.gov.crowncommercial.dts.scale.service.agreements.service.AgreementServ
 
 @SpringBootTest(classes = {AgreementConverter.class, ModelMapper.class, LotTypeConverter.class,
     DataTypeConverter.class, EvaluationTypeConverter.class, RelatedLotConverter.class,
-    SectorConverter.class})
+    SectorConverter.class, AgreementUpdateConverter.class, RouteToMarketConverter.class})
 @ActiveProfiles("test")
 public class AgreementConverterTest {
 
@@ -58,7 +68,6 @@ public class AgreementConverterTest {
   private static final String LOT_RULE_EVALUATION_TYPE = "flag";
   private static final String LOT_RULE_ATT_NAME = "Lot Rule Attribute";
   private static final String LOT_RULE_ATT_TYPE = "number";
-  private static final LocalDate LOT_RULE_ATT_VALUE_DATE = LocalDate.now();
   private static final String LOT_RULE_ATT_VALUE_TEXT = "Rule Value Text";
   private static final BigDecimal LOT_RULE_ATT_VALUE_NUMBER = new BigDecimal(123);
 
@@ -66,15 +75,32 @@ public class AgreementConverterTest {
 
   private static final String SECTOR_NAME = "Sector Name";
 
-  private static final String ROUTE_TO_MARKET_NAME = "RTM Name";
-  private static final String ROUTE_TO_MARKET_DESCRIPTION = "RTM Description";
-
+  private static final String ROUTE_TO_MARKET_NAME = "Direct Award";
+  private static final String LRTM_BUYING_METHOD_URL = "http://buyingmethod";
+  private static final Short LRTM_CONTRACT_LENGTH_MIN = 1;
+  private static final Short LRTM_CONTRACT_LENGTH_MAX = 2;
+  private static final String LRTM_CONTRACT_LENGHT_OUM = "years";
+  private static final LocalDate LTRM_START_DATE = LocalDate.now();
+  private static final LocalDate LTRM_END_DATE = LocalDate.now();
+  private static final BigDecimal LRTM_MIN_VALUE = new BigDecimal(3);
+  private static final BigDecimal LRTM_MAX_VALUE = new BigDecimal(4);
   private static final String LOCATION = "Mordor";
 
   private static final Integer RELATED_LOT_ID = 888;
   private static final String RELATED_AGREEMENT_NUMBER = "RM666";
   private static final String RELATED_LOT_NUMBER = "Lot 4";
   private static final String RELATED_LOT_RELATIONSHIP = "FurtherCompetitionWhenBudgetExceeded";
+
+  private static final String UPDATE_NAME = "Update Name";
+  private static final LocalDate UPDATE_PUBLISHED_DATE = LocalDate.now();
+  private static final Timestamp UPDATE_PUBLISHED_DATE_TS = Timestamp
+      .from(Instant.from(UPDATE_PUBLISHED_DATE.atStartOfDay(ZoneId.systemDefault()).toInstant()));
+  private static final String UPDATE_URL = "http://update";
+
+  private static final String DOCUMENT_TYPE = "Document Type";
+  private static final String DOCUMENT_NAME = "Document Name";
+  private static final String DOCUMENT_URL = "http://document";
+  private static final Integer DOCUMENT_VERSION = 1;
 
   @Autowired
   AgreementConverter converter;
@@ -114,39 +140,7 @@ public class AgreementConverterTest {
   @Test
   public void testLotDetailProduct() {
     LotDetail lotDetail = converter.convertLotToDTO(createTestLot("Products"));
-    assertEquals(LOT_NAME, lotDetail.getName());
-    assertEquals(LOT_NUMBER, lotDetail.getNumber());
-    assertEquals(LotType.PRODUCT, lotDetail.getType());
-    assertEquals(LOT_DESCRIPTION, lotDetail.getDescription());
-
-    String sector = lotDetail.getSectors().stream().findFirst().get();
-    assertEquals(SECTOR_NAME, sector);
-
-    RouteToMarketDTO rtm = lotDetail.getRoutesToMarket().stream().findFirst().get();
-    assertEquals(LOCATION, rtm.getLocation());
-
-    LotRuleDTO rule = lotDetail.getRules().stream().findFirst().get();
-    assertEquals(LOT_RULE_ID.toString(), rule.getRuleId());
-    assertEquals(LOT_RULE_NAME, rule.getName());
-    assertEquals(LOT_RULE_SERVICE, rule.getService());
-    assertEquals(LOT_RULE_EVALUATION_TYPE, rule.getEvaluationType().toString().toLowerCase());
-
-    NameValueType att = rule.getLotAttributes().stream().findFirst().get();
-    assertEquals(LOT_RULE_ID.toString(), rule.getRuleId());
-    assertEquals(LOT_RULE_ATT_NAME, att.getName());
-    assertEquals(LOT_RULE_ATT_TYPE, att.getDataType().toString().toLowerCase());
-    assertEquals(LOT_RULE_ATT_VALUE_NUMBER, att.getValueNumber());
-    assertEquals(LOT_RULE_ATT_VALUE_DATE, att.getValueDate());
-    assertEquals(LOT_RULE_ATT_VALUE_TEXT, att.getValueText());
-
-    TransactionData object = rule.getTransactionData().stream().findFirst().get();
-    assertEquals(LOT_RULE_TRANS_OBJECT_NAME, object.getName());
-    assertEquals(LOCATION, object.getLocation());
-
-    RelatedAgreementLot related = lotDetail.getRelatedAgreementLots().stream().findFirst().get();
-    assertEquals(RELATED_AGREEMENT_NUMBER, related.getCaNumber());
-    assertEquals(RELATED_LOT_NUMBER, related.getLotNumber());
-    assertEquals(RELATED_LOT_RELATIONSHIP, related.getRelationship());
+    testLot(lotDetail);
   }
 
   @Test
@@ -159,6 +153,80 @@ public class AgreementConverterTest {
   public void testLotDetailProductAndService() {
     LotDetail lotDetail = converter.convertLotToDTO(createTestLot("Products and Services"));
     assertEquals(LotType.PRODUCT_AND_SERVICE, lotDetail.getType());
+  }
+
+  @Test
+  public void testLotDetailProductCollection() {
+    Collection<LotDetail> lots =
+        converter.convertLotsToDTOs(Arrays.asList(createTestLot("Products")));
+    testLot(lots.stream().findFirst().get());
+  }
+
+  @Test
+  public void testAgreementUpdateCollection() {
+    Collection<AgreementUpdate> updates =
+        converter.convertAgreementUpdatesToDTOs(Arrays.asList(createCommercialAgreementUpdate()));
+    AgreementUpdate update = updates.stream().findFirst().get();
+    assertEquals(UPDATE_NAME, update.getText());
+    assertEquals(UPDATE_PUBLISHED_DATE, update.getDate());
+    assertEquals(UPDATE_URL, update.getLinkUrl());
+  }
+
+  @Test
+  public void testAgreementDocumentCollection() {
+    Collection<Document> documents = converter
+        .convertAgreementDocumentsToDTOs(Arrays.asList(createCommercialAgreementDocument()));
+    Document document = documents.stream().findFirst().get();
+    assertEquals(DOCUMENT_TYPE, document.getDocumentType());
+    assertEquals(DOCUMENT_NAME, document.getName());
+    assertEquals(DOCUMENT_URL, document.getUrl());
+    assertEquals(DOCUMENT_VERSION, document.getVersion());
+  }
+
+  private void testLot(LotDetail lotDetail) {
+    assertEquals(LOT_NAME, lotDetail.getName());
+    assertEquals(LOT_NUMBER, lotDetail.getNumber());
+    assertEquals(LotType.PRODUCT, lotDetail.getType());
+    assertEquals(LOT_DESCRIPTION, lotDetail.getDescription());
+    assertEquals(START_DATE, lotDetail.getStartDate());
+    assertEquals(END_DATE, lotDetail.getEndDate());
+
+    String sector = lotDetail.getSectors().stream().findFirst().get();
+    assertEquals(SECTOR_NAME, sector);
+
+    RouteToMarketDTO rtm = lotDetail.getRoutesToMarket().stream().findFirst().get();
+    assertEquals(LOCATION, rtm.getLocation());
+    assertEquals(BuyingMethod.DIRECT_AWARD, rtm.getBuyingMethod());
+    assertEquals(LRTM_BUYING_METHOD_URL, rtm.getBuyingSystemUrl());
+    assertEquals(LRTM_MIN_VALUE, rtm.getMinimumValue());
+    assertEquals(LRTM_MAX_VALUE, rtm.getMaximumValue());
+    assertEquals(LRTM_CONTRACT_LENGTH_MIN, rtm.getMinContractLength().getLength());
+    assertEquals(LRTM_CONTRACT_LENGHT_OUM, rtm.getMinContractLength().getUnit());
+    assertEquals(LRTM_CONTRACT_LENGTH_MAX, rtm.getMaxContractLength().getLength());
+    assertEquals(LRTM_CONTRACT_LENGHT_OUM, rtm.getMaxContractLength().getUnit());
+
+    LotRuleDTO rule = lotDetail.getRules().stream().findFirst().get();
+    assertEquals(LOT_RULE_ID.toString(), rule.getRuleId());
+    assertEquals(LOT_RULE_NAME, rule.getName());
+    assertEquals(LOT_RULE_SERVICE, rule.getService());
+    assertEquals(LOT_RULE_EVALUATION_TYPE, rule.getEvaluationType().toString().toLowerCase());
+
+    NameValueType att = rule.getLotAttributes().stream().findFirst().get();
+    assertEquals(LOT_RULE_ID.toString(), rule.getRuleId());
+    assertEquals(LOT_RULE_ATT_NAME, att.getName());
+    assertEquals(LOT_RULE_ATT_TYPE, att.getDataType().toString().toLowerCase());
+    assertEquals(LOT_RULE_ATT_VALUE_NUMBER, att.getValueNumber());
+    assertEquals(LOT_RULE_ATT_VALUE_TEXT, att.getValueText());
+
+    TransactionData object = rule.getTransactionData().stream().findFirst().get();
+    assertEquals(LOT_RULE_TRANS_OBJECT_NAME, object.getName());
+    assertEquals(LOCATION, object.getLocation());
+
+    RelatedAgreementLot related = lotDetail.getRelatedAgreementLots().stream().findFirst().get();
+    assertEquals(RELATED_AGREEMENT_NUMBER, related.getCaNumber());
+    assertEquals(RELATED_LOT_NUMBER, related.getLotNumber());
+    assertEquals(RELATED_LOT_RELATIONSHIP, related.getRelationship());
+
   }
 
   private Lot createTestLot(String type) {
@@ -186,7 +254,6 @@ public class AgreementConverterTest {
     lot.setRoutesToMarket(lrtms);
     lot.setRules(rules);
     lot.setRelatedAgreementLots(related);
-
     return lot;
   }
 
@@ -199,7 +266,6 @@ public class AgreementConverterTest {
   private RouteToMarket createRouteToMarket() {
     RouteToMarket rtm = new RouteToMarket();
     rtm.setName(ROUTE_TO_MARKET_NAME);
-    rtm.setDescription(ROUTE_TO_MARKET_DESCRIPTION);
     return rtm;
   }
 
@@ -212,7 +278,14 @@ public class AgreementConverterTest {
     lrtm.setRouteToMarket(createRouteToMarket());
     lrtm.setKey(key);
     lrtm.setLocation(LOCATION);
-
+    lrtm.setBuyingMethodUrl(LRTM_BUYING_METHOD_URL);
+    lrtm.setContractLengthMaximumValue(LRTM_CONTRACT_LENGTH_MAX);
+    lrtm.setContractLengthMinimumValue(LRTM_CONTRACT_LENGTH_MIN);
+    lrtm.setContractLengthUnitOfMeasure(LRTM_CONTRACT_LENGHT_OUM);
+    lrtm.setEndDate(LTRM_END_DATE);
+    lrtm.setStartDate(LTRM_START_DATE);
+    lrtm.setMaximumValue(LRTM_MAX_VALUE);
+    lrtm.setMinimumValue(LRTM_MIN_VALUE);
     return lrtm;
   }
 
@@ -221,7 +294,6 @@ public class AgreementConverterTest {
     att.setName(LOT_RULE_ATT_NAME);
     att.setRuleId(LOT_RULE_ID);
     att.setDataType(LOT_RULE_ATT_TYPE);
-    att.setValueDate(LOT_RULE_ATT_VALUE_DATE);
     att.setValueNumber(LOT_RULE_ATT_VALUE_NUMBER);
     att.setValueText(LOT_RULE_ATT_VALUE_TEXT);
     return att;
@@ -285,5 +357,22 @@ public class AgreementConverterTest {
     relatedLot.setAgreement(relatedAgreement);
 
     return relatedLot;
+  }
+
+  private CommercialAgreementUpdate createCommercialAgreementUpdate() {
+    CommercialAgreementUpdate update = new CommercialAgreementUpdate();
+    update.setName(UPDATE_NAME);
+    update.setPublishedDate(UPDATE_PUBLISHED_DATE_TS);
+    update.setUrl(UPDATE_URL);
+    return update;
+  }
+
+  private CommercialAgreementDocument createCommercialAgreementDocument() {
+    CommercialAgreementDocument document = new CommercialAgreementDocument();
+    document.setDocumentType(DOCUMENT_TYPE);
+    document.setName(DOCUMENT_NAME);
+    document.setUrl(DOCUMENT_URL);
+    document.setVersion(DOCUMENT_VERSION);
+    return document;
   }
 }

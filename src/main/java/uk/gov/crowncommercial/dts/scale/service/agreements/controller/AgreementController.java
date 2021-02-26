@@ -31,6 +31,9 @@ import uk.gov.crowncommercial.dts.scale.service.agreements.service.AgreementServ
 public class AgreementController {
 
   static final String METHOD_NOT_IMPLEMENTED_MSG = "This method is not yet implemented by the API";
+  static final String ERROR_MSG_AGREEMENT_NOT_FOUND = "Agreement number '%s' not found";
+  static final String ERROR_MSG_LOT_NOT_FOUND =
+      "Lot number '%s' for agreement number '%s' not found";
 
   private final AgreementService service;
   private final AgreementConverter converter;
@@ -44,14 +47,18 @@ public class AgreementController {
   }
 
   @GetMapping("/agreements/{ca-number}")
-  public AgreementDetail getAgreement(@PathVariable(value = "ca-number") String caNumber) {
+  public AgreementDetail getAgreementDetail(@PathVariable(value = "ca-number") String caNumber) {
     log.debug("getAgreement: {}", caNumber);
-    CommercialAgreement ca = service.findAgreementByNumber(caNumber);
-    if (ca == null) {
-      throw new ResourceNotFoundException(
-          String.format("Agreement number '%s' not found", caNumber));
-    }
+    CommercialAgreement ca = getAgreement(caNumber);
     return converter.convertAgreementToDTO(ca);
+  }
+
+  @GetMapping("/agreements/{ca-number}/lots")
+  public Collection<LotDetail> getAgreementLots(
+      @PathVariable(value = "ca-number") String caNumber) {
+    log.debug("getAgreementLots: caNumber={}", caNumber);
+    CommercialAgreement ca = getAgreement(caNumber);
+    return converter.convertLotsToDTOs(ca.getLots());
   }
 
   @GetMapping("/agreements/{ca-number}/lots/{lot-number}")
@@ -60,8 +67,8 @@ public class AgreementController {
     log.debug("getLot: caNumber={},lotNumber={}", caNumber, lotNumber);
     Lot lot = service.findLotByAgreementNumberAndLotNumber(caNumber, lotNumber);
     if (lot == null) {
-      throw new ResourceNotFoundException(String
-          .format("Lot number '%s' for agreement number '%s' not found", lotNumber, caNumber));
+      throw new ResourceNotFoundException(
+          String.format(ERROR_MSG_LOT_NOT_FOUND, lotNumber, caNumber));
     }
     return converter.convertLotToDTO(lot);
   }
@@ -70,14 +77,16 @@ public class AgreementController {
   public Collection<Document> getAgreementDocuments(
       @PathVariable(value = "ca-number") String caNumber) {
     log.debug("getAgreementDocuments: {}", caNumber);
-    throw new MethodNotImplementedException(METHOD_NOT_IMPLEMENTED_MSG);
+    CommercialAgreement ca = getAgreement(caNumber);
+    return converter.convertAgreementDocumentsToDTOs(ca.getDocuments());
   }
 
   @GetMapping("/agreements/{ca-number}/updates")
   public Collection<AgreementUpdate> getAgreementUpdates(
       @PathVariable(value = "ca-number") String caNumber) {
     log.debug("getAgreementUpdates: {}", caNumber);
-    throw new MethodNotImplementedException(METHOD_NOT_IMPLEMENTED_MSG);
+    CommercialAgreement ca = getAgreement(caNumber);
+    return converter.convertAgreementUpdatesToDTOs(ca.getUpdates());
   }
 
   @GetMapping("/agreements/{ca-number}/lots/{lot-number}/suppliers")
@@ -88,11 +97,12 @@ public class AgreementController {
     throw new MethodNotImplementedException(METHOD_NOT_IMPLEMENTED_MSG);
   }
 
-  @GetMapping("/agreements/{ca-number}/lots/{lot-number}/documents")
-  public Collection<Document> getLotDocuments(@PathVariable(value = "ca-number") String caNumber,
-      @PathVariable(value = "lot-number") String lotNumber) {
-    log.debug("getLotDocuments: caNumber={}, lotNumber={}", caNumber, lotNumber);
-    throw new MethodNotImplementedException(METHOD_NOT_IMPLEMENTED_MSG);
+  private CommercialAgreement getAgreement(final String caNumber) {
+    CommercialAgreement ca = service.findAgreementByNumber(caNumber);
+    if (ca == null) {
+      throw new ResourceNotFoundException(String.format(ERROR_MSG_AGREEMENT_NOT_FOUND, caNumber));
+    }
+    return ca;
   }
 
 }

@@ -27,9 +27,9 @@ import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.ApiErrors;
 @Slf4j
 public class GlobalErrorHandler implements ErrorController {
 
-  private static final String ERR_MSG_DEFAULT = "An error occurred processing the request";
-  private static final String ERR_MSG_VALIDATION = "Validation error processing the request";
-  private static final String ERR_MSG_NOT_FOUND = "Resource not found";
+  public static final String ERR_MSG_DEFAULT = "An error occurred processing the request";
+  public static final String ERR_MSG_VALIDATION = "Validation error processing the request";
+  public static final String ERR_MSG_NOT_FOUND = "Resource not found";
 
   @ResponseStatus(HttpStatus.BAD_REQUEST)
   @ExceptionHandler({ValidationException.class, HttpMessageNotReadableException.class})

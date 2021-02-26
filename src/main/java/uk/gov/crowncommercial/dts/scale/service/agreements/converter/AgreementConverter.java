@@ -1,5 +1,7 @@
 package uk.gov.crowncommercial.dts.scale.service.agreements.converter;
 
+import java.util.Collection;
+import java.util.stream.Collectors;
 import javax.annotation.PostConstruct;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -7,8 +9,12 @@ import org.springframework.stereotype.Component;
 import lombok.RequiredArgsConstructor;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.AgreementDetail;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.AgreementSummary;
+import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.AgreementUpdate;
+import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.Document;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.LotDetail;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.CommercialAgreement;
+import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.CommercialAgreementDocument;
+import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.CommercialAgreementUpdate;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.Lot;
 
 /**
@@ -26,6 +32,8 @@ public class AgreementConverter {
   private final SectorConverter sectorConverter;
   private final DataTypeConverter dataTypeConverter;
   private final RelatedLotConverter relatedLotConverter;
+  private final AgreementUpdateConverter agreementUpdateConverter;
+  private final RouteToMarketConverter routeToMarketConverter;
 
   @PostConstruct
   public void init() {
@@ -34,6 +42,8 @@ public class AgreementConverter {
     modelMapper.addConverter(evaluationTypeConverter);
     modelMapper.addConverter(dataTypeConverter);
     modelMapper.addConverter(relatedLotConverter);
+    modelMapper.addConverter(agreementUpdateConverter);
+    modelMapper.addConverter(routeToMarketConverter);
   }
 
   public AgreementDetail convertAgreementToDTO(CommercialAgreement ca) {
@@ -48,4 +58,18 @@ public class AgreementConverter {
     return modelMapper.map(lot, LotDetail.class);
   }
 
+  public Collection<AgreementUpdate> convertAgreementUpdatesToDTOs(
+      Collection<CommercialAgreementUpdate> updates) {
+    return updates.stream().map(u -> modelMapper.map(u, AgreementUpdate.class))
+        .collect(Collectors.toList());
+  }
+
+  public Collection<LotDetail> convertLotsToDTOs(Collection<Lot> lots) {
+    return lots.stream().map(l -> modelMapper.map(l, LotDetail.class)).collect(Collectors.toList());
+  }
+
+  public Collection<Document> convertAgreementDocumentsToDTOs(
+      Collection<CommercialAgreementDocument> lots) {
+    return lots.stream().map(l -> modelMapper.map(l, Document.class)).collect(Collectors.toList());
+  }
 }

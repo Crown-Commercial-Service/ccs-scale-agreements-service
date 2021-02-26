@@ -41,7 +41,21 @@ public class LotRouteToMarket {
   @Column(name = "location")
   String location;
 
+  @Column(name = "buying_method_url")
+  String buyingMethodUrl;
+
   @Column(name = "lot_minimum_value")
   BigDecimal minimumValue;
 
+  @Column(name = "lot_maximum_value")
+  BigDecimal maximumValue;
+
+  @Column(name = "lot_contract_length_uom")
+  String contractLengthUnitOfMeasure;
+
+  @Column(name = "lot_contract_length_minimum_value")
+  Short contractLengthMinimumValue;
+
+  @Column(name = "lot_contract_length_maximum_value")
+  Short contractLengthMaximumValue;
 }

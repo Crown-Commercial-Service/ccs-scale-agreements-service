@@ -21,7 +21,7 @@ public class Document {
   /**
    * string Version number of the document - does not prescribe the format
    */
-  private String version;
+  private Integer version;
 
   /**
    * The type of document e.g. overview, t&cs, guidance, how to buy, contract notice etc.

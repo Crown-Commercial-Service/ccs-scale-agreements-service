@@ -65,4 +65,5 @@ public class AgreementService {
     log.debug("getLot: {}", lotId);
     return lotRepo.getOne(lotId);
   }
+
 }
