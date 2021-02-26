@@ -9,7 +9,7 @@ import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.LotRoute
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.RouteToMarket;
 
 /**
- * Converts LotRouteToMArket from database into RouteToMarketDTO.
+ * Converts LotRouteToMarket from database into RouteToMarketDTO.
  *
  */
 @Component
@@ -38,14 +38,14 @@ public class RouteToMarketConverter extends AbstractConverter<LotRouteToMarket, 
   }
 
   private BuyingMethod getBuyingMethod(RouteToMarket rtm) {
-    switch (rtm.getName()) {
-      case "Further Competition":
+    switch (rtm.getName().toUpperCase()) {
+      case "FURTHER COMPETITION":
         return BuyingMethod.FURTHER_COMPETITION;
-      case "Direct Award":
+      case "DIRECT AWARD":
         return BuyingMethod.DIRECT_AWARD;
-      case "Marketplace":
+      case "MARKETPLACE":
         return BuyingMethod.MARKETPLACE;
-      case "Auction":
+      case "AUCTION":
         return BuyingMethod.E_AUCTION;
       default:
         return null;

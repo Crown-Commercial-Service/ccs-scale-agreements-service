@@ -19,6 +19,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.AgreementDetail;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.AgreementUpdate;
+import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.BuyingMethod;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.Document;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.LotDetail;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.LotRuleDTO;
@@ -74,9 +75,15 @@ public class AgreementConverterTest {
 
   private static final String SECTOR_NAME = "Sector Name";
 
-  private static final String ROUTE_TO_MARKET_NAME = "RTM Name";
-  private static final String ROUTE_TO_MARKET_DESCRIPTION = "RTM Description";
-
+  private static final String ROUTE_TO_MARKET_NAME = "Direct Award";
+  private static final String LRTM_BUYING_METHOD_URL = "http://buyingmethod";
+  private static final Short LRTM_CONTRACT_LENGTH_MIN = 1;
+  private static final Short LRTM_CONTRACT_LENGTH_MAX = 2;
+  private static final String LRTM_CONTRACT_LENGHT_OUM = "years";
+  private static final LocalDate LTRM_START_DATE = LocalDate.now();
+  private static final LocalDate LTRM_END_DATE = LocalDate.now();
+  private static final BigDecimal LRTM_MIN_VALUE = new BigDecimal(3);
+  private static final BigDecimal LRTM_MAX_VALUE = new BigDecimal(4);
   private static final String LOCATION = "Mordor";
 
   private static final Integer RELATED_LOT_ID = 888;
@@ -189,6 +196,14 @@ public class AgreementConverterTest {
 
     RouteToMarketDTO rtm = lotDetail.getRoutesToMarket().stream().findFirst().get();
     assertEquals(LOCATION, rtm.getLocation());
+    assertEquals(BuyingMethod.DIRECT_AWARD, rtm.getBuyingMethod());
+    assertEquals(LRTM_BUYING_METHOD_URL, rtm.getBuyingSystemUrl());
+    assertEquals(LRTM_MIN_VALUE, rtm.getMinimumValue());
+    assertEquals(LRTM_MAX_VALUE, rtm.getMaximumValue());
+    assertEquals(LRTM_CONTRACT_LENGTH_MIN, rtm.getMinContractLength().getLength());
+    assertEquals(LRTM_CONTRACT_LENGHT_OUM, rtm.getMinContractLength().getUnit());
+    assertEquals(LRTM_CONTRACT_LENGTH_MAX, rtm.getMaxContractLength().getLength());
+    assertEquals(LRTM_CONTRACT_LENGHT_OUM, rtm.getMaxContractLength().getUnit());
 
     LotRuleDTO rule = lotDetail.getRules().stream().findFirst().get();
     assertEquals(LOT_RULE_ID.toString(), rule.getRuleId());
@@ -211,6 +226,7 @@ public class AgreementConverterTest {
     assertEquals(RELATED_AGREEMENT_NUMBER, related.getCaNumber());
     assertEquals(RELATED_LOT_NUMBER, related.getLotNumber());
     assertEquals(RELATED_LOT_RELATIONSHIP, related.getRelationship());
+
   }
 
   private Lot createTestLot(String type) {
@@ -238,7 +254,6 @@ public class AgreementConverterTest {
     lot.setRoutesToMarket(lrtms);
     lot.setRules(rules);
     lot.setRelatedAgreementLots(related);
-
     return lot;
   }
 
@@ -251,7 +266,6 @@ public class AgreementConverterTest {
   private RouteToMarket createRouteToMarket() {
     RouteToMarket rtm = new RouteToMarket();
     rtm.setName(ROUTE_TO_MARKET_NAME);
-    rtm.setDescription(ROUTE_TO_MARKET_DESCRIPTION);
     return rtm;
   }
 
@@ -264,7 +278,14 @@ public class AgreementConverterTest {
     lrtm.setRouteToMarket(createRouteToMarket());
     lrtm.setKey(key);
     lrtm.setLocation(LOCATION);
-
+    lrtm.setBuyingMethodUrl(LRTM_BUYING_METHOD_URL);
+    lrtm.setContractLengthMaximumValue(LRTM_CONTRACT_LENGTH_MAX);
+    lrtm.setContractLengthMinimumValue(LRTM_CONTRACT_LENGTH_MIN);
+    lrtm.setContractLengthUnitOfMeasure(LRTM_CONTRACT_LENGHT_OUM);
+    lrtm.setEndDate(LTRM_END_DATE);
+    lrtm.setStartDate(LTRM_START_DATE);
+    lrtm.setMaximumValue(LRTM_MAX_VALUE);
+    lrtm.setMinimumValue(LRTM_MIN_VALUE);
     return lrtm;
   }
 
