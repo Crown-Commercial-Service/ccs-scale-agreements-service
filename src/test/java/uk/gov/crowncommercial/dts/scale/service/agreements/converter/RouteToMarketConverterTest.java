@@ -1,7 +1,7 @@
 package uk.gov.crowncommercial.dts.scale.service.agreements.converter;
 
-import static org.junit.Assert.assertNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import org.junit.jupiter.api.Test;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.BuyingMethod;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.RouteToMarketDTO;
