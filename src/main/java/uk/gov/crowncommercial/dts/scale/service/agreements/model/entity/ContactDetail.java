@@ -19,9 +19,8 @@ public class ContactDetail {
 
   @Id
   @Column(name = "contact_detail_id")
-  Long id;
+  Integer id;
 
-  @Id
   @ManyToOne
   @JoinColumn(name = "contact_method_type_id")
   ContactMethodType contactMethodType;

@@ -41,9 +41,9 @@ public class AgreementDetail {
   private String detailUrl;
 
   /**
-   * Contact details.
+   * Contacts.
    */
-  private Collection<ContactDetail> contactDetails;
+  private Collection<Contact> contacts;
 
   /**
    * Short description of the benefit.

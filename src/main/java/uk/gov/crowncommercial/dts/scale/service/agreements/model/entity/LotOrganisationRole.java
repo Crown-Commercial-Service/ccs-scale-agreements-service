@@ -1,6 +1,7 @@
 package uk.gov.crowncommercial.dts.scale.service.agreements.model.entity;
 
 import java.time.LocalDate;
+import java.util.Set;
 import javax.persistence.*;
 import org.hibernate.annotations.Immutable;
 import lombok.AccessLevel;
@@ -19,7 +20,7 @@ public class LotOrganisationRole {
 
   @Id
   @Column(name = "lot_organisation_role_id")
-  Long id;
+  Integer id;
 
   // Lot lot;
 
@@ -30,6 +31,10 @@ public class LotOrganisationRole {
   @ManyToOne
   @JoinColumn(name = "role_type_id")
   RoleType roleType;
+
+  @OneToMany
+  @JoinColumn(name = "lot_organisation_role_id")
+  Set<ContactPointLotOrgRole> contactPointLotOrgRole;
 
   @Column(name = "start_date")
   LocalDate startDate;

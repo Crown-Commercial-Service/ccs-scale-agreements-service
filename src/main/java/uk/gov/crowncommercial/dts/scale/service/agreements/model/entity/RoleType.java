@@ -26,7 +26,7 @@ public class RoleType {
   @Column(name = "role_type_name")
   String name;
 
-  @Column(name = "role_type_domain")
-  String domain;
+  @Column(name = "role_domain")
+  String roleDomain;
 
 }
