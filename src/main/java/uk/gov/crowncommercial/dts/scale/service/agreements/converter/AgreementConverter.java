@@ -7,15 +7,8 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import lombok.RequiredArgsConstructor;
-import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.AgreementDetail;
-import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.AgreementSummary;
-import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.AgreementUpdate;
-import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.Document;
-import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.LotDetail;
-import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.CommercialAgreement;
-import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.CommercialAgreementDocument;
-import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.CommercialAgreementUpdate;
-import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.Lot;
+import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.*;
+import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.*;
 
 /**
  * Encapsulates conversion logic between DTOs and Entities.
@@ -34,6 +27,7 @@ public class AgreementConverter {
   private final RelatedLotConverter relatedLotConverter;
   private final AgreementUpdateConverter agreementUpdateConverter;
   private final RouteToMarketConverter routeToMarketConverter;
+  private final LotSupplierConverter lotSupplierConverter;
 
   @PostConstruct
   public void init() {
@@ -44,6 +38,7 @@ public class AgreementConverter {
     modelMapper.addConverter(relatedLotConverter);
     modelMapper.addConverter(agreementUpdateConverter);
     modelMapper.addConverter(routeToMarketConverter);
+    modelMapper.addConverter(lotSupplierConverter);
   }
 
   public AgreementDetail convertAgreementToDTO(CommercialAgreement ca) {
@@ -71,5 +66,11 @@ public class AgreementConverter {
   public Collection<Document> convertAgreementDocumentsToDTOs(
       Collection<CommercialAgreementDocument> lots) {
     return lots.stream().map(l -> modelMapper.map(l, Document.class)).collect(Collectors.toList());
+  }
+
+  public Collection<LotSupplier> convertLotOrgRolesToLotSupplierDTOs(
+      Collection<LotOrganisationRole> lotOrgRoles) {
+    return lotOrgRoles.stream().map(lor -> modelMapper.map(lor, LotSupplier.class))
+        .collect(Collectors.toSet());
   }
 }

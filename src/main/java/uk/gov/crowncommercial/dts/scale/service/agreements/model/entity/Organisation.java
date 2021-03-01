@@ -6,6 +6,7 @@ import javax.persistence.*;
 import org.hibernate.annotations.Immutable;
 import lombok.AccessLevel;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.experimental.FieldDefaults;
 
 /**
@@ -15,12 +16,16 @@ import lombok.experimental.FieldDefaults;
 @Immutable
 @Table(name = "organisations")
 @Data
+@EqualsAndHashCode(exclude = "people")
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class Organisation {
 
   @Id
   @Column(name = "organisation_id")
   Integer id;
+
+  @Column(name = "entity_id")
+  String entityId;
 
   @Column(name = "legal_name")
   String legalName;

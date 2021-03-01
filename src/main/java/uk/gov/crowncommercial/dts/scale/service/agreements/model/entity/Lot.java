@@ -63,7 +63,7 @@ public class Lot {
   @JoinColumn(name = "lot_id")
   Set<LotRelatedLot> relatedAgreementLots;
 
-  @OneToMany
+  @OneToMany(fetch = FetchType.LAZY)
   @JoinColumn(name = "lot_id")
   Set<LotOrganisationRole> organisationRoles;
 }

@@ -8,14 +8,11 @@ import org.springframework.boot.web.servlet.error.ErrorController;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
-import org.springframework.web.bind.annotation.ControllerAdvice;
-import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import lombok.extern.slf4j.Slf4j;
+import uk.gov.crowncommercial.dts.scale.service.agreements.exception.AgreementNotFoundException;
+import uk.gov.crowncommercial.dts.scale.service.agreements.exception.LotNotFoundException;
 import uk.gov.crowncommercial.dts.scale.service.agreements.exception.MethodNotImplementedException;
-import uk.gov.crowncommercial.dts.scale.service.agreements.exception.ResourceNotFoundException;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.ApiError;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.ApiErrors;
 
@@ -37,18 +34,18 @@ public class GlobalErrorHandler implements ErrorController {
 
     log.trace("Request validation exception", exception);
 
-    ApiError apiError =
+    final ApiError apiError =
         new ApiError(HttpStatus.BAD_REQUEST.toString(), ERR_MSG_VALIDATION, exception.getMessage());
     return new ApiErrors(Arrays.asList(apiError));
   }
 
   @ResponseStatus(HttpStatus.NOT_FOUND)
-  @ExceptionHandler(ResourceNotFoundException.class)
+  @ExceptionHandler({AgreementNotFoundException.class, LotNotFoundException.class})
   public ApiErrors handleResourceNotFoundException(final Exception exception) {
 
     log.trace("Resource not found exception", exception);
 
-    ApiError apiError =
+    final ApiError apiError =
         new ApiError(HttpStatus.NOT_FOUND.toString(), ERR_MSG_NOT_FOUND, exception.getMessage());
     return new ApiErrors(Arrays.asList(apiError));
   }
@@ -59,8 +56,8 @@ public class GlobalErrorHandler implements ErrorController {
 
     log.trace("Method not implemented", exception);
 
-    ApiError apiError = new ApiError(HttpStatus.METHOD_NOT_ALLOWED.toString(), ERR_MSG_NOT_FOUND,
-        exception.getMessage());
+    final ApiError apiError = new ApiError(HttpStatus.METHOD_NOT_ALLOWED.toString(),
+        ERR_MSG_NOT_FOUND, exception.getMessage());
     return new ApiErrors(Arrays.asList(apiError));
   }
 
@@ -70,7 +67,7 @@ public class GlobalErrorHandler implements ErrorController {
 
     log.error("Unknown application exception", exception);
 
-    ApiError apiError =
+    final ApiError apiError =
         new ApiError(HttpStatus.INTERNAL_SERVER_ERROR.toString(), ERR_MSG_DEFAULT, "");
     return new ApiErrors(Arrays.asList(apiError));
   }
@@ -79,7 +76,7 @@ public class GlobalErrorHandler implements ErrorController {
   public ResponseEntity<ApiErrors> handleError(final HttpServletRequest request,
       final HttpServletResponse response) {
 
-    Object exception = request.getAttribute("javax.servlet.error.exception");
+    final Object exception = request.getAttribute("javax.servlet.error.exception");
 
     log.error("Unknown container/filter exception", exception);
 
