@@ -21,6 +21,9 @@ public class ContactPointCommercialAgreementOrgRole {
   @Column(name = "contact_point_id")
   Integer id;
 
+  @Column(name = "contact_point_name")
+  String contactPointName;
+
   @ManyToOne
   @JoinColumn(name = "contact_detail_id")
   ContactDetail contactDetail;

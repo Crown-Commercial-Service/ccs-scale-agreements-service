@@ -1,7 +1,10 @@
 package uk.gov.crowncommercial.dts.scale.service.agreements.model.entity;
 
 import java.time.LocalDate;
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
 import org.hibernate.annotations.Immutable;
 import lombok.AccessLevel;
 import lombok.Data;
@@ -21,18 +24,11 @@ public class ContactDetail {
   @Column(name = "contact_detail_id")
   Integer id;
 
-  @ManyToOne
-  @JoinColumn(name = "contact_method_type_id")
-  ContactMethodType contactMethodType;
-
   @Column(name = "effective_from")
   LocalDate effectiveFrom;
 
   @Column(name = "effective_to")
   LocalDate effectiveTo;
-
-  @Column(name = "virtual_address_value")
-  String virtualAddress;
 
   @Column(name = "street_address")
   String streetAddress;
@@ -52,4 +48,12 @@ public class ContactDetail {
   @Column(name = "uprn")
   Integer uprn;
 
+  @Column(name = "emailAddress")
+  String emailAddress;
+
+  @Column(name = "telephone_number")
+  String telephoneNumber;
+
+  @Column(name = "fax_number")
+  String faxNumber;
 }

@@ -21,6 +21,9 @@ public class ContactPointLotOrgRole {
   @Column(name = "contact_point_id")
   Integer id;
 
+  @Column(name = "contact_point_name")
+  String contactPointName;
+
   @ManyToOne
   @JoinColumn(name = "contact_detail_id")
   ContactDetail contactDetail;
@@ -37,4 +40,13 @@ public class ContactPointLotOrgRole {
 
   @Column(name = "primary_ind")
   Boolean primary;
+
+  /**
+   * Provide a null-safe default
+   *
+   * @return true if true, otherwise false
+   */
+  public Boolean getPrimary() {
+    return primary != null ? primary : Boolean.FALSE;
+  }
 }

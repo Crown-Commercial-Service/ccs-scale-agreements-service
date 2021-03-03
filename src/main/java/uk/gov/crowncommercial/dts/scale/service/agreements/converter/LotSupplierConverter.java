@@ -34,9 +34,8 @@ public class LotSupplierConverter extends AbstractConverter<LotOrganisationRole,
     // TODO Missing from DB
     primaryIdentifier.setScheme(Scheme.GB_COH);
 
-    // Organisation
+    // LotSupplier -> organization
     final Organization orgDTO = new Organization();
-
     orgDTO.setName(orgSource.getLegalName());
     orgDTO.setId(orgSource.getEntityId());
     orgDTO.setIdentifier(primaryIdentifier);
@@ -44,64 +43,38 @@ public class LotSupplierConverter extends AbstractConverter<LotOrganisationRole,
 
     final Set<ContactPointLotOrgRole> contactPointLogOrgRoles = source.getContactPointLotOrgRoles();
 
-    // TODO: Primary Contact Point (primary_ind = true)
+    // LotSupplier -> organization -> contactPoint (primary_ind = true)
+    // LotSupplier -> organization -> address (primary_ind = true)
     // TODO: Catch NPE if primary is null
-    final Set<ContactPointLotOrgRole> primaryContactPointsLotOrgRole = contactPointLogOrgRoles
-        .stream().filter(ContactPointLotOrgRole::getPrimary).collect(Collectors.toSet());
+    contactPointLogOrgRoles.stream().filter(ContactPointLotOrgRole::getPrimary).findFirst()
+        .ifPresent(cplor -> {
+          final ContactDetail contactDetail = cplor.getContactDetail();
+          final Address address = new Address();
+          address.setStreetAddress(contactDetail.getStreetAddress());
+          address.setLocality(contactDetail.getLocality());
+          address.setRegion(contactDetail.getRegion());
+          address.setPostalCode(contactDetail.getPostalCode());
+          address.setCountryName(contactDetail.getCountryCode());
+          orgDTO.setContactPoint(convertFromContactPointLotOrgRole(cplor));
+          orgDTO.setAddress(address);
+        });
 
-    // Primary ContactPoint Munging.. TODO: Extract / re-use for LotSupplier -> Organization ->
-    // Address
-    final ContactPoint primaryContactPointDTO = new ContactPoint();
-    for (final ContactPointLotOrgRole primaryContactPointLotOrgRole : primaryContactPointsLotOrgRole) {
-      final String virtualAddress =
-          primaryContactPointLotOrgRole.getContactDetail().getVirtualAddress();
-      switch (primaryContactPointLotOrgRole.getContactDetail().getContactMethodType().getName()) {
-        case "Email":
-          primaryContactPointDTO.setEmail(virtualAddress);
-          break;
-        case "Phone":
-          primaryContactPointDTO.setTelephone(virtualAddress);
-          break;
-        case "Fax":
-          primaryContactPointDTO.setFaxNumber(virtualAddress);
-          break;
-        // TODO: "name", "url" ?
-      }
-    }
-    orgDTO.setContactPoint(primaryContactPointDTO);
-
-    // Organization -> Address
-    // TODO: Candidate for auto-mapping?
-    final Optional<ContactPointLotOrgRole> optAddressContactPointsLotOrgRole =
-        contactPointLogOrgRoles.stream()
-            .filter(cplor -> "Postal Address"
-                .equalsIgnoreCase(cplor.getContactDetail().getContactMethodType().getName()))
-            .findFirst();
-    if (optAddressContactPointsLotOrgRole.isPresent()) {
-      final ContactDetail addressContactDetail =
-          optAddressContactPointsLotOrgRole.get().getContactDetail();
-      final Address address = new Address();
-      address.setStreetAddress(addressContactDetail.getStreetAddress());
-      address.setLocality(addressContactDetail.getLocality());
-      address.setRegion(addressContactDetail.getRegion());
-      address.setPostalCode(addressContactDetail.getPostalCode());
-      address.setCountryName(addressContactDetail.getCountryCode());
-      orgDTO.setAddress(address);
-    }
-
-    // Organization -> OrganizationDetail
+    // LotSupplier -> organization -> organizationDetail
     orgDTO.setDetails(convertFromDBOrg(orgSource));
     lotSupplier.setOrganization(orgDTO);
 
-    // TODO: Dedicated converter / handle null
-    lotSupplier.setSupplierStatus(SupplierStatus.valueOf(orgSource.getStatus().toUpperCase()));
+    // LotSupplier -> supplierStatus
+    // TODO: Dedicated converter
+    Optional.ofNullable(orgSource.getStatus()).ifPresent(
+        status -> lotSupplier.setSupplierStatus(SupplierStatus.valueOf(status.toUpperCase())));
 
     // LotSupplier -> lotContacts (Contact -> ContactPoint)
-    for (final ContactPointLotOrgRole contactPointLotOrgRole : contactPointLogOrgRoles) {
-
-      // Group by
-
-    }
+    lotSupplier.setLotContacts(contactPointLogOrgRoles.stream().map(cplor -> {
+      final Contact contact = new Contact();
+      contact.setLotContactReason(cplor.getContactPointReason().getName());
+      contact.setContactPoint(convertFromContactPointLotOrgRole(cplor));
+      return contact;
+    }).collect(Collectors.toSet()));
 
     return lotSupplier;
   }
@@ -109,19 +82,35 @@ public class LotSupplierConverter extends AbstractConverter<LotOrganisationRole,
   /**
    * TODO: Dedicated converter?
    *
-   * @param orgSource
+   * @param source
    * @return
    */
-  private OrganizationDetail convertFromDBOrg(final Organisation orgSource) {
+  static ContactPoint convertFromContactPointLotOrgRole(final ContactPointLotOrgRole source) {
+    final ContactDetail contactDetail = source.getContactDetail();
+    final ContactPoint contactPoint = new ContactPoint();
+    contactPoint.setName(source.getContactPointName());
+    contactPoint.setEmail(contactDetail.getEmailAddress());
+    contactPoint.setTelephone(contactDetail.getTelephoneNumber());
+    contactPoint.setFaxNumber(contactDetail.getFaxNumber());
+    return contactPoint;
+  }
+
+  /**
+   * TODO: Dedicated converter?
+   *
+   * @param source
+   * @return
+   */
+  static OrganizationDetail convertFromDBOrg(final Organisation source) {
 
     final OrganizationDetail orgDetail = new OrganizationDetail();
-    orgDetail.setCreationDate(orgSource.getIncorporationDate());
-    orgDetail.setCountryCode(orgSource.getIncorporationCountry());
-    orgDetail.setCompanyType(orgSource.getBusinessType());
-    orgDetail.setIsSme(orgSource.getIsSme());
-    orgDetail.setIsVcse(orgSource.getIsVcse());
-    orgDetail.setStatus(orgSource.getStatus());
-    orgDetail.setActive(orgSource.getIsActive());
+    orgDetail.setCreationDate(source.getIncorporationDate());
+    orgDetail.setCountryCode(source.getIncorporationCountry());
+    orgDetail.setCompanyType(source.getBusinessType());
+    orgDetail.setIsSme(source.getIsSme());
+    orgDetail.setIsVcse(source.getIsVcse());
+    orgDetail.setStatus(source.getStatus());
+    orgDetail.setActive(source.getIsActive());
     return orgDetail;
   }
 
