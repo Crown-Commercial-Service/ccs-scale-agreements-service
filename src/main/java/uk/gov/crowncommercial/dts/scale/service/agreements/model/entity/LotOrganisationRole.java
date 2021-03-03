@@ -32,7 +32,7 @@ public class LotOrganisationRole {
 
   @OneToMany(fetch = FetchType.LAZY)
   @JoinColumn(name = "lot_organisation_role_id")
-  Set<ContactPointLotOrgRole> contactPointLotOrgRole;
+  Set<ContactPointLotOrgRole> contactPointLotOrgRoles;
 
   @Column(name = "start_date")
   LocalDate startDate;

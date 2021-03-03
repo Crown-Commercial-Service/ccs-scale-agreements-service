@@ -27,9 +27,6 @@ import uk.gov.crowncommercial.dts.scale.service.agreements.service.AgreementServ
 public class AgreementController {
 
   static final String METHOD_NOT_IMPLEMENTED_MSG = "This method is not yet implemented by the API";
-  static final String ERROR_MSG_AGREEMENT_NOT_FOUND = "Agreement number '%s' not found";
-  static final String ERROR_MSG_LOT_NOT_FOUND =
-      "Lot number '%s' for agreement number '%s' not found";
 
   private final AgreementService service;
   private final AgreementConverter converter;

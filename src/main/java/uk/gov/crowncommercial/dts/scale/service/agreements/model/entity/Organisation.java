@@ -52,7 +52,7 @@ public class Organisation {
   Boolean isVcse;
 
   @Column(name = "active")
-  Boolean active;
+  Boolean isActive;
 
   @OneToMany(mappedBy = "organisation")
   Set<Person> people;
