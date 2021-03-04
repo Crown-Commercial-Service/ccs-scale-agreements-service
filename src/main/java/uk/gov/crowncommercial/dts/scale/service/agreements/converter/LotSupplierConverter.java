@@ -71,7 +71,7 @@ public class LotSupplierConverter extends AbstractConverter<LotOrganisationRole,
     // LotSupplier -> lotContacts (Contact -> ContactPoint)
     lotSupplier.setLotContacts(contactPointLogOrgRoles.stream().map(cplor -> {
       final Contact contact = new Contact();
-      contact.setLotContactReason(cplor.getContactPointReason().getName());
+      contact.setContactReason(cplor.getContactPointReason().getName());
       contact.setContactPoint(convertFromContactPointLotOrgRole(cplor));
       return contact;
     }).collect(Collectors.toSet()));

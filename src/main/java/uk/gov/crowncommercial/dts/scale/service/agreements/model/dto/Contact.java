@@ -14,6 +14,6 @@ public class Contact {
 
   String contactId;
 
-  String lotContactReason;
+  String contactReason;
 
 }

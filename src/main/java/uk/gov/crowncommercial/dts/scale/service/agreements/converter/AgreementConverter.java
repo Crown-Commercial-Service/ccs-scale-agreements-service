@@ -28,6 +28,7 @@ public class AgreementConverter {
   private final AgreementUpdateConverter agreementUpdateConverter;
   private final RouteToMarketConverter routeToMarketConverter;
   private final LotSupplierConverter lotSupplierConverter;
+  private final AgreementContactConverter agreementContactConverter;
 
   @PostConstruct
   public void init() {
@@ -39,37 +40,44 @@ public class AgreementConverter {
     modelMapper.addConverter(agreementUpdateConverter);
     modelMapper.addConverter(routeToMarketConverter);
     modelMapper.addConverter(lotSupplierConverter);
+
+    /*
+     * Specific mismatched properties / converters (do not set globally on modelMapper)
+     */
+    modelMapper.createTypeMap(CommercialAgreement.class, AgreementDetail.class)
+        .addMappings(mapper -> mapper.using(agreementContactConverter)
+            .map(CommercialAgreement::getOrganisationRoles, AgreementDetail::setContacts));
   }
 
-  public AgreementDetail convertAgreementToDTO(CommercialAgreement ca) {
+  public AgreementDetail convertAgreementToDTO(final CommercialAgreement ca) {
     return modelMapper.map(ca, AgreementDetail.class);
   }
 
-  public AgreementSummary convertAgreementToSummaryDTO(CommercialAgreement ca) {
+  public AgreementSummary convertAgreementToSummaryDTO(final CommercialAgreement ca) {
     return modelMapper.map(ca, AgreementSummary.class);
   }
 
-  public LotDetail convertLotToDTO(Lot lot) {
+  public LotDetail convertLotToDTO(final Lot lot) {
     return modelMapper.map(lot, LotDetail.class);
   }
 
   public Collection<AgreementUpdate> convertAgreementUpdatesToDTOs(
-      Collection<CommercialAgreementUpdate> updates) {
+      final Collection<CommercialAgreementUpdate> updates) {
     return updates.stream().map(u -> modelMapper.map(u, AgreementUpdate.class))
         .collect(Collectors.toList());
   }
 
-  public Collection<LotDetail> convertLotsToDTOs(Collection<Lot> lots) {
+  public Collection<LotDetail> convertLotsToDTOs(final Collection<Lot> lots) {
     return lots.stream().map(l -> modelMapper.map(l, LotDetail.class)).collect(Collectors.toList());
   }
 
   public Collection<Document> convertAgreementDocumentsToDTOs(
-      Collection<CommercialAgreementDocument> lots) {
+      final Collection<CommercialAgreementDocument> lots) {
     return lots.stream().map(l -> modelMapper.map(l, Document.class)).collect(Collectors.toList());
   }
 
   public Collection<LotSupplier> convertLotOrgRolesToLotSupplierDTOs(
-      Collection<LotOrganisationRole> lotOrgRoles) {
+      final Collection<LotOrganisationRole> lotOrgRoles) {
     return lotOrgRoles.stream().map(lor -> modelMapper.map(lor, LotSupplier.class))
         .collect(Collectors.toSet());
   }
