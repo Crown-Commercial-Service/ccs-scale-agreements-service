@@ -1,10 +1,10 @@
 package uk.gov.crowncommercial.dts.scale.service.agreements.converter;
 
 import java.util.Collections;
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
-import org.modelmapper.AbstractConverter;
+import org.modelmapper.Conditions;
+import org.modelmapper.PropertyMap;
 import org.springframework.stereotype.Component;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.*;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.ContactDetail;
@@ -13,19 +13,38 @@ import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.LotOrgan
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.Organisation;
 
 /**
- * Converts LotOrganisationRole from database into LotSupplier DTO
+ *
  */
 @Component
-public class LotSupplierConverter extends AbstractConverter<LotOrganisationRole, LotSupplier> {
+public class LotSupplierPropertyMap extends PropertyMap<LotOrganisationRole, LotSupplier> {
 
   @Override
-  protected LotSupplier convert(final LotOrganisationRole source) {
+  protected void configure() {
+    using(ctx -> convertOrganisation(((LotOrganisationRole) ctx.getSource()).getOrganisation(),
+        ((LotOrganisationRole) ctx.getSource()).getContactPointLotOrgRoles())).map(source,
+            destination.getOrganization());
 
-    final LotSupplier lotSupplier = new LotSupplier();
-    final Organisation orgSource = source.getOrganisation();
+    using(ctx -> convertContacts(
+        ((LotOrganisationRole) ctx.getSource()).getContactPointLotOrgRoles())).map(source,
+            destination.getLotContacts());
 
-    // Primary Org Identifier
-    // TODO: Dedicated converter?
+    when(Conditions.isNotNull())
+        .using(ctx -> SupplierStatus.valueOf(((String) ctx.getSource()).toUpperCase()))
+        .map(source.getOrganisation().getStatus(), destination.getSupplierStatus());
+  }
+
+  static Set<Contact> convertContacts(final Set<ContactPointLotOrgRole> contactPointLogOrgRoles) {
+    return contactPointLogOrgRoles.stream().map(cplor -> {
+      final Contact contact = new Contact();
+      contact.setContactReason(cplor.getContactPointReason().getName());
+      contact.setContactPoint(convertFromContactPointLotOrgRole(cplor));
+      return contact;
+    }).collect(Collectors.toSet());
+  }
+
+  static Organization convertOrganisation(final Organisation orgSource,
+      final Set<ContactPointLotOrgRole> contactPointLogOrgRoles) {
+
     final OrganizationIdentifier primaryIdentifier = new OrganizationIdentifier();
     primaryIdentifier.setId(orgSource.getEntityId());
     primaryIdentifier.setLegalName(orgSource.getLegalName());
@@ -40,12 +59,6 @@ public class LotSupplierConverter extends AbstractConverter<LotOrganisationRole,
     orgDTO.setId(orgSource.getEntityId());
     orgDTO.setIdentifier(primaryIdentifier);
     orgDTO.setRoles(Collections.singleton(PartyRole.SUPPLIER));
-
-    final Set<ContactPointLotOrgRole> contactPointLogOrgRoles = source.getContactPointLotOrgRoles();
-
-    // LotSupplier -> organization -> contactPoint (primary_ind = true)
-    // LotSupplier -> organization -> address (primary_ind = true)
-    // TODO: Catch NPE if primary is null
     contactPointLogOrgRoles.stream().filter(ContactPointLotOrgRole::getPrimary).findFirst()
         .ifPresent(cplor -> {
           final ContactDetail contactDetail = cplor.getContactDetail();
@@ -61,30 +74,10 @@ public class LotSupplierConverter extends AbstractConverter<LotOrganisationRole,
 
     // LotSupplier -> organization -> organizationDetail
     orgDTO.setDetails(convertFromDBOrg(orgSource));
-    lotSupplier.setOrganization(orgDTO);
 
-    // LotSupplier -> supplierStatus
-    // TODO: Dedicated converter
-    Optional.ofNullable(orgSource.getStatus()).ifPresent(
-        status -> lotSupplier.setSupplierStatus(SupplierStatus.valueOf(status.toUpperCase())));
-
-    // LotSupplier -> lotContacts (Contact -> ContactPoint)
-    lotSupplier.setLotContacts(contactPointLogOrgRoles.stream().map(cplor -> {
-      final Contact contact = new Contact();
-      contact.setContactReason(cplor.getContactPointReason().getName());
-      contact.setContactPoint(convertFromContactPointLotOrgRole(cplor));
-      return contact;
-    }).collect(Collectors.toSet()));
-
-    return lotSupplier;
+    return orgDTO;
   }
 
-  /**
-   * TODO: Dedicated converter?
-   *
-   * @param source
-   * @return
-   */
   static ContactPoint convertFromContactPointLotOrgRole(final ContactPointLotOrgRole source) {
     final ContactDetail contactDetail = source.getContactDetail();
     final ContactPoint contactPoint = new ContactPoint();
@@ -95,12 +88,6 @@ public class LotSupplierConverter extends AbstractConverter<LotOrganisationRole,
     return contactPoint;
   }
 
-  /**
-   * TODO: Dedicated converter?
-   *
-   * @param source
-   * @return
-   */
   static OrganizationDetail convertFromDBOrg(final Organisation source) {
 
     final OrganizationDetail orgDetail = new OrganizationDetail();

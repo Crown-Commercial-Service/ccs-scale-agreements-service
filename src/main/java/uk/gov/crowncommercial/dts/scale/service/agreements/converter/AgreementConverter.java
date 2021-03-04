@@ -27,8 +27,8 @@ public class AgreementConverter {
   private final RelatedLotConverter relatedLotConverter;
   private final AgreementUpdateConverter agreementUpdateConverter;
   private final RouteToMarketConverter routeToMarketConverter;
-  private final LotSupplierConverter lotSupplierConverter;
   private final AgreementContactConverter agreementContactConverter;
+  private final LotSupplierPropertyMap lotSupplierPropertyMap;
 
   @PostConstruct
   public void init() {
@@ -39,7 +39,6 @@ public class AgreementConverter {
     modelMapper.addConverter(relatedLotConverter);
     modelMapper.addConverter(agreementUpdateConverter);
     modelMapper.addConverter(routeToMarketConverter);
-    modelMapper.addConverter(lotSupplierConverter);
 
     /*
      * Specific mismatched properties / converters (do not set globally on modelMapper)
@@ -47,6 +46,9 @@ public class AgreementConverter {
     modelMapper.createTypeMap(CommercialAgreement.class, AgreementDetail.class)
         .addMappings(mapper -> mapper.using(agreementContactConverter)
             .map(CommercialAgreement::getOrganisationRoles, AgreementDetail::setContacts));
+
+    modelMapper.createTypeMap(LotOrganisationRole.class, LotSupplier.class)
+        .addMappings(lotSupplierPropertyMap);
   }
 
   public AgreementDetail convertAgreementToDTO(final CommercialAgreement ca) {
