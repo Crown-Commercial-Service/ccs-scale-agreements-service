@@ -1,5 +1,8 @@
 package uk.gov.crowncommercial.dts.scale.service.agreements.converter;
 
+import static java.lang.String.format;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.hasItems;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.when;
 import java.math.BigDecimal;
@@ -11,6 +14,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.IntStream;
 import org.junit.jupiter.api.Test;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -82,6 +86,13 @@ public class AgreementConverterTest {
   private static final String DOCUMENT_URL = "http://document";
   private static final Integer DOCUMENT_VERSION = 1;
 
+  // Contact detail value templates
+  private static final String CONTACT_EMAIL = "cd%d@example.com";
+  private static final String CONTACT_PHONE = "0123400000%d";
+  private static final String CONTACT_FAX = "0123400000%dF";
+  private static final String CONTACT_NAME = "Contact %d";
+  private static final String CONTACT_REASON = "Contact reason %d";
+
   @Autowired
   AgreementConverter converter;
 
@@ -102,7 +113,7 @@ public class AgreementConverterTest {
     ca.setEndDate(END_DATE);
     ca.setDetailUrl(AGREEMENT_URL);
     ca.setLots(lots);
-    ca.setOrganisationRoles(createCommercialAgreementOrgRoles());
+    ca.setOrganisationRoles(createCommercialAgreementOrgRoles(3));
 
     AgreementDetail agreement = converter.convertAgreementToDTO(ca);
 
@@ -112,6 +123,8 @@ public class AgreementConverterTest {
     assertEquals(START_DATE, agreement.getStartDate());
     assertEquals(END_DATE, agreement.getEndDate());
     assertEquals(AGREEMENT_URL, agreement.getDetailUrl());
+    assertEquals(3, agreement.getContacts().size());
+    assertThat(agreement.getContacts(), hasItems(getContact(1), getContact(2), getContact(3)));
 
     LotSummary lotSummary = agreement.getLots().stream().findFirst().get();
     assertEquals(LOT_NAME, lotSummary.getName());
@@ -357,49 +370,30 @@ public class AgreementConverterTest {
     return document;
   }
 
-  private Set<CommercialAgreementOrgRole> createCommercialAgreementOrgRoles() {
+  private Set<CommercialAgreementOrgRole> createCommercialAgreementOrgRoles(int count) {
     Set<ContactPointCommercialAgreementOrgRole> cpCaOrgRoles1 = new HashSet<>();
     Set<ContactPointCommercialAgreementOrgRole> cpCaOrgRoles2 = new HashSet<>();
 
-    ContactPointCommercialAgreementOrgRole cpCaOrgRole1 =
-        new ContactPointCommercialAgreementOrgRole();
-    ContactDetail contactDetail1 = new ContactDetail();
-    contactDetail1.setEmailAddress("cd1@example.com");
-    contactDetail1.setTelephoneNumber("01234000001");
-    contactDetail1.setFaxNumber("01234000001F");
-    ContactPointReason cpReason1 = new ContactPointReason();
-    cpReason1.setName("CP CA Reason 1");
-    cpCaOrgRole1.setContactPointName("CP CA Org Role 1");
-    cpCaOrgRole1.setContactPointReason(cpReason1);
-    cpCaOrgRole1.setContactDetail(contactDetail1);
+    IntStream.rangeClosed(1, count).forEach(i -> {
+      ContactPointCommercialAgreementOrgRole cpCaOrgRole =
+          new ContactPointCommercialAgreementOrgRole();
+      ContactDetail contactDetail = new ContactDetail();
+      contactDetail.setEmailAddress(format(CONTACT_EMAIL, i));
+      contactDetail.setTelephoneNumber(format(CONTACT_PHONE, i));
+      contactDetail.setFaxNumber(format(CONTACT_FAX, i));
+      ContactPointReason cpReason = new ContactPointReason();
+      cpReason.setName(format(CONTACT_REASON, i));
+      cpCaOrgRole.setContactPointName(format(CONTACT_NAME, i));
+      cpCaOrgRole.setContactPointReason(cpReason);
+      cpCaOrgRole.setContactDetail(contactDetail);
 
-    ContactPointCommercialAgreementOrgRole cpCaOrgRole2 =
-        new ContactPointCommercialAgreementOrgRole();
-    ContactDetail contactDetail2 = new ContactDetail();
-    contactDetail2.setEmailAddress("cd2@example.com");
-    contactDetail2.setTelephoneNumber("01234000002");
-    contactDetail2.setFaxNumber("01234000002F");
-    ContactPointReason cpReason2 = new ContactPointReason();
-    cpReason1.setName("CP CA Reason 1");
-    cpCaOrgRole2.setContactPointName("CP CA Org Role 2");
-    cpCaOrgRole2.setContactPointReason(cpReason2);
-    cpCaOrgRole2.setContactDetail(contactDetail2);
-
-    ContactPointCommercialAgreementOrgRole cpCaOrgRole3 =
-        new ContactPointCommercialAgreementOrgRole();
-    ContactDetail contactDetail3 = new ContactDetail();
-    contactDetail3.setEmailAddress("cd3@example.com");
-    contactDetail3.setTelephoneNumber("01234000003");
-    contactDetail3.setFaxNumber("01234000003F");
-    ContactPointReason cpReason3 = new ContactPointReason();
-    cpReason1.setName("CP CA Reason 3");
-    cpCaOrgRole3.setContactPointName("CP CA Org Role 3");
-    cpCaOrgRole3.setContactPointReason(cpReason3);
-    cpCaOrgRole3.setContactDetail(contactDetail3);
-
-    cpCaOrgRoles1.add(cpCaOrgRole1);
-    cpCaOrgRoles1.add(cpCaOrgRole2);
-    cpCaOrgRoles2.add(cpCaOrgRole3);
+      // Spread over 2 CP CA Org Role sets
+      if (i <= count - 1) {
+        cpCaOrgRoles1.add(cpCaOrgRole);
+      } else {
+        cpCaOrgRoles2.add(cpCaOrgRole);
+      }
+    });
 
     CommercialAgreementOrgRole caOrgRole1 = new CommercialAgreementOrgRole();
     CommercialAgreementOrgRole caOrgRole2 = new CommercialAgreementOrgRole();
@@ -411,6 +405,20 @@ public class AgreementConverterTest {
     commercialAgreementOrgRoles.add(caOrgRole2);
 
     return commercialAgreementOrgRoles;
-
   }
+
+  private Contact getContact(int instance) {
+    Contact contact = new Contact();
+    contact.setContactReason(format(CONTACT_REASON, instance));
+
+    ContactPoint contactPoint = new ContactPoint();
+    contactPoint.setName(format(CONTACT_NAME, instance));
+    contactPoint.setEmail(format(CONTACT_EMAIL, instance));
+    contactPoint.setTelephone(format(CONTACT_PHONE, instance));
+    contactPoint.setFaxNumber(format(CONTACT_FAX, instance));
+    contact.setContactPoint(contactPoint);
+
+    return contact;
+  }
+
 }
