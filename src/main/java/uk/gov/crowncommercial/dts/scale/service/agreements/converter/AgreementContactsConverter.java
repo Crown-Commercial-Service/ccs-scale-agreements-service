@@ -15,7 +15,7 @@ import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.ContactD
  * <code>Collection&lt;Contact&gt;</code>
  */
 @Component
-public class AgreementContactConverter
+public class AgreementContactsConverter
     extends AbstractConverter<Set<CommercialAgreementOrgRole>, Collection<Contact>> {
 
   @Override

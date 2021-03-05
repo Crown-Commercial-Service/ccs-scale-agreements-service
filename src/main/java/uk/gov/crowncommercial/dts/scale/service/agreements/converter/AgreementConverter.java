@@ -27,7 +27,7 @@ public class AgreementConverter {
   private final RelatedLotConverter relatedLotConverter;
   private final AgreementUpdateConverter agreementUpdateConverter;
   private final RouteToMarketConverter routeToMarketConverter;
-  private final AgreementContactConverter agreementContactConverter;
+  private final AgreementContactsConverter agreementContactsConverter;
   private final LotSupplierPropertyMap lotSupplierPropertyMap;
 
   @PostConstruct
@@ -44,7 +44,7 @@ public class AgreementConverter {
      * Specific mismatched properties / converters (do not set globally on modelMapper)
      */
     modelMapper.createTypeMap(CommercialAgreement.class, AgreementDetail.class)
-        .addMappings(mapper -> mapper.using(agreementContactConverter)
+        .addMappings(mapper -> mapper.using(agreementContactsConverter)
             .map(CommercialAgreement::getOrganisationRoles, AgreementDetail::setContacts));
 
     modelMapper.createTypeMap(LotOrganisationRole.class, LotSupplier.class)

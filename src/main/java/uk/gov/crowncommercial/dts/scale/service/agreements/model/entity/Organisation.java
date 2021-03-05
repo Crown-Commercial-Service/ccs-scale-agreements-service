@@ -27,6 +27,9 @@ public class Organisation {
   @Column(name = "entity_id")
   String entityId;
 
+  @Column(name = "registry_code")
+  String registryCode;
+
   @Column(name = "legal_name")
   String legalName;
 

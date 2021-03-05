@@ -17,35 +17,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
-import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.AgreementDetail;
-import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.AgreementUpdate;
-import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.BuyingMethod;
-import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.Document;
-import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.LotDetail;
-import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.LotRuleDTO;
-import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.LotSummary;
-import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.LotType;
-import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.NameValueType;
-import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.RelatedAgreementLot;
-import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.RouteToMarketDTO;
-import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.TransactionData;
-import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.CommercialAgreement;
-import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.CommercialAgreementDocument;
-import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.CommercialAgreementUpdate;
-import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.Lot;
-import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.LotRelatedLot;
-import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.LotRouteToMarket;
-import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.LotRouteToMarketKey;
-import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.LotRule;
-import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.LotRuleAttribute;
-import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.LotRuleTransactionObject;
-import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.RouteToMarket;
-import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.Sector;
+import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.*;
+import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.*;
 import uk.gov.crowncommercial.dts.scale.service.agreements.service.AgreementService;
 
 @SpringBootTest(classes = {AgreementConverter.class, ModelMapper.class, LotTypeConverter.class,
     DataTypeConverter.class, EvaluationTypeConverter.class, RelatedLotConverter.class,
-    SectorConverter.class, AgreementUpdateConverter.class, RouteToMarketConverter.class})
+    SectorConverter.class, AgreementUpdateConverter.class, RouteToMarketConverter.class,
+    AgreementContactsConverter.class, LotSupplierPropertyMap.class, OrganisationConverter.class,
+    LotContactsConverter.class, SupplierStatusConverter.class})
 @ActiveProfiles("test")
 public class AgreementConverterTest {
 
@@ -122,6 +102,7 @@ public class AgreementConverterTest {
     ca.setEndDate(END_DATE);
     ca.setDetailUrl(AGREEMENT_URL);
     ca.setLots(lots);
+    ca.setOrganisationRoles(createCommercialAgreementOrgRoles());
 
     AgreementDetail agreement = converter.convertAgreementToDTO(ca);
 
@@ -374,5 +355,62 @@ public class AgreementConverterTest {
     document.setUrl(DOCUMENT_URL);
     document.setVersion(DOCUMENT_VERSION);
     return document;
+  }
+
+  private Set<CommercialAgreementOrgRole> createCommercialAgreementOrgRoles() {
+    Set<ContactPointCommercialAgreementOrgRole> cpCaOrgRoles1 = new HashSet<>();
+    Set<ContactPointCommercialAgreementOrgRole> cpCaOrgRoles2 = new HashSet<>();
+
+    ContactPointCommercialAgreementOrgRole cpCaOrgRole1 =
+        new ContactPointCommercialAgreementOrgRole();
+    ContactDetail contactDetail1 = new ContactDetail();
+    contactDetail1.setEmailAddress("cd1@example.com");
+    contactDetail1.setTelephoneNumber("01234000001");
+    contactDetail1.setFaxNumber("01234000001F");
+    ContactPointReason cpReason1 = new ContactPointReason();
+    cpReason1.setName("CP CA Reason 1");
+    cpCaOrgRole1.setContactPointName("CP CA Org Role 1");
+    cpCaOrgRole1.setContactPointReason(cpReason1);
+    cpCaOrgRole1.setContactDetail(contactDetail1);
+
+    ContactPointCommercialAgreementOrgRole cpCaOrgRole2 =
+        new ContactPointCommercialAgreementOrgRole();
+    ContactDetail contactDetail2 = new ContactDetail();
+    contactDetail2.setEmailAddress("cd2@example.com");
+    contactDetail2.setTelephoneNumber("01234000002");
+    contactDetail2.setFaxNumber("01234000002F");
+    ContactPointReason cpReason2 = new ContactPointReason();
+    cpReason1.setName("CP CA Reason 1");
+    cpCaOrgRole2.setContactPointName("CP CA Org Role 2");
+    cpCaOrgRole2.setContactPointReason(cpReason2);
+    cpCaOrgRole2.setContactDetail(contactDetail2);
+
+    ContactPointCommercialAgreementOrgRole cpCaOrgRole3 =
+        new ContactPointCommercialAgreementOrgRole();
+    ContactDetail contactDetail3 = new ContactDetail();
+    contactDetail3.setEmailAddress("cd3@example.com");
+    contactDetail3.setTelephoneNumber("01234000003");
+    contactDetail3.setFaxNumber("01234000003F");
+    ContactPointReason cpReason3 = new ContactPointReason();
+    cpReason1.setName("CP CA Reason 3");
+    cpCaOrgRole3.setContactPointName("CP CA Org Role 3");
+    cpCaOrgRole3.setContactPointReason(cpReason3);
+    cpCaOrgRole3.setContactDetail(contactDetail3);
+
+    cpCaOrgRoles1.add(cpCaOrgRole1);
+    cpCaOrgRoles1.add(cpCaOrgRole2);
+    cpCaOrgRoles2.add(cpCaOrgRole3);
+
+    CommercialAgreementOrgRole caOrgRole1 = new CommercialAgreementOrgRole();
+    CommercialAgreementOrgRole caOrgRole2 = new CommercialAgreementOrgRole();
+    caOrgRole1.setContactPointCommercialAgreementOrgRole(cpCaOrgRoles1);
+    caOrgRole2.setContactPointCommercialAgreementOrgRole(cpCaOrgRoles2);
+
+    Set<CommercialAgreementOrgRole> commercialAgreementOrgRoles = new HashSet<>();
+    commercialAgreementOrgRoles.add(caOrgRole1);
+    commercialAgreementOrgRoles.add(caOrgRole2);
+
+    return commercialAgreementOrgRoles;
+
   }
 }
