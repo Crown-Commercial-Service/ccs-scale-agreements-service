@@ -22,18 +22,18 @@ public class OrganisationConverter extends AbstractConverter<LotOrganisationRole
     final Organisation dbOrg = source.getOrganisation();
     final Set<ContactPointLotOrgRole> contactPointLogOrgRoles = source.getContactPointLotOrgRoles();
 
-    final OrganizationIdentifier primaryIdentifier = new OrganizationIdentifier();
-    primaryIdentifier.setId(dbOrg.getEntityId());
-    primaryIdentifier.setLegalName(dbOrg.getLegalName());
-    primaryIdentifier.setUri(dbOrg.getUri());
-    primaryIdentifier
+    final OrganizationIdentifier orgIdentifier = new OrganizationIdentifier();
+    orgIdentifier.setId(dbOrg.getEntityId());
+    orgIdentifier.setLegalName(dbOrg.getLegalName());
+    orgIdentifier.setUri(dbOrg.getUri());
+    orgIdentifier
         .setScheme(ConverterUtils.enumFromString(Scheme.class, dbOrg.getRegistryCode()));
 
     // LotSupplier -> organization
     final Organization organization = new Organization();
     organization.setName(dbOrg.getLegalName());
     organization.setId(dbOrg.getEntityId());
-    organization.setIdentifier(primaryIdentifier);
+    organization.setIdentifier(orgIdentifier);
     organization.setRoles(Collections.singleton(PartyRole.SUPPLIER));
     contactPointLogOrgRoles.stream().filter(ContactPointLotOrgRole::getPrimary).findFirst()
         .ifPresent(cplor -> {
