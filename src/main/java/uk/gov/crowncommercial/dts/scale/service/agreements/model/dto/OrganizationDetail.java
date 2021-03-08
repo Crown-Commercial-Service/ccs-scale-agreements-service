@@ -7,7 +7,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
 /**
- *
+ * Organization detail
  */
 @Data
 public class OrganizationDetail {

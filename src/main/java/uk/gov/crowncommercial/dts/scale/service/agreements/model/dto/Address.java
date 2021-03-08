@@ -3,7 +3,7 @@ package uk.gov.crowncommercial.dts.scale.service.agreements.model.dto;
 import lombok.Data;
 
 /**
- *
+ * Address (e.g. of an Organization)
  */
 @Data
 public class Address {

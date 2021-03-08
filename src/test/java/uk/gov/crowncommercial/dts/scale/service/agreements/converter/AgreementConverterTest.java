@@ -248,10 +248,6 @@ public class AgreementConverterTest {
     return lotSupplier;
   }
 
-  public static void main(String[] args) {
-    IntStream.rangeClosed(3, 3).forEachOrdered(System.out::println);
-  }
-
   private void testLot(LotDetail lotDetail) {
     assertEquals(LOT_NAME, lotDetail.getName());
     assertEquals(LOT_NUMBER, lotDetail.getNumber());
@@ -471,8 +467,8 @@ public class AgreementConverterTest {
 
     CommercialAgreementOrgRole caOrgRole1 = new CommercialAgreementOrgRole();
     CommercialAgreementOrgRole caOrgRole2 = new CommercialAgreementOrgRole();
-    caOrgRole1.setContactPointCommercialAgreementOrgRole(cpCaOrgRoles1);
-    caOrgRole2.setContactPointCommercialAgreementOrgRole(cpCaOrgRoles2);
+    caOrgRole1.setContactPointCommercialAgreementOrgRoles(cpCaOrgRoles1);
+    caOrgRole2.setContactPointCommercialAgreementOrgRoles(cpCaOrgRoles2);
 
     Set<CommercialAgreementOrgRole> commercialAgreementOrgRoles = new HashSet<>();
     commercialAgreementOrgRoles.add(caOrgRole1);

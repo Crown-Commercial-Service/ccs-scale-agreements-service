@@ -10,7 +10,7 @@ import lombok.EqualsAndHashCode;
 import lombok.experimental.FieldDefaults;
 
 /**
- *
+ * Organisation
  */
 @Entity
 @Immutable

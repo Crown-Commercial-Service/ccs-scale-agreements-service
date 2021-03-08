@@ -10,7 +10,7 @@ import lombok.Data;
 import lombok.experimental.FieldDefaults;
 
 /**
- *
+ * CA / Lot organisational role type
  */
 @Entity
 @Immutable

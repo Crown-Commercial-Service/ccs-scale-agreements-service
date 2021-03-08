@@ -3,7 +3,7 @@ package uk.gov.crowncommercial.dts.scale.service.agreements.model.dto;
 import lombok.Data;
 
 /**
- *
+ * Contact point
  */
 @Data
 public class ContactPoint {

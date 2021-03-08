@@ -22,7 +22,7 @@ public class AgreementContactsConverter
   protected Set<Contact> convert(final Set<CommercialAgreementOrgRole> source) {
 
     return source.stream()
-        .flatMap(caor -> caor.getContactPointCommercialAgreementOrgRole().stream()).map(cpcaor -> {
+        .flatMap(caor -> caor.getContactPointCommercialAgreementOrgRoles().stream()).map(cpcaor -> {
           final ContactDetail contactDetail = cpcaor.getContactDetail();
           final Contact contact = new Contact();
           final ContactPoint contactPoint = new ContactPoint();

@@ -7,7 +7,7 @@ import lombok.Data;
 import lombok.experimental.FieldDefaults;
 
 /**
- *
+ * Person
  */
 @Entity
 @Immutable

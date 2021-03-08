@@ -18,12 +18,6 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class CommercialAgreementOrgRole {
 
-  /*
-   * commercial_agreement_organisation_role_id SERIAL NOT NULL PRIMARY KEY, commercial_agreement_id
-   * INTEGER NOT NULL, organisation_id INTEGER NOT NULL, role_type_id INTEGER NOT NULL, start_date
-   * DATE NOT NULL, end_date DATE );
-   */
-
   @Id
   @Column(name = "commercial_agreement_organisation_role_id")
   Integer id;
@@ -38,7 +32,7 @@ public class CommercialAgreementOrgRole {
 
   @OneToMany(fetch = FetchType.LAZY)
   @JoinColumn(name = "commercial_agreement_organisation_role_id")
-  Set<ContactPointCommercialAgreementOrgRole> contactPointCommercialAgreementOrgRole;
+  Set<ContactPointCommercialAgreementOrgRole> contactPointCommercialAgreementOrgRoles;
 
   @Column(name = "start_date")
   LocalDate startDate;

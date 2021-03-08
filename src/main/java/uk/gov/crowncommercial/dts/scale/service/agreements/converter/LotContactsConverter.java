@@ -8,7 +8,7 @@ import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.Contact;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.ContactPointLotOrgRole;
 
 /**
- *
+ * Converts a DB set of {@link ContactPointLotOrgRole} to a set of {@link Contact}s
  */
 @Component
 public class LotContactsConverter

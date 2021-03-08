@@ -26,10 +26,8 @@ public class OrganisationConverter extends AbstractConverter<LotOrganisationRole
     orgIdentifier.setId(dbOrg.getEntityId());
     orgIdentifier.setLegalName(dbOrg.getLegalName());
     orgIdentifier.setUri(dbOrg.getUri());
-    orgIdentifier
-        .setScheme(ConverterUtils.enumFromString(Scheme.class, dbOrg.getRegistryCode()));
+    orgIdentifier.setScheme(ConverterUtils.enumFromString(Scheme.class, dbOrg.getRegistryCode()));
 
-    // LotSupplier -> organization
     final Organization organization = new Organization();
     organization.setName(dbOrg.getLegalName());
     organization.setId(dbOrg.getEntityId());

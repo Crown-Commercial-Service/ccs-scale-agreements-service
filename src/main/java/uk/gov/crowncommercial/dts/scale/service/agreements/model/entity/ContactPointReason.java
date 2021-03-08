@@ -10,7 +10,7 @@ import lombok.Data;
 import lombok.experimental.FieldDefaults;
 
 /**
- * Contact point reasons ()
+ * Contact point reason
  */
 @Entity
 @Immutable

@@ -5,7 +5,7 @@ import org.springframework.stereotype.Component;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.SupplierStatus;
 
 /**
- * Converts a DB organisation status to a supplier status
+ * Converts a DB organisation status to a {@link SupplierStatus}
  */
 @Component
 public class SupplierStatusConverter extends AbstractConverter<String, SupplierStatus> {

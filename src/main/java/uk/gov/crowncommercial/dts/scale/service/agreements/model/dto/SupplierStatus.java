@@ -7,21 +7,12 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  */
 public enum SupplierStatus {
 
-  /*
-   *
-   */
   @JsonProperty("active")
   ACTIVE,
 
-  /*
-   *
-   */
   @JsonProperty("suspended")
   SUSPENDED,
 
-  /*
-   *
-   */
   @JsonProperty("excluded")
   EXCLUDED;
 

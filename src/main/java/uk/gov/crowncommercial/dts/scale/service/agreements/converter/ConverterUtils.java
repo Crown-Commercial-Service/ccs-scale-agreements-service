@@ -41,7 +41,7 @@ public class ConverterUtils {
    * Converts a DB {@link ContactPointLotOrgRole} to a {@link ContactPoint}
    *
    * @param source
-   * @return
+   * @return a contact point
    */
   public static ContactPoint convertFromContactPointLotOrgRole(
       final ContactPointLotOrgRole source) {
