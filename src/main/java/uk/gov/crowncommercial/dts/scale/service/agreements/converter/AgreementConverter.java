@@ -7,15 +7,8 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import lombok.RequiredArgsConstructor;
-import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.AgreementDetail;
-import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.AgreementSummary;
-import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.AgreementUpdate;
-import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.Document;
-import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.LotDetail;
-import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.CommercialAgreement;
-import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.CommercialAgreementDocument;
-import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.CommercialAgreementUpdate;
-import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.Lot;
+import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.*;
+import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.*;
 
 /**
  * Encapsulates conversion logic between DTOs and Entities.
@@ -34,6 +27,8 @@ public class AgreementConverter {
   private final RelatedLotConverter relatedLotConverter;
   private final AgreementUpdateConverter agreementUpdateConverter;
   private final RouteToMarketConverter routeToMarketConverter;
+  private final AgreementContactsConverter agreementContactsConverter;
+  private final LotSupplierPropertyMap lotSupplierPropertyMap;
 
   @PostConstruct
   public void init() {
@@ -44,32 +39,48 @@ public class AgreementConverter {
     modelMapper.addConverter(relatedLotConverter);
     modelMapper.addConverter(agreementUpdateConverter);
     modelMapper.addConverter(routeToMarketConverter);
+
+    /*
+     * Specific mismatched properties / converters (do not set globally on modelMapper)
+     */
+    modelMapper.createTypeMap(CommercialAgreement.class, AgreementDetail.class)
+        .addMappings(mapper -> mapper.using(agreementContactsConverter)
+            .map(CommercialAgreement::getOrganisationRoles, AgreementDetail::setContacts));
+
+    modelMapper.createTypeMap(LotOrganisationRole.class, LotSupplier.class)
+        .addMappings(lotSupplierPropertyMap);
   }
 
-  public AgreementDetail convertAgreementToDTO(CommercialAgreement ca) {
+  public AgreementDetail convertAgreementToDTO(final CommercialAgreement ca) {
     return modelMapper.map(ca, AgreementDetail.class);
   }
 
-  public AgreementSummary convertAgreementToSummaryDTO(CommercialAgreement ca) {
+  public AgreementSummary convertAgreementToSummaryDTO(final CommercialAgreement ca) {
     return modelMapper.map(ca, AgreementSummary.class);
   }
 
-  public LotDetail convertLotToDTO(Lot lot) {
+  public LotDetail convertLotToDTO(final Lot lot) {
     return modelMapper.map(lot, LotDetail.class);
   }
 
   public Collection<AgreementUpdate> convertAgreementUpdatesToDTOs(
-      Collection<CommercialAgreementUpdate> updates) {
+      final Collection<CommercialAgreementUpdate> updates) {
     return updates.stream().map(u -> modelMapper.map(u, AgreementUpdate.class))
         .collect(Collectors.toList());
   }
 
-  public Collection<LotDetail> convertLotsToDTOs(Collection<Lot> lots) {
+  public Collection<LotDetail> convertLotsToDTOs(final Collection<Lot> lots) {
     return lots.stream().map(l -> modelMapper.map(l, LotDetail.class)).collect(Collectors.toList());
   }
 
   public Collection<Document> convertAgreementDocumentsToDTOs(
-      Collection<CommercialAgreementDocument> lots) {
+      final Collection<CommercialAgreementDocument> lots) {
     return lots.stream().map(l -> modelMapper.map(l, Document.class)).collect(Collectors.toList());
+  }
+
+  public Collection<LotSupplier> convertLotOrgRolesToLotSupplierDTOs(
+      final Collection<LotOrganisationRole> lotOrgRoles) {
+    return lotOrgRoles.stream().map(lor -> modelMapper.map(lor, LotSupplier.class))
+        .collect(Collectors.toSet());
   }
 }

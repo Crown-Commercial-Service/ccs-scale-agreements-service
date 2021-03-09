@@ -6,7 +6,7 @@ import org.springframework.context.annotation.Configuration;
 
 /**
  * Application Config.
- * 
+ *
  */
 @Configuration
 public class ApplicationConfig {

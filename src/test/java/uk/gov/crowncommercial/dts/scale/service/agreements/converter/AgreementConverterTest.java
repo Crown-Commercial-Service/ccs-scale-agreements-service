@@ -1,5 +1,9 @@
 package uk.gov.crowncommercial.dts.scale.service.agreements.converter;
 
+import static java.lang.String.format;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.greaterThanOrEqualTo;
+import static org.hamcrest.Matchers.hasItems;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.when;
 import java.math.BigDecimal;
@@ -7,45 +11,23 @@ import java.sql.Timestamp;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.IntStream;
 import org.junit.jupiter.api.Test;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
-import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.AgreementDetail;
-import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.AgreementUpdate;
-import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.BuyingMethod;
-import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.Document;
-import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.LotDetail;
-import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.LotRuleDTO;
-import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.LotSummary;
-import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.LotType;
-import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.NameValueType;
-import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.RelatedAgreementLot;
-import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.RouteToMarketDTO;
-import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.TransactionData;
-import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.CommercialAgreement;
-import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.CommercialAgreementDocument;
-import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.CommercialAgreementUpdate;
-import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.Lot;
-import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.LotRelatedLot;
-import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.LotRouteToMarket;
-import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.LotRouteToMarketKey;
-import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.LotRule;
-import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.LotRuleAttribute;
-import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.LotRuleTransactionObject;
-import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.RouteToMarket;
-import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.Sector;
+import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.*;
+import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.*;
 import uk.gov.crowncommercial.dts.scale.service.agreements.service.AgreementService;
 
 @SpringBootTest(classes = {AgreementConverter.class, ModelMapper.class, LotTypeConverter.class,
     DataTypeConverter.class, EvaluationTypeConverter.class, RelatedLotConverter.class,
-    SectorConverter.class, AgreementUpdateConverter.class, RouteToMarketConverter.class})
+    SectorConverter.class, AgreementUpdateConverter.class, RouteToMarketConverter.class,
+    AgreementContactsConverter.class, LotSupplierPropertyMap.class, OrganisationConverter.class,
+    LotContactsConverter.class, SupplierStatusConverter.class})
 @ActiveProfiles("test")
 public class AgreementConverterTest {
 
@@ -102,6 +84,25 @@ public class AgreementConverterTest {
   private static final String DOCUMENT_URL = "http://document";
   private static final Integer DOCUMENT_VERSION = 1;
 
+  // Contact detail value templates
+  private static final String CONTACT_EMAIL = "cd%d@example.com";
+  private static final String CONTACT_PHONE = "0123400000%d";
+  private static final String CONTACT_FAX = "0123400000%dF";
+  private static final String CONTACT_NAME = "Contact %d";
+  private static final String CONTACT_REASON = "Contact reason %d";
+  private static final String CONTACT_STREET_ADDRESS = "%d Exeter Road";
+  private static final String CONTACT_LOCALITY = "East Mid Devonsh%dre";
+  private static final String CONTACT_REGION = "Devonsh%dre";
+  private static final String CONTACT_POSTCODE = "EX%d0AB";
+  private static final String CONTACT_COUNTRY_CODE = "GB%d";
+  private static final String CONTACT_URL = "https://procurement.acmetrading%d.com";
+
+  // Organisation value templates
+  private static final String ORG_ENTITY_ID = "entity-id-%d";
+  private static final String ORG_LEGAL_NAME = "ACME Trading Ltd %d";
+  private static final String ORG_URI = "https://www.acmetrading%d.com";
+  private static final String ORG_COMPANY_TYPE = "Small%d";
+
   @Autowired
   AgreementConverter converter;
 
@@ -122,6 +123,7 @@ public class AgreementConverterTest {
     ca.setEndDate(END_DATE);
     ca.setDetailUrl(AGREEMENT_URL);
     ca.setLots(lots);
+    ca.setOrganisationRoles(createCommercialAgreementOrgRoles(3));
 
     AgreementDetail agreement = converter.convertAgreementToDTO(ca);
 
@@ -131,6 +133,8 @@ public class AgreementConverterTest {
     assertEquals(START_DATE, agreement.getStartDate());
     assertEquals(END_DATE, agreement.getEndDate());
     assertEquals(AGREEMENT_URL, agreement.getDetailUrl());
+    assertEquals(3, agreement.getContacts().size());
+    assertThat(agreement.getContacts(), hasItems(getContact(1), getContact(2), getContact(3)));
 
     LotSummary lotSummary = agreement.getLots().stream().findFirst().get();
     assertEquals(LOT_NAME, lotSummary.getName());
@@ -181,6 +185,68 @@ public class AgreementConverterTest {
     assertEquals(DOCUMENT_NAME, document.getName());
     assertEquals(DOCUMENT_URL, document.getUrl());
     assertEquals(DOCUMENT_VERSION, document.getVersion());
+  }
+
+  @Test
+  public void testLotSuppliers() {
+    Collection<LotSupplier> lotSuppliers =
+        converter.convertLotOrgRolesToLotSupplierDTOs(createLotOrganisationRoles(3));
+
+    assertEquals(2, lotSuppliers.size());
+
+    // One LotSupplier should have 2 contacts, the other just 1. First in each is primary.
+    LotSupplier lotSupplier1 = getLotSupplier(1, 1, 2);
+    LotSupplier lotSupplier2 = getLotSupplier(2, 3, 3);
+
+    assertThat(lotSuppliers, hasItems(lotSupplier1, lotSupplier2));
+  }
+
+  private LotSupplier getLotSupplier(int instance, int minContactPoint, int maxContactPoint) {
+    LotSupplier lotSupplier = new LotSupplier();
+
+    Organization org = new Organization();
+    org.setName(format(ORG_LEGAL_NAME, instance));
+    org.setId(format(ORG_ENTITY_ID, instance));
+    org.setRoles(Collections.singleton(PartyRole.SUPPLIER)); // TODO - check
+
+    final OrganizationIdentifier orgIdentifier = new OrganizationIdentifier();
+    orgIdentifier.setId(format(ORG_ENTITY_ID, instance));
+    orgIdentifier.setLegalName(format(ORG_LEGAL_NAME, instance));
+    orgIdentifier.setUri(format(ORG_URI, instance));
+    orgIdentifier.setScheme(Scheme.GB_COH);
+    org.setIdentifier(orgIdentifier);
+
+    OrganizationDetail orgDetail = new OrganizationDetail();
+    orgDetail.setCreationDate(LocalDate.of(instance, 1, 1));
+    orgDetail.setCountryCode("GB");
+    orgDetail.setCompanyType(format(ORG_COMPANY_TYPE, instance));
+    orgDetail.setIsSme(true);
+    orgDetail.setIsVcse(true);
+    orgDetail.setStatus("active");
+    orgDetail.setActive(true);
+    org.setDetails(orgDetail);
+
+    // Primary Contact point + address
+    Address address = new Address();
+    address.setStreetAddress(format(CONTACT_STREET_ADDRESS, minContactPoint));
+    address.setLocality(format(CONTACT_LOCALITY, minContactPoint));
+    address.setRegion(format(CONTACT_REGION, minContactPoint));
+    address.setPostalCode(format(CONTACT_POSTCODE, minContactPoint));
+    address.setCountryName(format(CONTACT_COUNTRY_CODE, minContactPoint));
+    org.setAddress(address);
+    org.setContactPoint(getContact(minContactPoint).getContactPoint());
+
+    lotSupplier.setOrganization(org);
+    lotSupplier.setSupplierStatus(SupplierStatus.ACTIVE);
+
+    // All contacts
+    Set<Contact> contacts = new HashSet<>();
+    IntStream.rangeClosed(minContactPoint, maxContactPoint).forEachOrdered(i -> {
+      contacts.add(getContact(i));
+    });
+
+    lotSupplier.setLotContacts(contacts);
+    return lotSupplier;
   }
 
   private void testLot(LotDetail lotDetail) {
@@ -375,4 +441,135 @@ public class AgreementConverterTest {
     document.setVersion(DOCUMENT_VERSION);
     return document;
   }
+
+  private Set<CommercialAgreementOrgRole> createCommercialAgreementOrgRoles(int contactPointCount) {
+    assertThat("contactPointCount should >= 2", contactPointCount, greaterThanOrEqualTo(2));
+
+    Set<ContactPointCommercialAgreementOrgRole> cpCaOrgRoles1 = new HashSet<>();
+    Set<ContactPointCommercialAgreementOrgRole> cpCaOrgRoles2 = new HashSet<>();
+
+    IntStream.rangeClosed(1, contactPointCount).forEachOrdered(i -> {
+      ContactPointCommercialAgreementOrgRole cpCaOrgRole =
+          new ContactPointCommercialAgreementOrgRole();
+
+      ContactPointReason cpReason = new ContactPointReason();
+      cpReason.setName(format(CONTACT_REASON, i));
+      cpCaOrgRole.setContactPointName(format(CONTACT_NAME, i));
+      cpCaOrgRole.setContactPointReason(cpReason);
+      cpCaOrgRole.setContactDetail(createContactDetail(i, false));
+
+      // Spread over 2 CP CA Org Role sets
+      if (i <= contactPointCount - 1) {
+        cpCaOrgRoles1.add(cpCaOrgRole);
+      } else {
+        cpCaOrgRoles2.add(cpCaOrgRole);
+      }
+    });
+
+    CommercialAgreementOrgRole caOrgRole1 = new CommercialAgreementOrgRole();
+    CommercialAgreementOrgRole caOrgRole2 = new CommercialAgreementOrgRole();
+    caOrgRole1.setContactPointCommercialAgreementOrgRoles(cpCaOrgRoles1);
+    caOrgRole2.setContactPointCommercialAgreementOrgRoles(cpCaOrgRoles2);
+
+    Set<CommercialAgreementOrgRole> commercialAgreementOrgRoles = new HashSet<>();
+    commercialAgreementOrgRoles.add(caOrgRole1);
+    commercialAgreementOrgRoles.add(caOrgRole2);
+
+    return commercialAgreementOrgRoles;
+  }
+
+  /*
+   * Creates 2 LotOrganisationRoles, one with multiple contact points the other a single one.
+   */
+  private Set<LotOrganisationRole> createLotOrganisationRoles(int contactPointCount) {
+    assertThat("contactPointCount should >= 2", contactPointCount, greaterThanOrEqualTo(2));
+
+    Set<ContactPointLotOrgRole> cpLotOrgRoles1 = new HashSet<>();
+    Set<ContactPointLotOrgRole> cpLOtOrgRoles2 = new HashSet<>();
+
+    IntStream.rangeClosed(1, contactPointCount).forEachOrdered(i -> {
+      ContactPointLotOrgRole cpLotOrgRole = new ContactPointLotOrgRole();
+
+      ContactPointReason cpReason = new ContactPointReason();
+      cpReason.setName(format(CONTACT_REASON, i));
+      cpLotOrgRole.setContactPointName(format(CONTACT_NAME, i));
+      cpLotOrgRole.setContactPointReason(cpReason);
+      cpLotOrgRole.setContactDetail(createContactDetail(i, true));
+
+      // Spread over 2 CP Lot Org Role sets and set first in each as 'primary'
+      if (i <= contactPointCount - 1) {
+        if (i == 1) {
+          cpLotOrgRole.setPrimary(true);
+        }
+        cpLotOrgRoles1.add(cpLotOrgRole);
+      } else {
+        cpLotOrgRole.setPrimary(true);
+        cpLOtOrgRoles2.add(cpLotOrgRole);
+      }
+    });
+
+    LotOrganisationRole lotOrgRole1 = new LotOrganisationRole();
+    LotOrganisationRole lotOrgRole2 = new LotOrganisationRole();
+    lotOrgRole1.setContactPointLotOrgRoles(cpLotOrgRoles1);
+    lotOrgRole1.setOrganisation(createOrganisation(1));
+    lotOrgRole2.setContactPointLotOrgRoles(cpLOtOrgRoles2);
+    lotOrgRole2.setOrganisation(createOrganisation(2));
+
+    Set<LotOrganisationRole> lotOrgRoles = new HashSet<>();
+    lotOrgRoles.add(lotOrgRole1);
+    lotOrgRoles.add(lotOrgRole2);
+
+    return lotOrgRoles;
+  }
+
+  private Organisation createOrganisation(int instance) {
+    Organisation org = new Organisation();
+    org.setEntityId(format(ORG_ENTITY_ID, instance));
+    org.setLegalName(format(ORG_LEGAL_NAME, instance));
+    org.setUri(format(ORG_URI, instance));
+    org.setRegistryCode("GB-COH");
+
+    org.setIncorporationDate(LocalDate.of(instance, 1, 1));
+    org.setIncorporationCountry("GB");
+    org.setBusinessType(format(ORG_COMPANY_TYPE, instance));
+    org.setIsSme(true);
+    org.setIsVcse(true);
+    org.setStatus("active");
+    org.setIsActive(true);
+    return org;
+  }
+
+  private ContactDetail createContactDetail(int instance, boolean includeAddress) {
+    ContactDetail contactDetail = new ContactDetail();
+    contactDetail.setEmailAddress(format(CONTACT_EMAIL, instance));
+    contactDetail.setTelephoneNumber(format(CONTACT_PHONE, instance));
+    contactDetail.setFaxNumber(format(CONTACT_FAX, instance));
+    contactDetail.setUrl(format(CONTACT_URL, instance));
+
+    if (includeAddress) {
+      contactDetail.setStreetAddress(format(CONTACT_STREET_ADDRESS, instance));
+      contactDetail.setLocality(format(CONTACT_LOCALITY, instance));
+      contactDetail.setRegion(format(CONTACT_REGION, instance));
+      contactDetail.setPostalCode(format(CONTACT_POSTCODE, instance));
+      contactDetail.setCountryCode(format(CONTACT_COUNTRY_CODE, instance));
+    }
+
+    return contactDetail;
+  }
+
+  private Contact getContact(int instance) {
+    Contact contact = new Contact();
+    contact.setContactReason(format(CONTACT_REASON, instance));
+
+    ContactPoint contactPoint = new ContactPoint();
+    contactPoint.setName(format(CONTACT_NAME, instance));
+    contactPoint.setEmail(format(CONTACT_EMAIL, instance));
+    contactPoint.setTelephone(format(CONTACT_PHONE, instance));
+    contactPoint.setFaxNumber(format(CONTACT_FAX, instance));
+    contactPoint.setUrl(format(CONTACT_URL, instance));
+    contact.setContactPoint(contactPoint);
+
+    return contact;
+  }
+
 }
