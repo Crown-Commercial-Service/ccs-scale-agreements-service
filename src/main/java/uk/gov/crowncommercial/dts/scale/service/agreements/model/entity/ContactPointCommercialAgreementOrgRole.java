@@ -35,8 +35,8 @@ public class ContactPointCommercialAgreementOrgRole {
   @Column(name = "effective_from")
   LocalDate effectiveFrom;
 
-  @Column(name = "effecive_to")
-  LocalDate effeciveTo;
+  @Column(name = "effective_to")
+  LocalDate effectiveTo;
 
   @Column(name = "primary_ind")
   Boolean primary;
