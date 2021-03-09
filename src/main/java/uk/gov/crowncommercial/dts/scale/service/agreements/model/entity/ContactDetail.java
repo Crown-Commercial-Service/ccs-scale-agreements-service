@@ -56,4 +56,7 @@ public class ContactDetail {
 
   @Column(name = "fax_number")
   String faxNumber;
+
+  @Column(name = "url")
+  String url;
 }

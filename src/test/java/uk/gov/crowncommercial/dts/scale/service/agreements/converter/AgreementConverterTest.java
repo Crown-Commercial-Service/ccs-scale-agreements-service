@@ -95,6 +95,7 @@ public class AgreementConverterTest {
   private static final String CONTACT_REGION = "Devonsh%dre";
   private static final String CONTACT_POSTCODE = "EX%d0AB";
   private static final String CONTACT_COUNTRY_CODE = "GB%d";
+  private static final String CONTACT_URL = "https://procurement.acmetrading%d.com";
 
   // Organisation value templates
   private static final String ORG_ENTITY_ID = "entity-id-%d";
@@ -543,6 +544,7 @@ public class AgreementConverterTest {
     contactDetail.setEmailAddress(format(CONTACT_EMAIL, instance));
     contactDetail.setTelephoneNumber(format(CONTACT_PHONE, instance));
     contactDetail.setFaxNumber(format(CONTACT_FAX, instance));
+    contactDetail.setUrl(format(CONTACT_URL, instance));
 
     if (includeAddress) {
       contactDetail.setStreetAddress(format(CONTACT_STREET_ADDRESS, instance));
@@ -564,6 +566,7 @@ public class AgreementConverterTest {
     contactPoint.setEmail(format(CONTACT_EMAIL, instance));
     contactPoint.setTelephone(format(CONTACT_PHONE, instance));
     contactPoint.setFaxNumber(format(CONTACT_FAX, instance));
+    contactPoint.setUrl(format(CONTACT_URL, instance));
     contact.setContactPoint(contactPoint);
 
     return contact;

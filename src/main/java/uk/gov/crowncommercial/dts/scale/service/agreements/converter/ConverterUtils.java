@@ -51,6 +51,7 @@ public class ConverterUtils {
     contactPoint.setEmail(contactDetail.getEmailAddress());
     contactPoint.setTelephone(contactDetail.getTelephoneNumber());
     contactPoint.setFaxNumber(contactDetail.getFaxNumber());
+    contactPoint.setUrl(contactDetail.getUrl());
     return contactPoint;
   }
 

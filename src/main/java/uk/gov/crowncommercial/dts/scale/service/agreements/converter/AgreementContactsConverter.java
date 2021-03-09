@@ -30,6 +30,7 @@ public class AgreementContactsConverter
           contactPoint.setEmail(contactDetail.getEmailAddress());
           contactPoint.setTelephone(contactDetail.getTelephoneNumber());
           contactPoint.setFaxNumber(contactDetail.getFaxNumber());
+          contactPoint.setUrl(contactDetail.getUrl());
           contact.setContactReason(cpcaor.getContactPointReason().getName());
           contact.setContactPoint(contactPoint);
           return contact;
