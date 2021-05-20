@@ -27,6 +27,9 @@ public class CommercialAgreementDocument {
   @Column(name = "document_name")
   String name;
 
+  @Column(name = "document_description")
+  String description;
+
   @Column(name = "document_url")
   String url;
 
@@ -36,7 +39,16 @@ public class CommercialAgreementDocument {
   @Column(name = "document_version")
   Integer version;
 
+  @Column(name = "language")
+  String language;
+
+  @Column(name = "format")
+  String format;
+
   @Column(name = "published_date")
   Timestamp publishedDate;
+
+  @Column(name = "modified_at")
+  Timestamp modifiedDate;
 
 }

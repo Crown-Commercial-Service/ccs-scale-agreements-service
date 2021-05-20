@@ -6,6 +6,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import java.time.Instant;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
@@ -20,12 +21,25 @@ import org.springframework.test.web.servlet.MockMvc;
 import uk.gov.crowncommercial.dts.scale.service.agreements.converter.AgreementConverter;
 import uk.gov.crowncommercial.dts.scale.service.agreements.exception.AgreementNotFoundException;
 import uk.gov.crowncommercial.dts.scale.service.agreements.exception.LotNotFoundException;
-import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.*;
-import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.*;
+import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.AgreementDetail;
+import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.AgreementSummary;
+import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.AgreementUpdate;
+import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.Contact;
+import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.ContactPoint;
+import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.Document;
+import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.LotDetail;
+import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.LotSupplier;
+import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.Organization;
+import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.SupplierStatus;
+import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.CommercialAgreement;
+import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.CommercialAgreementDocument;
+import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.CommercialAgreementUpdate;
+import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.Lot;
+import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.LotOrganisationRole;
 import uk.gov.crowncommercial.dts.scale.service.agreements.service.AgreementService;
 
 @WebMvcTest(AgreementController.class)
-public class AgreementControllerTest {
+class AgreementControllerTest {
 
   private static final String GET_AGREEMENT_PATH = "/agreements/%s";
   private static final String GET_LOT_PATH = "/agreements/%s/lots/%s";
@@ -37,8 +51,16 @@ public class AgreementControllerTest {
 
   private static final String AGREEMENT_NUMBER = "RM3733";
   private static final String LOT_NUMBER = "Lot 1";
-  private static final String DOCUMENT_NAME = "My Doc";
   private static final String AGREEMENT_UPDATE_TEXT = "Update Text";
+
+  private static final String DOCUMENT_NAME = "My Doc";
+  private static final String DOCUMENT_URL = "http://document";
+  private static final String DOCUMENT_TYPE = "tenderNotice";
+  private static final String DOCUMENT_FORMAT = "text/html";
+  private static final String DOCUMENT_LANGUAGE = "en_GB";
+  private static final String DOCUMENT_DESCRIPTION = "Document Description";
+  private static final Instant DOCUMENT_PUBLISHED_DATE = Instant.now();
+  private static final Instant DOCUMENT_MODIFIED_DATE = Instant.now();
 
   @Autowired
   private MockMvc mockMvc;
@@ -65,7 +87,7 @@ public class AgreementControllerTest {
   private LotOrganisationRole lotOrganisationRole;
 
   @Test
-  public void testGetAgreementSummariesSuccess() throws Exception {
+  void testGetAgreementSummariesSuccess() throws Exception {
     final AgreementSummary agreement = new AgreementSummary();
     agreement.setNumber(AGREEMENT_NUMBER);
 
@@ -76,7 +98,7 @@ public class AgreementControllerTest {
   }
 
   @Test
-  public void testGetAgreementSuccess() throws Exception {
+  void testGetAgreementSuccess() throws Exception {
     final AgreementDetail agreement = new AgreementDetail();
     agreement.setNumber(AGREEMENT_NUMBER);
 
@@ -87,7 +109,7 @@ public class AgreementControllerTest {
   }
 
   @Test
-  public void testGetAgreementNotFound() throws Exception {
+  void testGetAgreementNotFound() throws Exception {
     when(service.findAgreementByNumber(AGREEMENT_NUMBER)).thenReturn(null);
     mockMvc.perform(get(String.format(GET_AGREEMENT_PATH, AGREEMENT_NUMBER)))
         .andExpect(status().is4xxClientError())
@@ -98,7 +120,7 @@ public class AgreementControllerTest {
   }
 
   @Test
-  public void testGetAgreementUnexpectedError() throws Exception {
+  void testGetAgreementUnexpectedError() throws Exception {
     when(service.findAgreementByNumber(AGREEMENT_NUMBER))
         .thenThrow(new RuntimeException("Something is amiss"));
     mockMvc.perform(get(String.format(GET_AGREEMENT_PATH, AGREEMENT_NUMBER)))
@@ -108,7 +130,7 @@ public class AgreementControllerTest {
   }
 
   @Test
-  public void testGetAgreementLotsSuccess() throws Exception {
+  void testGetAgreementLotsSuccess() throws Exception {
     final LotDetail lot = new LotDetail();
     lot.setNumber(LOT_NUMBER);
     final Set<Lot> mockLots = new HashSet<>(Arrays.asList(mockLot));
@@ -120,7 +142,7 @@ public class AgreementControllerTest {
   }
 
   @Test
-  public void testGetAgreementLotsNotFound() throws Exception {
+  void testGetAgreementLotsNotFound() throws Exception {
     when(service.findAgreementByNumber(AGREEMENT_NUMBER)).thenReturn(null);
     mockMvc.perform(get(String.format(GET_AGREEMENT_LOTS_PATH, AGREEMENT_NUMBER)))
         .andExpect(status().is4xxClientError())
@@ -131,7 +153,7 @@ public class AgreementControllerTest {
   }
 
   @Test
-  public void testGetAgreementLotsUnexpectedError() throws Exception {
+  void testGetAgreementLotsUnexpectedError() throws Exception {
     when(service.findAgreementByNumber(AGREEMENT_NUMBER))
         .thenThrow(new RuntimeException("Something is amiss"));
     mockMvc.perform(get(String.format(GET_AGREEMENT_LOTS_PATH, AGREEMENT_NUMBER)))
@@ -141,7 +163,7 @@ public class AgreementControllerTest {
   }
 
   @Test
-  public void testGetLotSuccess() throws Exception {
+  void testGetLotSuccess() throws Exception {
     final LotDetail lot = new LotDetail();
     lot.setNumber(LOT_NUMBER);
 
@@ -153,7 +175,7 @@ public class AgreementControllerTest {
   }
 
   @Test
-  public void testGetLotNotFound() throws Exception {
+  void testGetLotNotFound() throws Exception {
     when(service.findLotByAgreementNumberAndLotNumber(AGREEMENT_NUMBER, LOT_NUMBER))
         .thenReturn(null);
     mockMvc.perform(get(String.format(GET_LOT_PATH, AGREEMENT_NUMBER, LOT_NUMBER)))
@@ -165,7 +187,7 @@ public class AgreementControllerTest {
   }
 
   @Test
-  public void testGetLotUnexpectedError() throws Exception {
+  void testGetLotUnexpectedError() throws Exception {
     when(service.findLotByAgreementNumberAndLotNumber(AGREEMENT_NUMBER, LOT_NUMBER))
         .thenThrow(new RuntimeException("Something is amiss"));
     mockMvc.perform(get(String.format(GET_LOT_PATH, AGREEMENT_NUMBER, LOT_NUMBER)))
@@ -175,9 +197,17 @@ public class AgreementControllerTest {
   }
 
   @Test
-  public void testGetAgreementDocuments() throws Exception {
+  void testGetAgreementDocuments() throws Exception {
     final Document document = new Document();
     document.setName(DOCUMENT_NAME);
+    document.setDescription(DOCUMENT_DESCRIPTION);
+    document.setUrl(DOCUMENT_URL);
+    document.setDocumentType(DOCUMENT_TYPE);
+    document.setFormat(DOCUMENT_FORMAT);
+    document.setLanguage(DOCUMENT_LANGUAGE);
+    document.setPublishedDate(DOCUMENT_PUBLISHED_DATE);
+    document.setModifiedDate(DOCUMENT_MODIFIED_DATE);
+
     final Set<CommercialAgreementDocument> mockDocs =
         new HashSet<>(Arrays.asList(mockCommercialAgreementDocument));
     when(service.findAgreementByNumber(AGREEMENT_NUMBER)).thenReturn(mockCommercialAgreement);
@@ -185,11 +215,18 @@ public class AgreementControllerTest {
     when(converter.convertAgreementDocumentsToDTOs(mockDocs)).thenReturn(Arrays.asList(document));
     mockMvc.perform(get(String.format(GET_AGREEMENT_DOCUMENTS_PATH, AGREEMENT_NUMBER)))
         .andExpect(status().isOk()).andExpect(status().isOk())
-        .andExpect(jsonPath("$[0].name", is(DOCUMENT_NAME)));
+        .andExpect(jsonPath("$[0].title", is(DOCUMENT_NAME)))
+        .andExpect(jsonPath("$[0].url", is(DOCUMENT_URL)))
+        .andExpect(jsonPath("$[0].description", is(DOCUMENT_DESCRIPTION)))
+        .andExpect(jsonPath("$[0].documentType", is(DOCUMENT_TYPE)))
+        .andExpect(jsonPath("$[0].format", is(DOCUMENT_FORMAT)))
+        .andExpect(jsonPath("$[0].language", is(DOCUMENT_LANGUAGE)))
+        .andExpect(jsonPath("$[0].datePublished", is(DOCUMENT_PUBLISHED_DATE.toString())))
+        .andExpect(jsonPath("$[0].dateModified", is(DOCUMENT_MODIFIED_DATE.toString())));
   }
 
   @Test
-  public void testGetAgreementDocumentsNotFound() throws Exception {
+  void testGetAgreementDocumentsNotFound() throws Exception {
     when(service.findAgreementByNumber(AGREEMENT_NUMBER)).thenReturn(null);
     mockMvc.perform(get(String.format(GET_AGREEMENT_DOCUMENTS_PATH, AGREEMENT_NUMBER)))
         .andExpect(status().is4xxClientError())
@@ -200,7 +237,7 @@ public class AgreementControllerTest {
   }
 
   @Test
-  public void testGetAgreementDocumentsUnexpectedError() throws Exception {
+  void testGetAgreementDocumentsUnexpectedError() throws Exception {
     when(service.findAgreementByNumber(AGREEMENT_NUMBER))
         .thenThrow(new RuntimeException("Something is amiss"));
     mockMvc.perform(get(String.format(GET_AGREEMENT_DOCUMENTS_PATH, AGREEMENT_NUMBER)))
@@ -210,7 +247,7 @@ public class AgreementControllerTest {
   }
 
   @Test
-  public void testGetAgreementUpdates() throws Exception {
+  void testGetAgreementUpdates() throws Exception {
     final AgreementUpdate update = new AgreementUpdate();
     update.setText(AGREEMENT_UPDATE_TEXT);
     final Set<CommercialAgreementUpdate> mockUpdates =
@@ -223,7 +260,7 @@ public class AgreementControllerTest {
   }
 
   @Test
-  public void testGetAgreementUpdatesNotFound() throws Exception {
+  void testGetAgreementUpdatesNotFound() throws Exception {
     when(service.findAgreementByNumber(AGREEMENT_NUMBER)).thenReturn(null);
     mockMvc.perform(get(String.format(GET_AGREEMENT_UPDATES_PATH, AGREEMENT_NUMBER)))
         .andExpect(status().is4xxClientError())
@@ -234,7 +271,7 @@ public class AgreementControllerTest {
   }
 
   @Test
-  public void testGetAgreementUpdatesUnexpectedError() throws Exception {
+  void testGetAgreementUpdatesUnexpectedError() throws Exception {
     when(service.findAgreementByNumber(AGREEMENT_NUMBER))
         .thenThrow(new RuntimeException("Something is amiss"));
     mockMvc.perform(get(String.format(GET_AGREEMENT_UPDATES_PATH, AGREEMENT_NUMBER)))
@@ -244,7 +281,7 @@ public class AgreementControllerTest {
   }
 
   @Test
-  public void testGetLotSuppliers() throws Exception {
+  void testGetLotSuppliers() throws Exception {
     final Set<LotOrganisationRole> lotOrgRoles = Collections.singleton(lotOrganisationRole);
 
     final Organization org = new Organization();
@@ -275,7 +312,7 @@ public class AgreementControllerTest {
   }
 
   @Test
-  public void testGetLotSuppliersNotFound() throws Exception {
+  void testGetLotSuppliersNotFound() throws Exception {
     when(service.findLotSupplierOrgRolesByAgreementNumberAndLotNumber(AGREEMENT_NUMBER, LOT_NUMBER))
         .thenThrow(new LotNotFoundException(LOT_NUMBER, AGREEMENT_NUMBER));
 

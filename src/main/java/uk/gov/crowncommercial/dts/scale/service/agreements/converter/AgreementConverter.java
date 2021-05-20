@@ -7,8 +7,17 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import lombok.RequiredArgsConstructor;
-import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.*;
-import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.*;
+import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.AgreementDetail;
+import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.AgreementSummary;
+import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.AgreementUpdate;
+import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.Document;
+import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.LotDetail;
+import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.LotSupplier;
+import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.CommercialAgreement;
+import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.CommercialAgreementDocument;
+import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.CommercialAgreementUpdate;
+import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.Lot;
+import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.LotOrganisationRole;
 
 /**
  * Encapsulates conversion logic between DTOs and Entities.
@@ -29,6 +38,7 @@ public class AgreementConverter {
   private final RouteToMarketConverter routeToMarketConverter;
   private final AgreementContactsConverter agreementContactsConverter;
   private final LotSupplierPropertyMap lotSupplierPropertyMap;
+  private final TimestampConverter timestampConverter;
 
   @PostConstruct
   public void init() {
@@ -39,6 +49,7 @@ public class AgreementConverter {
     modelMapper.addConverter(relatedLotConverter);
     modelMapper.addConverter(agreementUpdateConverter);
     modelMapper.addConverter(routeToMarketConverter);
+    modelMapper.addConverter(timestampConverter);
 
     /*
      * Specific mismatched properties / converters (do not set globally on modelMapper)

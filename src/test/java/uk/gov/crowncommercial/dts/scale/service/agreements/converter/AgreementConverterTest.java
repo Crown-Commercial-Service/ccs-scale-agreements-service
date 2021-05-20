@@ -1,9 +1,9 @@
 package uk.gov.crowncommercial.dts.scale.service.agreements.converter;
 
 import static java.lang.String.format;
+import static org.hamcrest.CoreMatchers.hasItems;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.greaterThanOrEqualTo;
-import static org.hamcrest.Matchers.hasItems;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.when;
 import java.math.BigDecimal;
@@ -11,7 +11,11 @@ import java.sql.Timestamp;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.stream.IntStream;
 import org.junit.jupiter.api.Test;
 import org.modelmapper.ModelMapper;
@@ -19,17 +23,56 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
-import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.*;
-import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.*;
+import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.Address;
+import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.AgreementDetail;
+import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.AgreementUpdate;
+import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.BuyingMethod;
+import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.Contact;
+import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.ContactPoint;
+import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.Document;
+import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.LotDetail;
+import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.LotRuleDTO;
+import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.LotSummary;
+import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.LotSupplier;
+import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.LotType;
+import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.NameValueType;
+import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.Organization;
+import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.OrganizationDetail;
+import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.OrganizationIdentifier;
+import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.PartyRole;
+import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.RelatedAgreementLot;
+import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.RouteToMarketDTO;
+import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.Scheme;
+import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.SupplierStatus;
+import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.TransactionData;
+import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.CommercialAgreement;
+import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.CommercialAgreementDocument;
+import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.CommercialAgreementOrgRole;
+import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.CommercialAgreementUpdate;
+import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.ContactDetail;
+import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.ContactPointCommercialAgreementOrgRole;
+import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.ContactPointLotOrgRole;
+import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.ContactPointReason;
+import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.Lot;
+import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.LotOrganisationRole;
+import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.LotRelatedLot;
+import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.LotRouteToMarket;
+import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.LotRouteToMarketKey;
+import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.LotRule;
+import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.LotRuleAttribute;
+import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.LotRuleTransactionObject;
+import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.Organisation;
+import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.RouteToMarket;
+import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.Sector;
 import uk.gov.crowncommercial.dts.scale.service.agreements.service.AgreementService;
 
 @SpringBootTest(classes = {AgreementConverter.class, ModelMapper.class, LotTypeConverter.class,
     DataTypeConverter.class, EvaluationTypeConverter.class, RelatedLotConverter.class,
     SectorConverter.class, AgreementUpdateConverter.class, RouteToMarketConverter.class,
     AgreementContactsConverter.class, LotSupplierPropertyMap.class, OrganisationConverter.class,
-    LotContactsConverter.class, SupplierStatusConverter.class})
+    LotContactsConverter.class, SupplierStatusConverter.class, TimestampConverter.class})
 @ActiveProfiles("test")
-public class AgreementConverterTest {
+class AgreementConverterTest {
 
   private static final LocalDate START_DATE = LocalDate.now();
   private static final LocalDate END_DATE = LocalDate.now();
@@ -82,7 +125,13 @@ public class AgreementConverterTest {
   private static final String DOCUMENT_TYPE = "Document Type";
   private static final String DOCUMENT_NAME = "Document Name";
   private static final String DOCUMENT_URL = "http://document";
+  private static final String DOCUMENT_FORMAT = "text/html";
+  private static final String DOCUMENT_LANGUAGE = "en_GB";
+  private static final String DOCUMENT_DESCRIPTION = "Document Description";
   private static final Integer DOCUMENT_VERSION = 1;
+  private static final Timestamp DOCUMENT_PUBLISHED_DATE =
+      new Timestamp(System.currentTimeMillis());
+  private static final Timestamp DOCUMENT_MODIFIED_DATE = new Timestamp(System.currentTimeMillis());
 
   // Contact detail value templates
   private static final String CONTACT_EMAIL = "cd%d@example.com";
@@ -110,7 +159,7 @@ public class AgreementConverterTest {
   private AgreementService service;
 
   @Test
-  public void testAgreementDetail() {
+  void testAgreementDetail() {
 
     Set<Lot> lots = new HashSet<>();
     lots.add(createTestLot("Products"));
@@ -142,32 +191,32 @@ public class AgreementConverterTest {
   }
 
   @Test
-  public void testLotDetailProduct() {
+  void testLotDetailProduct() {
     LotDetail lotDetail = converter.convertLotToDTO(createTestLot("Products"));
     testLot(lotDetail);
   }
 
   @Test
-  public void testLotDetailService() {
+  void testLotDetailService() {
     LotDetail lotDetail = converter.convertLotToDTO(createTestLot("Services"));
     assertEquals(LotType.SERVICE, lotDetail.getType());
   }
 
   @Test
-  public void testLotDetailProductAndService() {
+  void testLotDetailProductAndService() {
     LotDetail lotDetail = converter.convertLotToDTO(createTestLot("Products and Services"));
     assertEquals(LotType.PRODUCT_AND_SERVICE, lotDetail.getType());
   }
 
   @Test
-  public void testLotDetailProductCollection() {
+  void testLotDetailProductCollection() {
     Collection<LotDetail> lots =
         converter.convertLotsToDTOs(Arrays.asList(createTestLot("Products")));
     testLot(lots.stream().findFirst().get());
   }
 
   @Test
-  public void testAgreementUpdateCollection() {
+  void testAgreementUpdateCollection() {
     Collection<AgreementUpdate> updates =
         converter.convertAgreementUpdatesToDTOs(Arrays.asList(createCommercialAgreementUpdate()));
     AgreementUpdate update = updates.stream().findFirst().get();
@@ -177,18 +226,22 @@ public class AgreementConverterTest {
   }
 
   @Test
-  public void testAgreementDocumentCollection() {
+  void testAgreementDocumentCollection() {
     Collection<Document> documents = converter
         .convertAgreementDocumentsToDTOs(Arrays.asList(createCommercialAgreementDocument()));
     Document document = documents.stream().findFirst().get();
     assertEquals(DOCUMENT_TYPE, document.getDocumentType());
     assertEquals(DOCUMENT_NAME, document.getName());
+    assertEquals(DOCUMENT_DESCRIPTION, document.getDescription());
     assertEquals(DOCUMENT_URL, document.getUrl());
-    assertEquals(DOCUMENT_VERSION, document.getVersion());
+    assertEquals(DOCUMENT_FORMAT, document.getFormat());
+    assertEquals(DOCUMENT_LANGUAGE, document.getLanguage());
+    assertEquals(DOCUMENT_PUBLISHED_DATE.toInstant(), document.getPublishedDate());
+    assertEquals(DOCUMENT_MODIFIED_DATE.toInstant(), document.getModifiedDate());
   }
 
   @Test
-  public void testLotSuppliers() {
+  void testLotSuppliers() {
     Collection<LotSupplier> lotSuppliers =
         converter.convertLotOrgRolesToLotSupplierDTOs(createLotOrganisationRoles(3));
 
@@ -439,6 +492,11 @@ public class AgreementConverterTest {
     document.setName(DOCUMENT_NAME);
     document.setUrl(DOCUMENT_URL);
     document.setVersion(DOCUMENT_VERSION);
+    document.setFormat(DOCUMENT_FORMAT);
+    document.setLanguage(DOCUMENT_LANGUAGE);
+    document.setDescription(DOCUMENT_DESCRIPTION);
+    document.setPublishedDate(DOCUMENT_PUBLISHED_DATE);
+    document.setModifiedDate(DOCUMENT_MODIFIED_DATE);
     return document;
   }
 
