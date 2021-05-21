@@ -98,6 +98,9 @@ public class AgreementOwnerConverter
       // Role would be 'owner' - but that does not exist (waiting for confirmation from Dave that
       // this is ok)
       // owner.setRoles(null);
+      // Note: Dave has added 'frameworkOwner' role to
+      // https://raw.githubusercontent.com/Crown-Commercial-Service/ccs-api-definitions-common/main/CCS_OCDS_Standards/CCS-OCDS_CodeLists.yaml#/components/schemas/PartyRoles'
+      // Think it should be this
 
       return owner;
 
