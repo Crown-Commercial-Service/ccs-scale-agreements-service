@@ -40,6 +40,8 @@ public class AgreementConverter {
   private final LotSupplierPropertyMap lotSupplierPropertyMap;
   private final TimestampConverter timestampConverter;
 
+  private final AgreementOwnerConverter agreementOwnerConverter;
+
   @PostConstruct
   public void init() {
     modelMapper.addConverter(sectorConverter);
@@ -51,12 +53,16 @@ public class AgreementConverter {
     modelMapper.addConverter(routeToMarketConverter);
     modelMapper.addConverter(timestampConverter);
 
+
     /*
      * Specific mismatched properties / converters (do not set globally on modelMapper)
      */
     modelMapper.createTypeMap(CommercialAgreement.class, AgreementDetail.class)
         .addMappings(mapper -> mapper.using(agreementContactsConverter)
-            .map(CommercialAgreement::getOrganisationRoles, AgreementDetail::setContacts));
+            .map(CommercialAgreement::getOrganisationRoles, AgreementDetail::setContacts))
+        .addMappings(mapper -> mapper.using(agreementOwnerConverter)
+            .map(CommercialAgreement::getOrganisationRoles, AgreementDetail::setOwner));
+
 
     modelMapper.createTypeMap(LotOrganisationRole.class, LotSupplier.class)
         .addMappings(lotSupplierPropertyMap);

@@ -70,7 +70,8 @@ import uk.gov.crowncommercial.dts.scale.service.agreements.service.AgreementServ
     DataTypeConverter.class, EvaluationTypeConverter.class, RelatedLotConverter.class,
     SectorConverter.class, AgreementUpdateConverter.class, RouteToMarketConverter.class,
     AgreementContactsConverter.class, LotSupplierPropertyMap.class, OrganisationConverter.class,
-    LotContactsConverter.class, SupplierStatusConverter.class, TimestampConverter.class})
+    LotContactsConverter.class, SupplierStatusConverter.class, TimestampConverter.class,
+    AgreementOwnerConverter.class})
 @ActiveProfiles("test")
 class AgreementConverterTest {
 
@@ -273,7 +274,6 @@ class AgreementConverterTest {
     orgDetail.setCreationDate(LocalDate.of(instance, 1, 1));
     orgDetail.setCountryCode("GB");
     orgDetail.setCompanyType(format(ORG_COMPANY_TYPE, instance));
-    orgDetail.setIsSme(true);
     orgDetail.setIsVcse(true);
     orgDetail.setStatus("active");
     orgDetail.setActive(true);

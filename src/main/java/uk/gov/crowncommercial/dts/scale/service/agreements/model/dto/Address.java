@@ -33,4 +33,9 @@ public class Address {
    */
   private String countryName;
 
+  /**
+   * The country code.
+   */
+  private String countryCode;
+
 }
