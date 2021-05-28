@@ -1,14 +1,16 @@
 package uk.gov.crowncommercial.dts.scale.service.agreements.converter;
 
+import static uk.gov.crowncommercial.dts.scale.service.agreements.config.Constants.OCDS_ROLE_FRAMEWORK_OWNER;
+import java.util.Collections;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import org.modelmapper.AbstractConverter;
 import org.springframework.stereotype.Component;
-import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.Address;
+import lombok.RequiredArgsConstructor;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.ContactPoint;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.Organization;
-import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.OrganizationDetail;
-import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.OrganizationIdentifier;
+import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.PartyRole;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.CommercialAgreementOrgRole;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.ContactDetail;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.ContactPointCommercialAgreementOrgRole;
@@ -19,15 +21,22 @@ import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.Organisa
  * <code>Organization</code>, based on the owner role (if present).
  */
 @Component
+@RequiredArgsConstructor
 public class AgreementOwnerConverter
     extends AbstractConverter<Set<CommercialAgreementOrgRole>, Organization> {
+
+  static final String FRAMEWORK_OWNER = "frameworkOwner";
+
+  private final ConverterUtils converterUtils;
 
   @Override
   protected Organization convert(final Set<CommercialAgreementOrgRole> source) {
 
-    Optional<CommercialAgreementOrgRole> optOrgRole = source.stream()
-        .filter(c -> c.getRoleType() != null && c.getRoleType().getName().equalsIgnoreCase("owner"))
-        .findFirst();
+    Optional<CommercialAgreementOrgRole> optOrgRole =
+        source.stream()
+            .filter(c -> c.getRoleType() != null
+                && Objects.equals(OCDS_ROLE_FRAMEWORK_OWNER, c.getRoleType().getName()))
+            .findFirst();
 
     if (optOrgRole.isPresent()) {
       CommercialAgreementOrgRole orgRole = optOrgRole.get();
@@ -50,64 +59,23 @@ public class AgreementOwnerConverter
         contactPoint.setFaxNumber(contactDetail.getFaxNumber());
         contactPoint.setUrl(contactDetail.getUrl());
 
-        // Address
-        Address address = new Address();
-        address.setCountryCode(contactDetail.getCountryCode());
-        address.setPostalCode(contactDetail.getPostalCode());
-        address.setRegion(contactDetail.getRegion());
-        address.setStreetAddress(contactDetail.getStreetAddress());
-        address.setLocality(contactDetail.getLocality());
-        // Country code is not in the DB. Trev has no plans to add it unless required
-        // address.setCountryName(null);
-
         owner.setContactPoint(contactPoint);
-        owner.setAddress(address);
+        owner.setAddress(converterUtils.convertContactDetailToAddress(contactDetail));
       }
-
-      // OrganizationIdentifier
-      OrganizationIdentifier identifier = new OrganizationIdentifier();
-      identifier.setLegalName(org.getLegalName());
-      identifier.setUri(org.getUri());
-      identifier.setId(org.getEntityId());
-      // data needs to match the Scheme enum values (Trev is going to see if he can get this)
-      // if so will also need a Scheme converter
-      // identifier.setScheme(org.getRegistryCode());
-
-
-      // OrganizationDetail
-      OrganizationDetail detail = new OrganizationDetail();
-      detail.setActive(org.getIsActive());
-      detail.setIsVcse(org.getIsVcse());
-      detail.setCreationDate(org.getIncorporationDate());
-      detail.setCompanyType(org.getBusinessType());
-      detail.setCountryCode(org.getIncorporationCountry());
-      detail.setStatus(org.getStatus());
-      detail.setScale(null);
 
       // Trev thinks this should be a concatenation of these values (but see registry_code/scheme
       // issue above)
       owner.setId((org.getRegistryCode() == null ? "TODO" : org.getRegistryCode()) + "-"
           + org.getEntityId());
       owner.setName(org.getLegalName());
-      owner.setIdentifier(identifier);
-      owner.setDetails(detail);
-
-      // No additional identifier data available (confirmed by Trev)
-      // owner.setAdditionalIdentifiers(null);
-
-      // Role would be 'owner' - but that does not exist (waiting for confirmation from Dave that
-      // this is ok)
-      // owner.setRoles(null);
-      // Note: Dave has added 'frameworkOwner' role to
-      // https://raw.githubusercontent.com/Crown-Commercial-Service/ccs-api-definitions-common/main/CCS_OCDS_Standards/CCS-OCDS_CodeLists.yaml#/components/schemas/PartyRoles'
-      // Think it should be this
-
+      owner.setIdentifier(converterUtils.convertOrgToOrgId(org));
+      owner.setDetails(converterUtils.convertOrgToOrgDetail(org));
+      owner.setRoles(Collections.singleton(PartyRole.FRAMEWORK_OWNER));
       return owner;
 
     } else {
       return null;
     }
-
   }
 
 }

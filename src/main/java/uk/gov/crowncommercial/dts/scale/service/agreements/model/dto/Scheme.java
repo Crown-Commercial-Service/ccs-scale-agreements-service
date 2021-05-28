@@ -35,6 +35,9 @@ public enum Scheme {
   GB_LANI,
 
   @JsonProperty("GB-NHS")
-  GB_NHS;
+  GB_NHS,
+
+  @JsonProperty("GB-SRS")
+  GB_SRS;
 
 }
