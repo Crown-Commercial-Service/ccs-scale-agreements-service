@@ -25,8 +25,6 @@ import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.Organisa
 public class AgreementOwnerConverter
     extends AbstractConverter<Set<CommercialAgreementOrgRole>, Organization> {
 
-  static final String FRAMEWORK_OWNER = "frameworkOwner";
-
   private final ConverterUtils converterUtils;
 
   @Override
