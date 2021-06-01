@@ -38,6 +38,9 @@ public enum Scheme {
   GB_NHS,
 
   @JsonProperty("GB-SRS")
-  GB_SRS;
+  GB_SRS,
+
+  @JsonProperty("US-DUNS")
+  US_DUNS,
 
 }
