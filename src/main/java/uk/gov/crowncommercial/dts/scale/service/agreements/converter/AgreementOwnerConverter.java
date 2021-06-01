@@ -62,11 +62,7 @@ public class AgreementOwnerConverter
         owner.setContactPoint(contactPoint);
         owner.setAddress(converterUtils.convertContactDetailToAddress(contactDetail));
       }
-
-      // Trev thinks this should be a concatenation of these values (but see registry_code/scheme
-      // issue above)
-      owner.setId((org.getRegistryCode() == null ? "TODO" : org.getRegistryCode()) + "-"
-          + org.getEntityId());
+      owner.setId(converterUtils.buildOrgId(org.getRegistryCode(), org.getEntityId()));
       owner.setName(org.getLegalName());
       owner.setIdentifier(converterUtils.convertOrgToOrgId(org));
       owner.setDetails(converterUtils.convertOrgToOrgDetail(org));

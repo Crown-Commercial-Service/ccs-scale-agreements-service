@@ -109,4 +109,17 @@ public class ConverterUtils {
     return identifier;
   }
 
+  /**
+   * Builds an organisation identifier from the registry code (scheme in the API) concatenated with
+   * the entity ID. Inserts 'UNKOWN' placeholders if either / both are null
+   *
+   * @param registryCode
+   * @param entityId
+   * @return the org ID, e.g. "GB-COH-001"
+   */
+  public String buildOrgId(String registryCode, String entityId) {
+    return (registryCode == null ? "SCHEME-UNKNOWN" : registryCode) + "-"
+        + (entityId == null ? "ID-UNKNOWN" : entityId);
+  }
+
 }

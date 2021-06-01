@@ -28,8 +28,7 @@ public class LotSupplierOrgConverter extends AbstractConverter<LotOrganisationRo
 
     final Organization lotSupplier = new Organization();
     lotSupplier.setName(org.getLegalName());
-    lotSupplier.setId(
-        (org.getRegistryCode() == null ? "TODO" : org.getRegistryCode()) + "-" + org.getEntityId());
+    lotSupplier.setId(converterUtils.buildOrgId(org.getRegistryCode(), org.getEntityId()));
     lotSupplier.setIdentifier(converterUtils.convertOrgToOrgId(org));
     lotSupplier.setRoles(Collections.singleton(PartyRole.SUPPLIER));
     contactPointLogOrgRoles.stream().filter(ContactPointLotOrgRole::getPrimary).findFirst()
