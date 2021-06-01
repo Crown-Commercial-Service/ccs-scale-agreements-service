@@ -13,6 +13,11 @@ import lombok.Data;
 public class OrganizationDetail {
 
   /**
+   * The size or scale of the organization.
+   */
+  private String scale;
+
+  /**
    * Date of organisation creation
    */
   @DateTimeFormat(iso = ISO.DATE)
@@ -27,12 +32,6 @@ public class OrganizationDetail {
    * Type of company
    */
   private String companyType;
-
-  /**
-   * Is company SME (Small Medium Enterprise)?
-   */
-  @JsonProperty("is_sme")
-  private Boolean isSme;
 
   /**
    * Is company voluntary, community and social enterprise

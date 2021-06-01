@@ -1,16 +1,17 @@
 package uk.gov.crowncommercial.dts.scale.service.agreements.converter;
 
-import lombok.experimental.UtilityClass;
+import org.springframework.stereotype.Component;
 import lombok.extern.slf4j.Slf4j;
-import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.ContactPoint;
+import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.*;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.ContactDetail;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.ContactPointLotOrgRole;
+import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.Organisation;
 
 /**
  * Common conversion utilities
  */
 @Slf4j
-@UtilityClass
+@Component
 public class ConverterUtils {
 
   /**
@@ -23,18 +24,24 @@ public class ConverterUtils {
    * @param s
    * @return the enum instance or null
    */
-  public static <T extends Enum<T>> T enumFromString(final Class<T> enumClass, final String s) {
+  public <T extends Enum<T>> T enumFromString(final Class<T> enumClass, final String s) {
 
     if (s == null || s.trim().length() == 0) {
       log.debug("String is null or empty and cannot be converted to enum type {}", enumClass);
       return null;
     }
     try {
-      return Enum.valueOf(enumClass, s.toUpperCase().replace('-', '_'));
+      return Enum.valueOf(enumClass, camelToSnakeCase(s).toUpperCase().replace('-', '_'));
     } catch (final Exception e) {
       log.warn("String '{}' cannot be converted to enum type {}", s, enumClass);
       return null;
     }
+  }
+
+  public static String camelToSnakeCase(String str) {
+    String regex = "([a-z])([A-Z]+)";
+    String replacement = "$1_$2";
+    return str.replaceAll(regex, replacement);
   }
 
   /**
@@ -43,8 +50,7 @@ public class ConverterUtils {
    * @param source
    * @return a contact point
    */
-  public static ContactPoint convertFromContactPointLotOrgRole(
-      final ContactPointLotOrgRole source) {
+  public ContactPoint convertContactPointLotOrgRole(final ContactPointLotOrgRole source) {
     final ContactDetail contactDetail = source.getContactDetail();
     final ContactPoint contactPoint = new ContactPoint();
     contactPoint.setName(source.getContactPointName());
@@ -53,6 +59,67 @@ public class ConverterUtils {
     contactPoint.setFaxNumber(contactDetail.getFaxNumber());
     contactPoint.setUrl(contactDetail.getUrl());
     return contactPoint;
+  }
+
+  /**
+   * Extracts the detail from a DB {@link Organisation} into an {@link OrganizationDetail}
+   *
+   * @param org
+   * @return organization detail
+   */
+  public OrganizationDetail convertOrgToOrgDetail(final Organisation org) {
+    final OrganizationDetail orgDetail = new OrganizationDetail();
+    orgDetail.setCreationDate(org.getIncorporationDate());
+    orgDetail.setCountryCode(org.getIncorporationCountry());
+    orgDetail.setCompanyType(org.getBusinessType());
+    orgDetail.setIsVcse(org.getIsVcse());
+    orgDetail.setStatus(org.getStatus());
+    orgDetail.setActive(org.getIsActive());
+    return orgDetail;
+  }
+
+  /**
+   * Converts a {@link ContactDetail} into an {@link Address}
+   *
+   * @param contactDetail
+   * @return an address
+   */
+  public Address convertContactDetailToAddress(ContactDetail contactDetail) {
+    final Address address = new Address();
+    address.setStreetAddress(contactDetail.getStreetAddress());
+    address.setLocality(contactDetail.getLocality());
+    address.setRegion(contactDetail.getRegion());
+    address.setPostalCode(contactDetail.getPostalCode());
+    address.setCountryName(contactDetail.getCountryCode());
+    return address;
+  }
+
+  /**
+   * Converts a {@link Organisation} to an {@link OrganizationIdentifier}
+   *
+   * @param org
+   * @return an org identifier
+   */
+  public OrganizationIdentifier convertOrgToOrgId(final Organisation org) {
+    OrganizationIdentifier identifier = new OrganizationIdentifier();
+    identifier.setLegalName(org.getLegalName());
+    identifier.setUri(org.getUri());
+    identifier.setId(org.getEntityId());
+    identifier.setScheme(enumFromString(Scheme.class, org.getRegistryCode()));
+    return identifier;
+  }
+
+  /**
+   * Builds an organisation identifier from the registry code (scheme in the API) concatenated with
+   * the entity ID. Inserts 'UNKOWN' placeholders if either / both are null
+   *
+   * @param registryCode
+   * @param entityId
+   * @return the org ID, e.g. "GB-COH-001"
+   */
+  public String buildOrgId(String registryCode, String entityId) {
+    return (registryCode == null ? "SCHEME-UNKNOWN" : registryCode) + "-"
+        + (entityId == null ? "ID-UNKNOWN" : entityId);
   }
 
 }

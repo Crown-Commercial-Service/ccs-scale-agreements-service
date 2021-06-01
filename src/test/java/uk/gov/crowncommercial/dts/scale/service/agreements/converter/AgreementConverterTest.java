@@ -1,9 +1,9 @@
 package uk.gov.crowncommercial.dts.scale.service.agreements.converter;
 
 import static java.lang.String.format;
+import static org.hamcrest.CoreMatchers.hasItems;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.greaterThanOrEqualTo;
-import static org.hamcrest.Matchers.hasItems;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.when;
 import java.math.BigDecimal;
@@ -26,10 +26,11 @@ import uk.gov.crowncommercial.dts.scale.service.agreements.service.AgreementServ
 @SpringBootTest(classes = {AgreementConverter.class, ModelMapper.class, LotTypeConverter.class,
     DataTypeConverter.class, EvaluationTypeConverter.class, RelatedLotConverter.class,
     SectorConverter.class, AgreementUpdateConverter.class, RouteToMarketConverter.class,
-    AgreementContactsConverter.class, LotSupplierPropertyMap.class, OrganisationConverter.class,
-    LotContactsConverter.class, SupplierStatusConverter.class})
+    AgreementContactsConverter.class, LotSupplierPropertyMap.class, LotSupplierOrgConverter.class,
+    LotContactsConverter.class, SupplierStatusConverter.class, TimestampConverter.class,
+    AgreementOwnerConverter.class, ConverterUtils.class})
 @ActiveProfiles("test")
-public class AgreementConverterTest {
+class AgreementConverterTest {
 
   private static final LocalDate START_DATE = LocalDate.now();
   private static final LocalDate END_DATE = LocalDate.now();
@@ -82,7 +83,13 @@ public class AgreementConverterTest {
   private static final String DOCUMENT_TYPE = "Document Type";
   private static final String DOCUMENT_NAME = "Document Name";
   private static final String DOCUMENT_URL = "http://document";
+  private static final String DOCUMENT_FORMAT = "text/html";
+  private static final String DOCUMENT_LANGUAGE = "en_GB";
+  private static final String DOCUMENT_DESCRIPTION = "Document Description";
   private static final Integer DOCUMENT_VERSION = 1;
+  private static final Timestamp DOCUMENT_PUBLISHED_DATE =
+      new Timestamp(System.currentTimeMillis());
+  private static final Timestamp DOCUMENT_MODIFIED_DATE = new Timestamp(System.currentTimeMillis());
 
   // Contact detail value templates
   private static final String CONTACT_EMAIL = "cd%d@example.com";
@@ -98,7 +105,8 @@ public class AgreementConverterTest {
   private static final String CONTACT_URL = "https://procurement.acmetrading%d.com";
 
   // Organisation value templates
-  private static final String ORG_ENTITY_ID = "entity-id-%d";
+  private static final String ORG_ID = "%s-%d";
+  private static final String ORG_ENTITY_ID = "%d";
   private static final String ORG_LEGAL_NAME = "ACME Trading Ltd %d";
   private static final String ORG_URI = "https://www.acmetrading%d.com";
   private static final String ORG_COMPANY_TYPE = "Small%d";
@@ -110,7 +118,7 @@ public class AgreementConverterTest {
   private AgreementService service;
 
   @Test
-  public void testAgreementDetail() {
+  void testAgreementDetail() {
 
     Set<Lot> lots = new HashSet<>();
     lots.add(createTestLot("Products"));
@@ -139,35 +147,64 @@ public class AgreementConverterTest {
     LotSummary lotSummary = agreement.getLots().stream().findFirst().get();
     assertEquals(LOT_NAME, lotSummary.getName());
     assertEquals(LOT_NUMBER, lotSummary.getNumber());
+
+    Organization owner = agreement.getOwner();
+    assertEquals(format(ORG_ID, "GB-COH", 3), owner.getId());
+    assertEquals(format(ORG_LEGAL_NAME, 3), owner.getName());
+
+    // Org detail
+    assertEquals(LocalDate.parse("0003-03-03"), owner.getDetails().getCreationDate());
+    assertEquals("GB", owner.getDetails().getCountryCode());
+    assertEquals(format(ORG_COMPANY_TYPE, 3), owner.getDetails().getCompanyType());
+
+    // Org address
+    assertEquals(format(CONTACT_STREET_ADDRESS, 3), owner.getAddress().getStreetAddress());
+    assertEquals(format(CONTACT_LOCALITY, 3), owner.getAddress().getLocality());
+    assertEquals(format(CONTACT_REGION, 3), owner.getAddress().getRegion());
+    assertEquals(format(CONTACT_POSTCODE, 3), owner.getAddress().getPostalCode());
+
+    // Org identifier
+    assertEquals("3", owner.getIdentifier().getId());
+    assertEquals(format(ORG_LEGAL_NAME, 3), owner.getIdentifier().getLegalName());
+    assertEquals(Scheme.GB_COH, owner.getIdentifier().getScheme());
+    assertEquals(format(ORG_URI, 3), owner.getIdentifier().getUri());
+
+    // Org contact point
+    assertEquals(format(CONTACT_NAME, 3), owner.getContactPoint().getName());
+    assertEquals(format(CONTACT_EMAIL, 3), owner.getContactPoint().getEmail());
+    assertEquals(format(CONTACT_PHONE, 3), owner.getContactPoint().getTelephone());
+    assertEquals(format(CONTACT_FAX, 3), owner.getContactPoint().getFaxNumber());
+    assertEquals(format(CONTACT_FAX, 3), owner.getContactPoint().getFaxNumber());
+    assertEquals(format(CONTACT_URL, 3), owner.getContactPoint().getUrl());
   }
 
   @Test
-  public void testLotDetailProduct() {
+  void testLotDetailProduct() {
     LotDetail lotDetail = converter.convertLotToDTO(createTestLot("Products"));
     testLot(lotDetail);
   }
 
   @Test
-  public void testLotDetailService() {
+  void testLotDetailService() {
     LotDetail lotDetail = converter.convertLotToDTO(createTestLot("Services"));
     assertEquals(LotType.SERVICE, lotDetail.getType());
   }
 
   @Test
-  public void testLotDetailProductAndService() {
+  void testLotDetailProductAndService() {
     LotDetail lotDetail = converter.convertLotToDTO(createTestLot("Products and Services"));
     assertEquals(LotType.PRODUCT_AND_SERVICE, lotDetail.getType());
   }
 
   @Test
-  public void testLotDetailProductCollection() {
+  void testLotDetailProductCollection() {
     Collection<LotDetail> lots =
         converter.convertLotsToDTOs(Arrays.asList(createTestLot("Products")));
     testLot(lots.stream().findFirst().get());
   }
 
   @Test
-  public void testAgreementUpdateCollection() {
+  void testAgreementUpdateCollection() {
     Collection<AgreementUpdate> updates =
         converter.convertAgreementUpdatesToDTOs(Arrays.asList(createCommercialAgreementUpdate()));
     AgreementUpdate update = updates.stream().findFirst().get();
@@ -177,18 +214,22 @@ public class AgreementConverterTest {
   }
 
   @Test
-  public void testAgreementDocumentCollection() {
+  void testAgreementDocumentCollection() {
     Collection<Document> documents = converter
         .convertAgreementDocumentsToDTOs(Arrays.asList(createCommercialAgreementDocument()));
     Document document = documents.stream().findFirst().get();
     assertEquals(DOCUMENT_TYPE, document.getDocumentType());
     assertEquals(DOCUMENT_NAME, document.getName());
+    assertEquals(DOCUMENT_DESCRIPTION, document.getDescription());
     assertEquals(DOCUMENT_URL, document.getUrl());
-    assertEquals(DOCUMENT_VERSION, document.getVersion());
+    assertEquals(DOCUMENT_FORMAT, document.getFormat());
+    assertEquals(DOCUMENT_LANGUAGE, document.getLanguage());
+    assertEquals(DOCUMENT_PUBLISHED_DATE.toInstant(), document.getPublishedDate());
+    assertEquals(DOCUMENT_MODIFIED_DATE.toInstant(), document.getModifiedDate());
   }
 
   @Test
-  public void testLotSuppliers() {
+  void testLotSuppliers() {
     Collection<LotSupplier> lotSuppliers =
         converter.convertLotOrgRolesToLotSupplierDTOs(createLotOrganisationRoles(3));
 
@@ -206,7 +247,7 @@ public class AgreementConverterTest {
 
     Organization org = new Organization();
     org.setName(format(ORG_LEGAL_NAME, instance));
-    org.setId(format(ORG_ENTITY_ID, instance));
+    org.setId(format(ORG_ID, "GB-COH", instance));
     org.setRoles(Collections.singleton(PartyRole.SUPPLIER)); // TODO - check
 
     final OrganizationIdentifier orgIdentifier = new OrganizationIdentifier();
@@ -217,10 +258,9 @@ public class AgreementConverterTest {
     org.setIdentifier(orgIdentifier);
 
     OrganizationDetail orgDetail = new OrganizationDetail();
-    orgDetail.setCreationDate(LocalDate.of(instance, 1, 1));
+    orgDetail.setCreationDate(LocalDate.of(instance, instance, instance));
     orgDetail.setCountryCode("GB");
     orgDetail.setCompanyType(format(ORG_COMPANY_TYPE, instance));
-    orgDetail.setIsSme(true);
     orgDetail.setIsVcse(true);
     orgDetail.setStatus("active");
     orgDetail.setActive(true);
@@ -439,6 +479,11 @@ public class AgreementConverterTest {
     document.setName(DOCUMENT_NAME);
     document.setUrl(DOCUMENT_URL);
     document.setVersion(DOCUMENT_VERSION);
+    document.setFormat(DOCUMENT_FORMAT);
+    document.setLanguage(DOCUMENT_LANGUAGE);
+    document.setDescription(DOCUMENT_DESCRIPTION);
+    document.setPublishedDate(DOCUMENT_PUBLISHED_DATE);
+    document.setModifiedDate(DOCUMENT_MODIFIED_DATE);
     return document;
   }
 
@@ -456,7 +501,7 @@ public class AgreementConverterTest {
       cpReason.setName(format(CONTACT_REASON, i));
       cpCaOrgRole.setContactPointName(format(CONTACT_NAME, i));
       cpCaOrgRole.setContactPointReason(cpReason);
-      cpCaOrgRole.setContactDetail(createContactDetail(i, false));
+      cpCaOrgRole.setContactDetail(createContactDetail(i, true));
 
       // Spread over 2 CP CA Org Role sets
       if (i <= contactPointCount - 1) {
@@ -468,8 +513,14 @@ public class AgreementConverterTest {
 
     CommercialAgreementOrgRole caOrgRole1 = new CommercialAgreementOrgRole();
     CommercialAgreementOrgRole caOrgRole2 = new CommercialAgreementOrgRole();
+    RoleType roleTypeFrameworkOwner = new RoleType();
+    roleTypeFrameworkOwner.setName("frameworkOwner");
+    roleTypeFrameworkOwner.setRoleDomain("COMMERCIAL_AGREEMENT_ORGANISATION");
+
     caOrgRole1.setContactPointCommercialAgreementOrgRoles(cpCaOrgRoles1);
     caOrgRole2.setContactPointCommercialAgreementOrgRoles(cpCaOrgRoles2);
+    caOrgRole2.setRoleType(roleTypeFrameworkOwner);
+    caOrgRole2.setOrganisation(createOrganisation(3));
 
     Set<CommercialAgreementOrgRole> commercialAgreementOrgRoles = new HashSet<>();
     commercialAgreementOrgRoles.add(caOrgRole1);
@@ -529,7 +580,7 @@ public class AgreementConverterTest {
     org.setUri(format(ORG_URI, instance));
     org.setRegistryCode("GB-COH");
 
-    org.setIncorporationDate(LocalDate.of(instance, 1, 1));
+    org.setIncorporationDate(LocalDate.of(instance, instance, instance));
     org.setIncorporationCountry("GB");
     org.setBusinessType(format(ORG_COMPANY_TYPE, instance));
     org.setIsSme(true);

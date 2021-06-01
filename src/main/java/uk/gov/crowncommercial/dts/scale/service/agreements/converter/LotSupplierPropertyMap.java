@@ -13,13 +13,13 @@ import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.LotOrgan
 @RequiredArgsConstructor
 public class LotSupplierPropertyMap extends PropertyMap<LotOrganisationRole, LotSupplier> {
 
-  private final OrganisationConverter organisationConverter;
+  private final LotSupplierOrgConverter lotSupplierOrgConverter;
   private final LotContactsConverter lotContactsConverter;
   private final SupplierStatusConverter supplierStatusConverter;
 
   @Override
   protected void configure() {
-    using(organisationConverter).map(source, destination.getOrganization());
+    using(lotSupplierOrgConverter).map(source, destination.getOrganization());
     using(lotContactsConverter).map(source.getContactPointLotOrgRoles(),
         destination.getLotContacts());
     using(supplierStatusConverter).map(source.getOrganisation().getStatus(),

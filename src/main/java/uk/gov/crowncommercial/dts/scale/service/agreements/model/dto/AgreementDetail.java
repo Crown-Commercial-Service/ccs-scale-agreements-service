@@ -41,6 +41,11 @@ public class AgreementDetail {
   private String detailUrl;
 
   /**
+   * A party (organization).
+   */
+  private Organization owner;
+
+  /**
    * Contacts.
    */
   private Collection<Contact> contacts;

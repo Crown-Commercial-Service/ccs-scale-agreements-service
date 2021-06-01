@@ -1,6 +1,7 @@
 package uk.gov.crowncommercial.dts.scale.service.agreements.model.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import uk.gov.crowncommercial.dts.scale.service.agreements.config.Constants;
 
 /**
  * Party role
@@ -35,6 +36,9 @@ public enum PartyRole {
   REVIEW_BODY,
 
   @JsonProperty("interestedParty")
-  INTERESTED_PARTY;
+  INTERESTED_PARTY,
+
+  @JsonProperty(Constants.OCDS_ROLE_FRAMEWORK_OWNER)
+  FRAMEWORK_OWNER;
 
 }
