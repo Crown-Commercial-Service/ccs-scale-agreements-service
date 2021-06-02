@@ -119,7 +119,7 @@ class AgreementConverterTest {
   private static final String RELATED_LOT_NUMBER = "Lot 4";
   private static final String RELATED_LOT_RELATIONSHIP = "FurtherCompetitionWhenBudgetExceeded";
 
-  private static final String UPDATE_NAME = "Update Name";
+  private static final String UPDATE_DESCRIPTION = "Update Description";
   private static final LocalDate UPDATE_PUBLISHED_DATE = LocalDate.now();
   private static final Timestamp UPDATE_PUBLISHED_DATE_TS = Timestamp
       .from(Instant.from(UPDATE_PUBLISHED_DATE.atStartOfDay(ZoneId.systemDefault()).toInstant()));
@@ -262,7 +262,7 @@ class AgreementConverterTest {
     Collection<AgreementUpdate> updates =
         converter.convertAgreementUpdatesToDTOs(Arrays.asList(createCommercialAgreementUpdate()));
     AgreementUpdate update = updates.stream().findFirst().get();
-    assertEquals(UPDATE_NAME, update.getText());
+    assertEquals(UPDATE_DESCRIPTION, update.getText());
     assertEquals(UPDATE_PUBLISHED_DATE, update.getDate());
     assertEquals(UPDATE_URL, update.getLinkUrl());
   }
@@ -521,7 +521,7 @@ class AgreementConverterTest {
 
   private CommercialAgreementUpdate createCommercialAgreementUpdate() {
     CommercialAgreementUpdate update = new CommercialAgreementUpdate();
-    update.setName(UPDATE_NAME);
+    update.setDescription(UPDATE_DESCRIPTION);
     update.setPublishedDate(UPDATE_PUBLISHED_DATE_TS);
     update.setUrl(UPDATE_URL);
     return update;
