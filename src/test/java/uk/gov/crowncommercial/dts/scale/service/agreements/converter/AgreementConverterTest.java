@@ -28,7 +28,7 @@ import uk.gov.crowncommercial.dts.scale.service.agreements.service.AgreementServ
     SectorConverter.class, AgreementUpdateConverter.class, RouteToMarketConverter.class,
     AgreementContactsConverter.class, LotSupplierPropertyMap.class, LotSupplierOrgConverter.class,
     LotContactsConverter.class, SupplierStatusConverter.class, TimestampConverter.class,
-    AgreementOwnerConverter.class, ConverterUtils.class})
+    AgreementOwnerConverter.class, AgreementBenefitConverter.class, ConverterUtils.class})
 @ActiveProfiles("test")
 class AgreementConverterTest {
 
@@ -74,7 +74,7 @@ class AgreementConverterTest {
   private static final String RELATED_LOT_NUMBER = "Lot 4";
   private static final String RELATED_LOT_RELATIONSHIP = "FurtherCompetitionWhenBudgetExceeded";
 
-  private static final String UPDATE_NAME = "Update Name";
+  private static final String UPDATE_DESCRIPTION = "Update Description";
   private static final LocalDate UPDATE_PUBLISHED_DATE = LocalDate.now();
   private static final Timestamp UPDATE_PUBLISHED_DATE_TS = Timestamp
       .from(Instant.from(UPDATE_PUBLISHED_DATE.atStartOfDay(ZoneId.systemDefault()).toInstant()));
@@ -111,6 +111,11 @@ class AgreementConverterTest {
   private static final String ORG_URI = "https://www.acmetrading%d.com";
   private static final String ORG_COMPANY_TYPE = "Small%d";
 
+  // Benefits
+  private static final String BENEFIT_ONE = "Benefit 1";
+  private static final String BENEFIT_TWO = "Benefit 2";
+
+
   @Autowired
   AgreementConverter converter;
 
@@ -132,7 +137,7 @@ class AgreementConverterTest {
     ca.setDetailUrl(AGREEMENT_URL);
     ca.setLots(lots);
     ca.setOrganisationRoles(createCommercialAgreementOrgRoles(3));
-
+    ca.setBenefits(createBenefits());
     AgreementDetail agreement = converter.convertAgreementToDTO(ca);
 
     assertEquals(AGREEMENT_NUMBER, agreement.getNumber());
@@ -176,6 +181,10 @@ class AgreementConverterTest {
     assertEquals(format(CONTACT_FAX, 3), owner.getContactPoint().getFaxNumber());
     assertEquals(format(CONTACT_FAX, 3), owner.getContactPoint().getFaxNumber());
     assertEquals(format(CONTACT_URL, 3), owner.getContactPoint().getUrl());
+
+    // Benefits (should be sorted by sequence order)
+    assertEquals(BENEFIT_ONE, agreement.getBenefits().stream().findFirst().get());
+    assertEquals(BENEFIT_TWO, agreement.getBenefits().stream().skip(1).findFirst().get());
   }
 
   @Test
@@ -208,7 +217,7 @@ class AgreementConverterTest {
     Collection<AgreementUpdate> updates =
         converter.convertAgreementUpdatesToDTOs(Arrays.asList(createCommercialAgreementUpdate()));
     AgreementUpdate update = updates.stream().findFirst().get();
-    assertEquals(UPDATE_NAME, update.getText());
+    assertEquals(UPDATE_DESCRIPTION, update.getText());
     assertEquals(UPDATE_PUBLISHED_DATE, update.getDate());
     assertEquals(UPDATE_URL, update.getLinkUrl());
   }
@@ -467,7 +476,7 @@ class AgreementConverterTest {
 
   private CommercialAgreementUpdate createCommercialAgreementUpdate() {
     CommercialAgreementUpdate update = new CommercialAgreementUpdate();
-    update.setName(UPDATE_NAME);
+    update.setDescription(UPDATE_DESCRIPTION);
     update.setPublishedDate(UPDATE_PUBLISHED_DATE_TS);
     update.setUrl(UPDATE_URL);
     return update;
@@ -621,6 +630,22 @@ class AgreementConverterTest {
     contact.setContactPoint(contactPoint);
 
     return contact;
+  }
+
+  private Set<CommercialAgreementBenefit> createBenefits() {
+
+    CommercialAgreementBenefit benefit1 = new CommercialAgreementBenefit();
+    benefit1.setDescription(BENEFIT_ONE);
+    benefit1.setSequence(1);
+
+    CommercialAgreementBenefit benefit2 = new CommercialAgreementBenefit();
+    benefit2.setDescription(BENEFIT_TWO);
+    benefit2.setSequence(2);
+
+    Set<CommercialAgreementBenefit> benefits = new HashSet<>();
+    benefits.add(benefit2);
+    benefits.add(benefit1);
+    return benefits;
   }
 
 }

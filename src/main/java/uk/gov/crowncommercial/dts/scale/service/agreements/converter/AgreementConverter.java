@@ -30,8 +30,8 @@ public class AgreementConverter {
   private final AgreementContactsConverter agreementContactsConverter;
   private final LotSupplierPropertyMap lotSupplierPropertyMap;
   private final TimestampConverter timestampConverter;
-
   private final AgreementOwnerConverter agreementOwnerConverter;
+  private final AgreementBenefitConverter agreementBenefitConverter;
 
   @PostConstruct
   public void init() {
@@ -51,7 +51,9 @@ public class AgreementConverter {
         .addMappings(mapper -> mapper.using(agreementContactsConverter)
             .map(CommercialAgreement::getOrganisationRoles, AgreementDetail::setContacts))
         .addMappings(mapper -> mapper.using(agreementOwnerConverter)
-            .map(CommercialAgreement::getOrganisationRoles, AgreementDetail::setOwner));
+            .map(CommercialAgreement::getOrganisationRoles, AgreementDetail::setOwner))
+        .addMappings(mapper -> mapper.using(agreementBenefitConverter)
+            .map(CommercialAgreement::getBenefits, AgreementDetail::setBenefits));
 
     modelMapper.createTypeMap(LotOrganisationRole.class, LotSupplier.class)
         .addMappings(lotSupplierPropertyMap);

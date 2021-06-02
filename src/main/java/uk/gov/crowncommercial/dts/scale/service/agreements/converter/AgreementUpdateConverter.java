@@ -21,7 +21,7 @@ public class AgreementUpdateConverter
     update.setDate(source.getPublishedDate() != null
         ? source.getPublishedDate().toLocalDateTime().toLocalDate()
         : null);
-    update.setText(source.getName());
+    update.setText(source.getDescription());
     update.setLinkUrl(source.getUrl());
     return update;
   }
