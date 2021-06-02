@@ -7,8 +7,17 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import lombok.RequiredArgsConstructor;
-import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.*;
-import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.*;
+import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.AgreementDetail;
+import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.AgreementSummary;
+import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.AgreementUpdate;
+import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.Document;
+import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.LotDetail;
+import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.LotSupplier;
+import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.CommercialAgreement;
+import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.CommercialAgreementDocument;
+import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.CommercialAgreementUpdate;
+import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.Lot;
+import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.LotOrganisationRole;
 
 /**
  * Encapsulates conversion logic between DTOs and Entities.
@@ -30,8 +39,8 @@ public class AgreementConverter {
   private final AgreementContactsConverter agreementContactsConverter;
   private final LotSupplierPropertyMap lotSupplierPropertyMap;
   private final TimestampConverter timestampConverter;
-
   private final AgreementOwnerConverter agreementOwnerConverter;
+  private final AgreementBenefitConverter agreementBenefitConverter;
 
   @PostConstruct
   public void init() {
@@ -51,7 +60,9 @@ public class AgreementConverter {
         .addMappings(mapper -> mapper.using(agreementContactsConverter)
             .map(CommercialAgreement::getOrganisationRoles, AgreementDetail::setContacts))
         .addMappings(mapper -> mapper.using(agreementOwnerConverter)
-            .map(CommercialAgreement::getOrganisationRoles, AgreementDetail::setOwner));
+            .map(CommercialAgreement::getOrganisationRoles, AgreementDetail::setOwner))
+        .addMappings(mapper -> mapper.using(agreementBenefitConverter)
+            .map(CommercialAgreement::getBenefits, AgreementDetail::setBenefits));
 
     modelMapper.createTypeMap(LotOrganisationRole.class, LotSupplier.class)
         .addMappings(lotSupplierPropertyMap);

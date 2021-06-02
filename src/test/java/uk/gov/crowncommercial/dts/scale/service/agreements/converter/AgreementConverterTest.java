@@ -11,7 +11,11 @@ import java.sql.Timestamp;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.stream.IntStream;
 import org.junit.jupiter.api.Test;
 import org.modelmapper.ModelMapper;
@@ -19,8 +23,49 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
-import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.*;
-import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.*;
+import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.Address;
+import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.AgreementDetail;
+import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.AgreementUpdate;
+import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.BuyingMethod;
+import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.Contact;
+import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.ContactPoint;
+import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.Document;
+import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.LotDetail;
+import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.LotRuleDTO;
+import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.LotSummary;
+import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.LotSupplier;
+import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.LotType;
+import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.NameValueType;
+import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.Organization;
+import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.OrganizationDetail;
+import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.OrganizationIdentifier;
+import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.PartyRole;
+import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.RelatedAgreementLot;
+import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.RouteToMarketDTO;
+import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.Scheme;
+import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.SupplierStatus;
+import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.TransactionData;
+import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.CommercialAgreement;
+import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.CommercialAgreementBenefit;
+import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.CommercialAgreementDocument;
+import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.CommercialAgreementOrgRole;
+import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.CommercialAgreementUpdate;
+import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.ContactDetail;
+import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.ContactPointCommercialAgreementOrgRole;
+import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.ContactPointLotOrgRole;
+import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.ContactPointReason;
+import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.Lot;
+import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.LotOrganisationRole;
+import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.LotRelatedLot;
+import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.LotRouteToMarket;
+import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.LotRouteToMarketKey;
+import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.LotRule;
+import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.LotRuleAttribute;
+import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.LotRuleTransactionObject;
+import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.Organisation;
+import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.RoleType;
+import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.RouteToMarket;
+import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.Sector;
 import uk.gov.crowncommercial.dts.scale.service.agreements.service.AgreementService;
 
 @SpringBootTest(classes = {AgreementConverter.class, ModelMapper.class, LotTypeConverter.class,
@@ -28,7 +73,7 @@ import uk.gov.crowncommercial.dts.scale.service.agreements.service.AgreementServ
     SectorConverter.class, AgreementUpdateConverter.class, RouteToMarketConverter.class,
     AgreementContactsConverter.class, LotSupplierPropertyMap.class, LotSupplierOrgConverter.class,
     LotContactsConverter.class, SupplierStatusConverter.class, TimestampConverter.class,
-    AgreementOwnerConverter.class, ConverterUtils.class})
+    AgreementOwnerConverter.class, AgreementBenefitConverter.class, ConverterUtils.class})
 @ActiveProfiles("test")
 class AgreementConverterTest {
 
@@ -111,6 +156,11 @@ class AgreementConverterTest {
   private static final String ORG_URI = "https://www.acmetrading%d.com";
   private static final String ORG_COMPANY_TYPE = "Small%d";
 
+  // Benefits
+  private static final String BENEFIT_ONE = "Benefit 1";
+  private static final String BENEFIT_TWO = "Benefit 2";
+
+
   @Autowired
   AgreementConverter converter;
 
@@ -132,7 +182,7 @@ class AgreementConverterTest {
     ca.setDetailUrl(AGREEMENT_URL);
     ca.setLots(lots);
     ca.setOrganisationRoles(createCommercialAgreementOrgRoles(3));
-
+    ca.setBenefits(createBenefits());
     AgreementDetail agreement = converter.convertAgreementToDTO(ca);
 
     assertEquals(AGREEMENT_NUMBER, agreement.getNumber());
@@ -176,6 +226,10 @@ class AgreementConverterTest {
     assertEquals(format(CONTACT_FAX, 3), owner.getContactPoint().getFaxNumber());
     assertEquals(format(CONTACT_FAX, 3), owner.getContactPoint().getFaxNumber());
     assertEquals(format(CONTACT_URL, 3), owner.getContactPoint().getUrl());
+
+    // Benefits (should be sorted by sequence order)
+    assertEquals(BENEFIT_ONE, agreement.getBenefits().stream().findFirst().get());
+    assertEquals(BENEFIT_TWO, agreement.getBenefits().stream().skip(1).findFirst().get());
   }
 
   @Test
@@ -621,6 +675,22 @@ class AgreementConverterTest {
     contact.setContactPoint(contactPoint);
 
     return contact;
+  }
+
+  private Set<CommercialAgreementBenefit> createBenefits() {
+
+    CommercialAgreementBenefit benefit1 = new CommercialAgreementBenefit();
+    benefit1.setDescription(BENEFIT_ONE);
+    benefit1.setSequence(1);
+
+    CommercialAgreementBenefit benefit2 = new CommercialAgreementBenefit();
+    benefit2.setDescription(BENEFIT_TWO);
+    benefit2.setSequence(2);
+
+    Set<CommercialAgreementBenefit> benefits = new HashSet<>();
+    benefits.add(benefit2);
+    benefits.add(benefit1);
+    return benefits;
   }
 
 }

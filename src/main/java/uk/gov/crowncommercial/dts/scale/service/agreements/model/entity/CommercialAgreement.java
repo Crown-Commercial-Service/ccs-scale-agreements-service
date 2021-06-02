@@ -59,4 +59,8 @@ public class CommercialAgreement {
   @OneToMany
   @JoinColumn(name = "commercial_agreement_id")
   Set<CommercialAgreementOrgRole> organisationRoles;
+
+  @OneToMany
+  @JoinColumn(name = "commercial_agreement_id")
+  Set<CommercialAgreementBenefit> benefits;
 }
