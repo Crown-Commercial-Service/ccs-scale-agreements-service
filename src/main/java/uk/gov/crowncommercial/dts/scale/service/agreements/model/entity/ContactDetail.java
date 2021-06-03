@@ -45,6 +45,9 @@ public class ContactDetail {
   @Column(name = "country_code")
   String countryCode;
 
+  @Column(name = "country_name")
+  String countryName;
+
   @Column(name = "uprn")
   Integer uprn;
 

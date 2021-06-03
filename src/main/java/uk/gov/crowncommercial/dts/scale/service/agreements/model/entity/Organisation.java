@@ -48,6 +48,9 @@ public class Organisation {
   @Column(name = "country_of_incorporation")
   String incorporationCountry;
 
+  @Column(name = "country_name")
+  String countryName;
+
   @Column(name = "is_sme")
   Boolean isSme;
 
