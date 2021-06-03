@@ -90,7 +90,8 @@ public class ConverterUtils {
     address.setLocality(contactDetail.getLocality());
     address.setRegion(contactDetail.getRegion());
     address.setPostalCode(contactDetail.getPostalCode());
-    address.setCountryName(contactDetail.getCountryCode());
+    address.setCountryCode(contactDetail.getCountryCode());
+    address.setCountryName(contactDetail.getCountryName());
     return address;
   }
 
