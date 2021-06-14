@@ -1,5 +1,8 @@
 package uk.gov.crowncommercial.dts.scale.service.agreements.model.dto;
 
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.stream.Collectors;
 import com.fasterxml.jackson.annotation.JsonValue;
 import lombok.RequiredArgsConstructor;
 
@@ -31,6 +34,10 @@ public enum BuyingMethod {
       }
     }
     return null;
+  }
+
+  public static Collection<String> names() {
+    return Arrays.stream(values()).map(BuyingMethod::getName).collect(Collectors.toSet());
   }
 
 }

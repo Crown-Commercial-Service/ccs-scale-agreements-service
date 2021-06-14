@@ -1,5 +1,6 @@
 package uk.gov.crowncommercial.dts.scale.service.agreements.converter.dto;
 
+import static java.util.Optional.ofNullable;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.stereotype.Component;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.BuyingMethod;
@@ -10,9 +11,12 @@ import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.BuyingMetho
 @Component
 public class BuyingMethodConverter implements Converter<String, BuyingMethod> {
 
+  static final String ERR_MSG_TEMPLATE = "Buying method value invalid. Valid values are: %s";
+
   @Override
   public BuyingMethod convert(String name) {
-    return BuyingMethod.fromName(name);
+    return ofNullable(BuyingMethod.fromName(name)).orElseThrow(
+        () -> new IllegalArgumentException(String.format(ERR_MSG_TEMPLATE, BuyingMethod.names())));
   }
 
 }
