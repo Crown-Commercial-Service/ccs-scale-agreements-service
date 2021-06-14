@@ -1,21 +1,36 @@
 package uk.gov.crowncommercial.dts.scale.service.agreements.model.dto;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonValue;
+import lombok.RequiredArgsConstructor;
 
 /**
  * Buying Methods.
  */
+@RequiredArgsConstructor
 public enum BuyingMethod {
 
-  @JsonProperty("DirectAward")
-  DIRECT_AWARD,
+  DIRECT_AWARD("DirectAward"),
 
-  @JsonProperty("FurtherCompetition")
-  FURTHER_COMPETITION,
+  FURTHER_COMPETITION("FurtherCompetition"),
 
-  @JsonProperty("MarketPlace")
-  MARKETPLACE,
+  MARKETPLACE("MarketPlace"),
 
-  @JsonProperty("EAuction")
-  E_AUCTION
+  E_AUCTION("EAuction");
+
+  private final String name;
+
+  @JsonValue
+  public String getName() {
+    return name;
+  }
+
+  public static BuyingMethod fromName(String name) {
+    for (BuyingMethod buyingMethod : values()) {
+      if (buyingMethod.name.equals(name)) {
+        return buyingMethod;
+      }
+    }
+    return null;
+  }
+
 }
