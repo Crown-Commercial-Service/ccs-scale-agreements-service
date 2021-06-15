@@ -16,7 +16,7 @@ public enum BuyingMethod {
 
   FURTHER_COMPETITION("FurtherCompetition"),
 
-  MARKETPLACE("MarketPlace"),
+  MARKETPLACE("Marketplace"),
 
   E_AUCTION("EAuction");
 
@@ -29,7 +29,7 @@ public enum BuyingMethod {
 
   public static BuyingMethod fromName(String name) {
     for (BuyingMethod buyingMethod : values()) {
-      if (buyingMethod.name.equals(name)) {
+      if (buyingMethod.name.equalsIgnoreCase(name)) {
         return buyingMethod;
       }
     }
@@ -37,7 +37,7 @@ public enum BuyingMethod {
   }
 
   public static Collection<String> names() {
-    return Arrays.stream(values()).map(BuyingMethod::getName).collect(Collectors.toSet());
+    return Arrays.stream(values()).map(BuyingMethod::getName).collect(Collectors.toList());
   }
 
 }
