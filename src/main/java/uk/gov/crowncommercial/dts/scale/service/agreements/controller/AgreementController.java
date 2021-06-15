@@ -2,9 +2,11 @@ package uk.gov.crowncommercial.dts.scale.service.agreements.controller;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -49,10 +51,16 @@ public class AgreementController {
 
   @GetMapping("/agreements/{ca-number}/lots")
   public Collection<LotDetail> getAgreementLots(
-      @PathVariable(value = "ca-number") final String caNumber) {
-    log.debug("getAgreementLots: caNumber={}", caNumber);
+      @PathVariable(value = "ca-number") final String caNumber,
+      @RequestParam Optional<BuyingMethod> buyingMethod) {
+    log.debug("getAgreementLots: caNumber={}, buyingMethod={}", caNumber, buyingMethod);
     final CommercialAgreement ca = getAgreement(caNumber);
-    return converter.convertLotsToDTOs(ca.getLots());
+    Collection<LotDetail> lots = converter.convertLotsToDTOs(ca.getLots());
+    if (buyingMethod.isPresent()) {
+      return filterLotsByBuyingMethod(lots, buyingMethod.get());
+    } else {
+      return lots;
+    }
   }
 
   @GetMapping("/agreements/{ca-number}/lots/{lot-number}")
@@ -101,6 +109,14 @@ public class AgreementController {
       throw new AgreementNotFoundException(caNumber);
     }
     return ca;
+  }
+
+  private Collection<LotDetail> filterLotsByBuyingMethod(Collection<LotDetail> lots,
+      BuyingMethod buyingMethod) {
+    return lots.stream()
+        .filter(ld -> ld.getRoutesToMarket().stream()
+            .filter(rtm -> buyingMethod == rtm.getBuyingMethod()).count() > 0)
+        .collect(Collectors.toSet());
   }
 
 }

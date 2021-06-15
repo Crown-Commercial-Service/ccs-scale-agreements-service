@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import lombok.extern.slf4j.Slf4j;
 import uk.gov.crowncommercial.dts.scale.service.agreements.exception.AgreementNotFoundException;
 import uk.gov.crowncommercial.dts.scale.service.agreements.exception.LotNotFoundException;
@@ -29,13 +30,19 @@ public class GlobalErrorHandler implements ErrorController {
   public static final String ERR_MSG_NOT_FOUND = "Resource not found";
 
   @ResponseStatus(HttpStatus.BAD_REQUEST)
-  @ExceptionHandler({ValidationException.class, HttpMessageNotReadableException.class})
+  @ExceptionHandler({ValidationException.class, HttpMessageNotReadableException.class,
+      MethodArgumentTypeMismatchException.class})
   public ApiErrors handleValidationException(final Exception exception) {
 
     log.trace("Request validation exception", exception);
+    String detail = exception.getMessage();
+    if (exception instanceof MethodArgumentTypeMismatchException) {
+      detail =
+          ((MethodArgumentTypeMismatchException) exception).getMostSpecificCause().getMessage();
+    }
 
     final ApiError apiError =
-        new ApiError(HttpStatus.BAD_REQUEST.toString(), ERR_MSG_VALIDATION, exception.getMessage());
+        new ApiError(HttpStatus.BAD_REQUEST.toString(), ERR_MSG_VALIDATION, detail);
     return new ApiErrors(Arrays.asList(apiError));
   }
 
