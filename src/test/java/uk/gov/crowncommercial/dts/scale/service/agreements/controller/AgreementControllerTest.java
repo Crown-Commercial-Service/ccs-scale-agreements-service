@@ -168,7 +168,7 @@ class AgreementControllerTest {
         .andExpect(jsonPath("$.errors[0].status", is("400 BAD_REQUEST")))
         .andExpect(jsonPath("$.errors[0].title", is("Validation error processing the request")))
         .andExpect(jsonPath("$.errors[0].detail", is(
-            "Buying method value invalid. Valid values are: [DirectAward, FurtherCompetition, EAuction, MarketPlace]")));
+            "Buying method value invalid. Valid values are: [DirectAward, FurtherCompetition, Marketplace, EAuction]")));
   }
 
   @Test
