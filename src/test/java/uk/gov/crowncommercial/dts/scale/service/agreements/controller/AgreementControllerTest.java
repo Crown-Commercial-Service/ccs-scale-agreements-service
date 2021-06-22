@@ -118,7 +118,7 @@ class AgreementControllerTest {
         .thenThrow(new RuntimeException("Something is amiss"));
     mockMvc.perform(get(String.format(GET_AGREEMENT_PATH, AGREEMENT_NUMBER)))
         .andExpect(status().is5xxServerError())
-        .andExpect(jsonPath("$.description", is(GlobalErrorHandler.ERR_MSG_UNKNOWN_DESCRIPTION)));
+        .andExpect(jsonPath("$.description", is(GlobalErrorHandler.ERR_MSG_DEFAULT_DESCRIPTION)));
   }
 
   @Test
@@ -191,7 +191,7 @@ class AgreementControllerTest {
         .thenThrow(new RuntimeException("Something is amiss"));
     mockMvc.perform(get(String.format(GET_AGREEMENT_LOTS_PATH, AGREEMENT_NUMBER)))
         .andExpect(status().is5xxServerError())
-        .andExpect(jsonPath("$.description", is(GlobalErrorHandler.ERR_MSG_UNKNOWN_DESCRIPTION)));
+        .andExpect(jsonPath("$.description", is(GlobalErrorHandler.ERR_MSG_DEFAULT_DESCRIPTION)));
   }
 
   @Test
@@ -226,7 +226,7 @@ class AgreementControllerTest {
         .thenThrow(new RuntimeException("Something is amiss"));
     mockMvc.perform(get(String.format(GET_LOT_PATH, AGREEMENT_NUMBER, LOT1_NUMBER)))
         .andExpect(status().is5xxServerError())
-        .andExpect(jsonPath("$.description", is(GlobalErrorHandler.ERR_MSG_UNKNOWN_DESCRIPTION)));
+        .andExpect(jsonPath("$.description", is(GlobalErrorHandler.ERR_MSG_DEFAULT_DESCRIPTION)));
   }
 
   @Test
@@ -276,7 +276,7 @@ class AgreementControllerTest {
         .thenThrow(new RuntimeException("Something is amiss"));
     mockMvc.perform(get(String.format(GET_AGREEMENT_DOCUMENTS_PATH, AGREEMENT_NUMBER)))
         .andExpect(status().is5xxServerError())
-        .andExpect(jsonPath("$.description", is(GlobalErrorHandler.ERR_MSG_UNKNOWN_DESCRIPTION)));
+        .andExpect(jsonPath("$.description", is(GlobalErrorHandler.ERR_MSG_DEFAULT_DESCRIPTION)));
   }
 
   @Test
@@ -310,7 +310,7 @@ class AgreementControllerTest {
         .thenThrow(new RuntimeException("Something is amiss"));
     mockMvc.perform(get(String.format(GET_AGREEMENT_UPDATES_PATH, AGREEMENT_NUMBER)))
         .andExpect(status().is5xxServerError())
-        .andExpect(jsonPath("$.description", is(GlobalErrorHandler.ERR_MSG_UNKNOWN_DESCRIPTION)));
+        .andExpect(jsonPath("$.description", is(GlobalErrorHandler.ERR_MSG_DEFAULT_DESCRIPTION)));
   }
 
   @Test

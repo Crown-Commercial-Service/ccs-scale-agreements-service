@@ -29,7 +29,7 @@ public class GlobalErrorHandler implements ErrorController {
   public static final String ERR_MSG_NOT_FOUND_TITLE = "Resource not found";
   public static final String ERR_MSG_NOT_FOUND_DESCRIPTION =
       "The resource you were looking for could not be found";
-  public static final String ERR_MSG_UNKNOWN_DESCRIPTION = "An unknown error has occurred";
+  public static final String ERR_MSG_DEFAULT_DESCRIPTION = "An unknown error has occurred";
 
   @ResponseStatus(HttpStatus.BAD_REQUEST)
   @ExceptionHandler({ValidationException.class, HttpMessageNotReadableException.class,
@@ -64,7 +64,7 @@ public class GlobalErrorHandler implements ErrorController {
   public ApiErrors handleUnknownException(final Exception exception) {
 
     log.error("Unknown application exception", exception);
-    return new ApiErrors(null, ERR_MSG_UNKNOWN_DESCRIPTION);
+    return new ApiErrors(null, ERR_MSG_DEFAULT_DESCRIPTION);
   }
 
   @GetMapping(value = "/error")
@@ -75,7 +75,7 @@ public class GlobalErrorHandler implements ErrorController {
 
     log.error("Unknown container/filter exception", exception);
 
-    return ResponseEntity.badRequest().body(new ApiErrors(null, ERR_MSG_UNKNOWN_DESCRIPTION));
+    return ResponseEntity.badRequest().body(new ApiErrors(null, ERR_MSG_DEFAULT_DESCRIPTION));
   }
 
   @Override
