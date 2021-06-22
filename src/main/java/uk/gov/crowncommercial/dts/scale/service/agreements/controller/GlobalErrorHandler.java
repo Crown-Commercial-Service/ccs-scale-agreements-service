@@ -24,7 +24,6 @@ import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.ApiErrors;
 @Slf4j
 public class GlobalErrorHandler implements ErrorController {
 
-  public static final String ERR_MSG_DEFAULT = "An error occurred processing the request";
   public static final String ERR_MSG_VALIDATION = "Validation error processing the request";
   public static final String ERR_MSG_NOT_FOUND = "Resource not found";
 
@@ -77,11 +76,7 @@ public class GlobalErrorHandler implements ErrorController {
 
     log.error("Unknown container/filter exception", exception);
 
-    return ResponseEntity.badRequest()
-        .body(new ApiErrors(
-            Arrays.asList(
-                new ApiError(HttpStatus.INTERNAL_SERVER_ERROR.toString(), ERR_MSG_DEFAULT, "")),
-            "DESC"));
+    return ResponseEntity.badRequest().body(new ApiErrors(null, ERR_MSG_UNKNOWN_DESCRIPTION));
   }
 
   @Override
