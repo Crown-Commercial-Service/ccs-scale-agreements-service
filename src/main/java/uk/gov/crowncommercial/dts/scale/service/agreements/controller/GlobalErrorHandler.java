@@ -24,10 +24,9 @@ import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.ApiErrors;
 @Slf4j
 public class GlobalErrorHandler implements ErrorController {
 
-  public static final String ERR_MSG_VALIDATION = "Validation error processing the request";
-  public static final String ERR_MSG_NOT_FOUND = "Resource not found";
-
+  public static final String ERR_MSG_VALIDATION_TITLE = "Validation error processing the request";
   public static final String ERR_MSG_VALIDATION_DESCRIPTION = "Invalid request";
+  public static final String ERR_MSG_NOT_FOUND_TITLE = "Resource not found";
   public static final String ERR_MSG_NOT_FOUND_DESCRIPTION =
       "The resource you were looking for could not be found";
   public static final String ERR_MSG_UNKNOWN_DESCRIPTION = "An unknown error has occurred";
@@ -45,7 +44,7 @@ public class GlobalErrorHandler implements ErrorController {
     }
 
     final ApiError apiError =
-        new ApiError(HttpStatus.BAD_REQUEST.toString(), ERR_MSG_VALIDATION, detail);
+        new ApiError(HttpStatus.BAD_REQUEST.toString(), ERR_MSG_VALIDATION_TITLE, detail);
     return new ApiErrors(Arrays.asList(apiError), ERR_MSG_VALIDATION_DESCRIPTION);
   }
 
@@ -55,8 +54,8 @@ public class GlobalErrorHandler implements ErrorController {
 
     log.trace("Resource not found exception", exception);
 
-    final ApiError apiError =
-        new ApiError(HttpStatus.NOT_FOUND.toString(), ERR_MSG_NOT_FOUND, exception.getMessage());
+    final ApiError apiError = new ApiError(HttpStatus.NOT_FOUND.toString(), ERR_MSG_NOT_FOUND_TITLE,
+        exception.getMessage());
     return new ApiErrors(Arrays.asList(apiError), ERR_MSG_NOT_FOUND_DESCRIPTION);
   }
 
