@@ -10,4 +10,6 @@ import lombok.Data;
 public class ApiErrors {
 
   private final List<ApiError> errors;
+  private final String description;
+
 }

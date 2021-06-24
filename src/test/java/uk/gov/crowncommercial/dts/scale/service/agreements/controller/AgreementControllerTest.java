@@ -106,9 +106,10 @@ class AgreementControllerTest {
     mockMvc.perform(get(String.format(GET_AGREEMENT_PATH, AGREEMENT_NUMBER)))
         .andExpect(status().is4xxClientError())
         .andExpect(jsonPath("$.errors[0].status", is(HttpStatus.NOT_FOUND.toString())))
-        .andExpect(jsonPath("$.errors[0].title", is(GlobalErrorHandler.ERR_MSG_NOT_FOUND)))
+        .andExpect(jsonPath("$.errors[0].title", is(GlobalErrorHandler.ERR_MSG_NOT_FOUND_TITLE)))
         .andExpect(jsonPath("$.errors[0].detail",
-            is(String.format(AgreementNotFoundException.ERROR_MSG_TEMPLATE, AGREEMENT_NUMBER))));
+            is(String.format(AgreementNotFoundException.ERROR_MSG_TEMPLATE, AGREEMENT_NUMBER))))
+        .andExpect(jsonPath("$.description", is(GlobalErrorHandler.ERR_MSG_NOT_FOUND_DESCRIPTION)));
   }
 
   @Test
@@ -117,8 +118,7 @@ class AgreementControllerTest {
         .thenThrow(new RuntimeException("Something is amiss"));
     mockMvc.perform(get(String.format(GET_AGREEMENT_PATH, AGREEMENT_NUMBER)))
         .andExpect(status().is5xxServerError())
-        .andExpect(jsonPath("$.errors[0].status", is(HttpStatus.INTERNAL_SERVER_ERROR.toString())))
-        .andExpect(jsonPath("$.errors[0].title", is(GlobalErrorHandler.ERR_MSG_DEFAULT)));
+        .andExpect(jsonPath("$.description", is(GlobalErrorHandler.ERR_MSG_DEFAULT_DESCRIPTION)));
   }
 
   @Test
@@ -168,7 +168,9 @@ class AgreementControllerTest {
         .andExpect(jsonPath("$.errors[0].status", is("400 BAD_REQUEST")))
         .andExpect(jsonPath("$.errors[0].title", is("Validation error processing the request")))
         .andExpect(jsonPath("$.errors[0].detail", is(
-            "Buying method value invalid. Valid values are: [DirectAward, FurtherCompetition, Marketplace, EAuction]")));
+            "Buying method value invalid. Valid values are: [DirectAward, FurtherCompetition, Marketplace, EAuction]")))
+        .andExpect(
+            jsonPath("$.description", is(GlobalErrorHandler.ERR_MSG_VALIDATION_DESCRIPTION)));
   }
 
   @Test
@@ -177,9 +179,10 @@ class AgreementControllerTest {
     mockMvc.perform(get(String.format(GET_AGREEMENT_LOTS_PATH, AGREEMENT_NUMBER)))
         .andExpect(status().is4xxClientError())
         .andExpect(jsonPath("$.errors[0].status", is(HttpStatus.NOT_FOUND.toString())))
-        .andExpect(jsonPath("$.errors[0].title", is(GlobalErrorHandler.ERR_MSG_NOT_FOUND)))
+        .andExpect(jsonPath("$.errors[0].title", is(GlobalErrorHandler.ERR_MSG_NOT_FOUND_TITLE)))
         .andExpect(jsonPath("$.errors[0].detail",
-            is(String.format(AgreementNotFoundException.ERROR_MSG_TEMPLATE, AGREEMENT_NUMBER))));
+            is(String.format(AgreementNotFoundException.ERROR_MSG_TEMPLATE, AGREEMENT_NUMBER))))
+        .andExpect(jsonPath("$.description", is(GlobalErrorHandler.ERR_MSG_NOT_FOUND_DESCRIPTION)));
   }
 
   @Test
@@ -188,8 +191,7 @@ class AgreementControllerTest {
         .thenThrow(new RuntimeException("Something is amiss"));
     mockMvc.perform(get(String.format(GET_AGREEMENT_LOTS_PATH, AGREEMENT_NUMBER)))
         .andExpect(status().is5xxServerError())
-        .andExpect(jsonPath("$.errors[0].status", is(HttpStatus.INTERNAL_SERVER_ERROR.toString())))
-        .andExpect(jsonPath("$.errors[0].title", is(GlobalErrorHandler.ERR_MSG_DEFAULT)));
+        .andExpect(jsonPath("$.description", is(GlobalErrorHandler.ERR_MSG_DEFAULT_DESCRIPTION)));
   }
 
   @Test
@@ -211,9 +213,11 @@ class AgreementControllerTest {
     mockMvc.perform(get(String.format(GET_LOT_PATH, AGREEMENT_NUMBER, LOT1_NUMBER)))
         .andExpect(status().is4xxClientError())
         .andExpect(jsonPath("$.errors[0].status", is(HttpStatus.NOT_FOUND.toString())))
-        .andExpect(jsonPath("$.errors[0].title", is(GlobalErrorHandler.ERR_MSG_NOT_FOUND)))
-        .andExpect(jsonPath("$.errors[0].detail", is(String
-            .format(LotNotFoundException.ERROR_MSG_TEMPLATE, LOT1_NUMBER, AGREEMENT_NUMBER))));
+        .andExpect(jsonPath("$.errors[0].title", is(GlobalErrorHandler.ERR_MSG_NOT_FOUND_TITLE)))
+        .andExpect(jsonPath("$.errors[0].detail",
+            is(String.format(LotNotFoundException.ERROR_MSG_TEMPLATE, LOT1_NUMBER,
+                AGREEMENT_NUMBER))))
+        .andExpect(jsonPath("$.description", is(GlobalErrorHandler.ERR_MSG_NOT_FOUND_DESCRIPTION)));
   }
 
   @Test
@@ -222,8 +226,7 @@ class AgreementControllerTest {
         .thenThrow(new RuntimeException("Something is amiss"));
     mockMvc.perform(get(String.format(GET_LOT_PATH, AGREEMENT_NUMBER, LOT1_NUMBER)))
         .andExpect(status().is5xxServerError())
-        .andExpect(jsonPath("$.errors[0].status", is(HttpStatus.INTERNAL_SERVER_ERROR.toString())))
-        .andExpect(jsonPath("$.errors[0].title", is(GlobalErrorHandler.ERR_MSG_DEFAULT)));
+        .andExpect(jsonPath("$.description", is(GlobalErrorHandler.ERR_MSG_DEFAULT_DESCRIPTION)));
   }
 
   @Test
@@ -261,9 +264,10 @@ class AgreementControllerTest {
     mockMvc.perform(get(String.format(GET_AGREEMENT_DOCUMENTS_PATH, AGREEMENT_NUMBER)))
         .andExpect(status().is4xxClientError())
         .andExpect(jsonPath("$.errors[0].status", is(HttpStatus.NOT_FOUND.toString())))
-        .andExpect(jsonPath("$.errors[0].title", is(GlobalErrorHandler.ERR_MSG_NOT_FOUND)))
+        .andExpect(jsonPath("$.errors[0].title", is(GlobalErrorHandler.ERR_MSG_NOT_FOUND_TITLE)))
         .andExpect(jsonPath("$.errors[0].detail",
-            is(String.format(AgreementNotFoundException.ERROR_MSG_TEMPLATE, AGREEMENT_NUMBER))));
+            is(String.format(AgreementNotFoundException.ERROR_MSG_TEMPLATE, AGREEMENT_NUMBER))))
+        .andExpect(jsonPath("$.description", is(GlobalErrorHandler.ERR_MSG_NOT_FOUND_DESCRIPTION)));
   }
 
   @Test
@@ -272,8 +276,7 @@ class AgreementControllerTest {
         .thenThrow(new RuntimeException("Something is amiss"));
     mockMvc.perform(get(String.format(GET_AGREEMENT_DOCUMENTS_PATH, AGREEMENT_NUMBER)))
         .andExpect(status().is5xxServerError())
-        .andExpect(jsonPath("$.errors[0].status", is(HttpStatus.INTERNAL_SERVER_ERROR.toString())))
-        .andExpect(jsonPath("$.errors[0].title", is(GlobalErrorHandler.ERR_MSG_DEFAULT)));
+        .andExpect(jsonPath("$.description", is(GlobalErrorHandler.ERR_MSG_DEFAULT_DESCRIPTION)));
   }
 
   @Test
@@ -295,9 +298,10 @@ class AgreementControllerTest {
     mockMvc.perform(get(String.format(GET_AGREEMENT_UPDATES_PATH, AGREEMENT_NUMBER)))
         .andExpect(status().is4xxClientError())
         .andExpect(jsonPath("$.errors[0].status", is(HttpStatus.NOT_FOUND.toString())))
-        .andExpect(jsonPath("$.errors[0].title", is(GlobalErrorHandler.ERR_MSG_NOT_FOUND)))
+        .andExpect(jsonPath("$.errors[0].title", is(GlobalErrorHandler.ERR_MSG_NOT_FOUND_TITLE)))
         .andExpect(jsonPath("$.errors[0].detail",
-            is(String.format(AgreementNotFoundException.ERROR_MSG_TEMPLATE, AGREEMENT_NUMBER))));
+            is(String.format(AgreementNotFoundException.ERROR_MSG_TEMPLATE, AGREEMENT_NUMBER))))
+        .andExpect(jsonPath("$.description", is(GlobalErrorHandler.ERR_MSG_NOT_FOUND_DESCRIPTION)));
   }
 
   @Test
@@ -306,8 +310,7 @@ class AgreementControllerTest {
         .thenThrow(new RuntimeException("Something is amiss"));
     mockMvc.perform(get(String.format(GET_AGREEMENT_UPDATES_PATH, AGREEMENT_NUMBER)))
         .andExpect(status().is5xxServerError())
-        .andExpect(jsonPath("$.errors[0].status", is(HttpStatus.INTERNAL_SERVER_ERROR.toString())))
-        .andExpect(jsonPath("$.errors[0].title", is(GlobalErrorHandler.ERR_MSG_DEFAULT)));
+        .andExpect(jsonPath("$.description", is(GlobalErrorHandler.ERR_MSG_DEFAULT_DESCRIPTION)));
   }
 
   @Test
@@ -351,8 +354,10 @@ class AgreementControllerTest {
     mockMvc.perform(get(GET_LOT_SUPPLIERS_PATH, AGREEMENT_NUMBER, LOT1_NUMBER))
         .andExpect(status().is4xxClientError())
         .andExpect(jsonPath("$.errors[0].status", is(HttpStatus.NOT_FOUND.toString())))
-        .andExpect(jsonPath("$.errors[0].title", is(GlobalErrorHandler.ERR_MSG_NOT_FOUND)))
-        .andExpect(jsonPath("$.errors[0].detail", is(String
-            .format(LotNotFoundException.ERROR_MSG_TEMPLATE, LOT1_NUMBER, AGREEMENT_NUMBER))));
+        .andExpect(jsonPath("$.errors[0].title", is(GlobalErrorHandler.ERR_MSG_NOT_FOUND_TITLE)))
+        .andExpect(jsonPath("$.errors[0].detail",
+            is(String.format(LotNotFoundException.ERROR_MSG_TEMPLATE, LOT1_NUMBER,
+                AGREEMENT_NUMBER))))
+        .andExpect(jsonPath("$.description", is(GlobalErrorHandler.ERR_MSG_NOT_FOUND_DESCRIPTION)));
   }
 }
