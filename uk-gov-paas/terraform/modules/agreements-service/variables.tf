@@ -28,7 +28,6 @@ variable "path" {
   default = "../../../../target/ccs-scale-agreements-service-0.0.1-SNAPSHOT.jar"
 }
 
-
 variable "vault_addr" {
   default = "https://vault.ai-cloud.uk"
 }
