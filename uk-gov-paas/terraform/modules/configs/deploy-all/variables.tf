@@ -2,13 +2,14 @@ variable "organisation" {
   default = "ccs-shared-services"
 }
 
-variable "space" {
-  default = "sandbox"
+variable "space" {}
+
+variable "environment" {}
+
+variable "cf_username" {
+  #sensitive = true
 }
 
-variable "postgres_service_plan" {
-  default = "tiny-unencrypted-12-high-iops"
-}
-
-variable "syslog_drain_url" {
+variable "cf_password" {
+  #sensitive = true
 }

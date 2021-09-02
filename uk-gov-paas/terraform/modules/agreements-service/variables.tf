@@ -1,14 +1,8 @@
-variable "organisation" {
-  default = "ccs-shared-services"
-}
+variable "organisation" {}
 
-variable "space" {
-  default = "sandbox"
-}
+variable "space" {}
 
-variable "app_name" {
-  default = "sbx-ccs-scale-agreements-service"
-}
+variable "environment" {}
 
 variable "buildpack" {
   default = "https://github.com/cloudfoundry/java-buildpack#v4.33"
@@ -37,5 +31,13 @@ variable "path" {
 
 variable "vault_addr" {
   default = "https://vault.ai-cloud.uk"
+}
+
+variable "cf_username" {
+  #sensitive = true
+}
+
+variable "cf_password" {
+  #sensitive = true
 }
 

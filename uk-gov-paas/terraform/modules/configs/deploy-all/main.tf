@@ -5,13 +5,10 @@
 #########################################################
 
 module "agreements-service" {
-  source = "../../agreements-service"
-}
-
-module "logit-ups" {
-  source                    = "../../logit-ups"
-  logit_service_broker_name = "logit-ssl-drain"
-  organisation              = var.organisation
-  space                     = var.space
-  syslog_drain_url          = var.syslog_drain_url
+  source       = "../../agreements-service"
+  organisation = var.organisation
+  space        = var.space
+  environment  = var.environment
+  cf_username  = var.cf_username
+  cf_password  = var.cf_password
 }

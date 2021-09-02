@@ -11,6 +11,15 @@ data "cloudfoundry_domain" "domain" {
   name = "london.cloudapps.digital"
 }
 
+data "cloudfoundry_service_instance" "agreements_database" {
+  name_or_id = "${var.environment}-agreements-pg-db"
+  space      = data.cloudfoundry_space.space.id
+}
+
+data "cloudfoundry_user_provided_service" "logit" {
+  name  = "${var.environment}-logit-ssl-drain"
+  space = data.cloudfoundry_space.space.id
+}
 
 resource "cloudfoundry_app" "agreements_service" {
   annotations = {}
@@ -18,33 +27,36 @@ resource "cloudfoundry_app" "agreements_service" {
   disk_quota  = var.disk_quota
   enable_ssh  = true
   environment = {
-    #GOPACKAGENAME: var.go_package_name
-    #GOVERSION: var.go_version
-    #SECURITY_USER_NAME: var.security_user_name
-    #SECURITY_USER_PASSWORD: var.security_user_password
-    #VAULT_ADDR: var.vault_addr
-    #VAULT_TOKEN: var.vault_token
+    #ENV_VAR: var.variable_name
   }
   health_check_timeout = var.healthcheck_timeout
   health_check_type    = "port"
   instances            = var.instances
   labels               = {}
   memory               = var.memory
-  name                 = var.app_name
+  name                 = "${var.environment}-ccs-scale-agreements-service"
   path                 = var.path
   ports                = [8080]
   space                = data.cloudfoundry_space.space.id
   stopped              = false
   timeout              = 600
+
+  service_binding {
+    service_instance = data.cloudfoundry_service_instance.agreements_database.id
+  }
+
+  service_binding {
+    service_instance = data.cloudfoundry_user_provided_service.logit.id
+  }
 }
 
 resource "cloudfoundry_route" "agreements_service" {
-  domain    = data.cloudfoundry_domain.domain.id
-  space     = data.cloudfoundry_space.space.id
-  #hostname  = var.cloudfoundry_route
+  domain   = data.cloudfoundry_domain.domain.id
+  space    = data.cloudfoundry_space.space.id
+  hostname = "${var.environment}-ccs-scale-agreements-service"
 
   target {
-    app = cloudfoundry_app.agreements_service.id
+    app  = cloudfoundry_app.agreements_service.id
     port = 8080
   }
 }
