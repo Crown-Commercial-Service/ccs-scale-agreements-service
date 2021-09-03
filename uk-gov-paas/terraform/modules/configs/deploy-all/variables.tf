@@ -7,9 +7,9 @@ variable "space" {}
 variable "environment" {}
 
 variable "cf_username" {
-  #sensitive = true
+  sensitive = true
 }
 
 variable "cf_password" {
-  #sensitive = true
+  sensitive = true
 }
