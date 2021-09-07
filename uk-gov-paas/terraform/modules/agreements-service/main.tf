@@ -21,6 +21,11 @@ data "cloudfoundry_user_provided_service" "logit" {
   space = data.cloudfoundry_space.space.id
 }
 
+data "cloudfoundry_user_provided_service" "ip_router" {
+  name  = "${var.environment}-ccs-scale-shared-ip-router"
+  space = data.cloudfoundry_space.space.id
+}
+
 resource "cloudfoundry_app" "agreements_service" {
   annotations = {}
   buildpack   = var.buildpack
@@ -59,4 +64,10 @@ resource "cloudfoundry_route" "agreements_service" {
     app  = cloudfoundry_app.agreements_service.id
     port = 8080
   }
+}
+
+# Bind to nginx IP Router UPS
+resource "cloudfoundry_route_service_binding" "agreements-service" {
+  service_instance = data.cloudfoundry_user_provided_service.ip_router.id
+  route            = cloudfoundry_route.agreements_service.id
 }
