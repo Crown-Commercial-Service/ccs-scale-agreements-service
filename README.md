@@ -7,6 +7,15 @@ It is deployed as part of the Terraform AWS environment provisioning scripts in 
 CodeBuild project(s) exist in the Management account to build from source and deploy as a Docker image to ECR.
 
 
+## Provision the service infrastructure via Travis
+
+The main environments are provisioned automatically via Travis CI. Merges to key branches will trigger an automatic deployment to certain environments - mapped below:
+
+* `develop` branch -> `development` space
+* `main` branch -> `INT` space
+* other environments TBD (these mappings may change as we evolve the process as more environments come online)
+* feature branches can be deployed to specific sandboxes by making minor changes in the `travis.yml` file (follow instructions)
+
 ## Deploying to UK.Gov PaaS (from local machine)
 
 These are instructions on how to deploy the Agreements Service manually from your local machine to a space in UK.Gov PaaS (this will later be extended to be run in a Travis pipeline)
