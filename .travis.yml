@@ -41,7 +41,14 @@ deploy:
   skip_cleanup: true
   script: CF_ENVIRONMENT=int bash ./deploy.sh
   on:
-    branch: main
+    branch: release/int
+
+# NFT    
+- provider: script
+  skip_cleanup: true
+  script: CF_ENVIRONMENT=nft bash ./deploy.sh
+  on:
+    branch: release/nft
     
 # WARNING! Do NOT use the --add flag of travis cli encrypt - it removes all formatting and comments
 env:
