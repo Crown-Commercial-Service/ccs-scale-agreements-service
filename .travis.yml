@@ -7,7 +7,9 @@ cache:
 branches:
   only:
   - "/^(feature|bugfix)\\/SCC-[0-9]+.*$/"
-  - develop
+  - bat/develop
+  - release/int
+  - release/nft
   - main
 
 # Install dependencies
@@ -34,7 +36,7 @@ deploy:
   skip_cleanup: true
   script: CF_ENVIRONMENT=dev bash ./deploy.sh
   on:
-    branch: develop
+    branch: bat/develop
     
 # INT (SIT)    
 - provider: script
