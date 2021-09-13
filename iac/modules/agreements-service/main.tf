@@ -17,7 +17,7 @@ data "cloudfoundry_service_instance" "agreements_database" {
 }
 
 data "cloudfoundry_user_provided_service" "logit" {
-  name  = "${var.environment}-logit-ssl-drain"
+  name  = "${var.environment}-ccs-scale-shared-agreements-logit-ssl-drain"
   space = data.cloudfoundry_space.space.id
 }
 
@@ -39,7 +39,7 @@ resource "cloudfoundry_app" "agreements_service" {
   instances            = var.instances
   labels               = {}
   memory               = var.memory
-  name                 = "${var.environment}-ccs-scale-agreements-service"
+  name                 = "${var.environment}-ccs-scale-shared-agreements-service"
   path                 = var.path
   ports                = [8080]
   space                = data.cloudfoundry_space.space.id
@@ -58,7 +58,7 @@ resource "cloudfoundry_app" "agreements_service" {
 resource "cloudfoundry_route" "agreements_service" {
   domain   = data.cloudfoundry_domain.domain.id
   space    = data.cloudfoundry_space.space.id
-  hostname = "${var.environment}-ccs-scale-agreements-service"
+  hostname = "${var.environment}-ccs-scale-shared-agreements-service"
 
   target {
     app  = cloudfoundry_app.agreements_service.id
