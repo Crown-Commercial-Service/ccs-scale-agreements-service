@@ -12,7 +12,7 @@ data "cloudfoundry_domain" "domain" {
 }
 
 data "cloudfoundry_service_instance" "agreements_database" {
-  name_or_id = "${var.environment}-agreements-pg-db"
+  name_or_id = "${var.environment}-ccs-scale-shared-agreements-pg-db"
   space      = data.cloudfoundry_space.space.id
 }
 
