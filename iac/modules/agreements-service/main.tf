@@ -17,7 +17,7 @@ data "cloudfoundry_service_instance" "agreements_database" {
 }
 
 data "cloudfoundry_user_provided_service" "logit" {
-  name  = "${var.environment}-ccs-scale-shared-agreements-logit-ssl-drain"
+  name  = "${var.environment}-ccs-scale-shared-logit-ssl-drain"
   space = data.cloudfoundry_space.space.id
 }
 
