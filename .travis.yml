@@ -1,0 +1,67 @@
+language: java
+script: mvn package
+cache:
+  directories:
+  - "$HOME/.m2"
+
+branches:
+  only:
+  - "/^(feature|bugfix)\\/SCC-[0-9]+.*$/"
+  - "/^(release)\\/.*$/"
+  - bat/develop
+  - main
+
+# Install dependencies
+before_install:
+  - sudo rm -Rf terraform_"$TF_VERSION"_linux_amd64.zip
+  - sudo rm -Rf terraform
+  - wget https://releases.hashicorp.com/terraform/"$TF_VERSION"/terraform_"$TF_VERSION"_linux_amd64.zip
+  - unzip terraform_"$TF_VERSION"_linux_amd64.zip
+  - sudo mv terraform /usr/local/bin/
+  - rm terraform_"$TF_VERSION"_linux_amd64.zip
+
+deploy:
+
+# SBX - modify CF_ENVIRONMENT as required
+- provider: script
+  skip_cleanup: true
+  script: CF_ENVIRONMENT=sbx1 bash ./deploy.sh
+  on:
+    all_branches: true
+    condition: "${TRAVIS_PULL_REQUEST_BRANCH:-$TRAVIS_BRANCH} =~ ^(feature|bugfix)\\/SCC-[0-9]+.*$"
+
+# DEVELOP    
+- provider: script
+  skip_cleanup: true
+  script: CF_ENVIRONMENT=dev bash ./deploy.sh
+  on:
+    branch: bat/develop
+    
+# INT (SIT)    
+- provider: script
+  skip_cleanup: true
+  script: CF_ENVIRONMENT=int bash ./deploy.sh
+  on:
+    branch: release/int
+
+# NFT    
+- provider: script
+  skip_cleanup: true
+  script: CF_ENVIRONMENT=nft bash ./deploy.sh
+  on:
+    branch: release/nft
+    
+# WARNING! Do NOT use the --add flag of travis cli encrypt - it removes all formatting and comments
+env:
+  global:
+  # ACCESS_KEY_ID 
+  - secure: "Ae/S9Gb4vsx2upWJIksrkGAgEOhb+xamO1NG26qvdyX9pmwAUoW2XClO9layJoHyXzaGhQBNtG5kShUIDeU8aUB0iFw393NyiqZ7dFyXcfEFGDdat8vD/egSmluvBOcjq7LCr/bYuN6p+0blC6QmEynOloaXr+7jsYQPD1jM27ZoAT3R3PhX/Dxg6zm/fbH9ZuJ6m/kBW7QiS9WvInRPXpPXEpdxm/XnCZVk/gzUpI4SpMv0Zo1CpsQaqmqehJ7EstC7AoHVp/b8bybT7+0Y6Jk6E/cMekXzRYwe1MhiSvjgDje18gkdQ1k5cOH7jcoQuJs1AOYiDZsVHWvSBAXoaWFcboKFgysrMuDvF9DASOivGZks5f6BCbN2AAauSg8/hB7KDyxH3etH1eBitE7NBo4lVfJO/d+LTBqfe7R3NmYlPl958Y+wBd3A2fm1D4pMvcxT0LDzJxD/WBEUbkQ6+i1ta/FglMV/quIIrlnE1He+otp08nJ0TmPthws8qOFjqtqcl6UU2z1YvkYuUeQqPsB5T/J2Ptbh8316li/ZeFLkkoCjJAXytg5CllI47zQhlpJEhZAKe//unmw3ei80hvMMl7/FaVVPIr7O2Ci1NJzKDBZ0x8c/DCxl2T8dSVjg1KTHnynNYgMyYnGrzeiG9gKre5XE6lZ0j/yIl0743qM="
+  # SECRET_ACCESS_KEY
+  - secure: "ZmcdxxEZ5doPxtLoUCDNHcNhuN61hhQGSZalAbuLfcuxS3oi/m2Hhv2ABAh0RCSxO0iYPHc98VNrqDoWcvFjPayI86XdCDN4I3hQVk1k0dVjgWmdZl1Xy3Pmx8NWMspAAD1R8dR6MYVG3vJhfaeSjCVJBefZumvmu6Hhx8pdIUn8yu6gW//TBaPdD9pOQf+5BHn4DJydEnouVUIh37Y5e+Z2Ajifod/dVJ+c/dRuRUrlm0ATiT3empCWhhbdxCihUPK/jXoG75TyFn9m06wNjmMLyZkcsIkXYHoiq2rEe5njVpK2PRr6HyOHMlpTKJsHNe83f49ypPY6YYa0AodP5ghougN55m00l9of396W75mc6P5dPda3plErS3ZxbhQ6zfzR3AyM4YeZsQzJwAqlMiYxlaWwyH7mgFtTbCqr4SFSeNkImgNngInp4aPEfkY+m5Wb5mlD4SpzV5yeQT75smkMt1YqX8SJY5HeT6Cp/396yiPJVe9lB9txrTzjfWB4ehIjUbqMlICFl2wS9aOrNybnrm3ikW6XPUC4oCTFwlJlF9SOUPwQ/A319SAdXK1CzDcJUfQz6Dbz7AHiv+ujGf8p4XXtTe9/4bLP7W2v57dU/kpFnxP7QRubEzdyDgAgYlCfJdsECTXneCcZicoDCrG+u4RkQ/tP4IWlo+E38tk="
+  # S3_STATE_BUCKET_NAME
+  - secure: "VL3X2V2xdn0bpqpU4lti94Vik+erBHwaEFn0I3JYs9Yxn1oSjOyO5I6G6UTDLpatTwKq0k2Hfb8wRiBtR5dmUoc0pjxN1tAwn1yJWSVraaxIqU9e2brFFq+/VeEBL8oRakCtRO2xBpoEF6vUVo1ISJ5zPCr0ltravxDakk3o4eFEXRDlAPRw9wI7fDyTa6fAMgvno8At3txNOuj1oCopSejHxLiq6rJ3/O6H3IDw2ft8MZPACIF1r38AMx+508syiw9ZxB5H5it0tNMslfCbpe7zxRWavX0JAd9lgmnAVFd4zWqwiQD+EsPvH+/l3L+MZZ7NMxz8RqvirCUHKSmMGwwq1uG6PsqZ84/775gjqYp7kNiFXudT482KT9JFLsBKgyy9coe/k7lklQuZfmzRx2t7C3tZeF4y1UShGcPrhHjqlutWaHEdfIRRpZnrIcgYPcwf2T7B7xnXL8Ft5rs6nhD1vdFy0jpgFLYsHINVTZ8AM2L8xqypjuYuGLtyU08jEJc0Se81HkdDa017A+DFpGcDyET7JXajJ/n6zYm+uUM5E8+imeH2wfKzs72h/dPi4TC4EYPs2UJazI+mUxv2p/Nj+V362npSpSnoFUKK6bVbc5wwSsGlbrV8A8Jexp3E20wsNTd1E7zgrnANnuZmXDFC+T32TeylAWVMvVv97EA="
+  # CF_USERNAME
+  - secure: "a9kqosKnC7OKPbR4Lw00RCZXqQ8p3v82nbIBXi/TAvbHc2iCZAou4Ik/cGI6EWYYoTwKvB1YnSvJJpSG82kSEOoVXS4kVLSXlNAY/iRl8ehEXrawHPJnunslvAyZYp6Y2wpC4Rj0h58hRYkMcgJzGKbkOkPdS6Qhxq2bNv9Vr6tsEYvRmFflnS6DHFAydKv1OXOiyeBqySMaeu6oazd6ZfFOlpEGgOvM7gQDt+JE2AUGEmzyHvDFPI/vISKkdfRa2AI4WCm6E10Ubj/4ShMlhIZh0iFBuHIg6m5XYEHfKn4InVojrNwgeiTWbsPYjzeix4cMOsAAovkqStw/u+lDIqSG24FtV6xiDYPW5G9tlWUyt5VC8xPhMbJE5st9v8wdbfCgAK6shxgIDZ/4609fKF1qn/EfP1sOmVF6kOuMNNolSjMKtRs89kC69OHg2PaxKtE8jfDTXyXfetRgT0a76hTrp2D0MmARA+9elj4BFdDu5pLiz1byRaCNxahS9upc72kkMDB3vxou5IUVlXVW6JEYZO5MvgzqWEQxtu5wZmxCnBTGQvqs29I2X/l6kl2Ej7442TTHwqGKcpG2iQzfQYKUa/PIn+5z3yh7gqiw0WbCqBc3q2GLyPifJdr1YJ8gHphHPXKQ++OJpfiLJePnpGyKfL8r30u0YSLWUXplhvY="
+  # CF_PASSWORD
+  - secure: "W/eP+yEpgZ/o8ck2dcVYI6Ck9net+wHJGRfaQGLdeVfua2XlfGQd5h95L2pjqefNRhrZYZqsyScDEEHnmpYuS19U94z2C/P8JOSF2tv+7ZXS3FNLcHMu064/7yvsb+fCwOzAACF9oUhz+HE8eP0zo2qhVXAwEO0RNNN/L9+Xt43NM3j2MpFqO05oh9yE4skVC/rXop7anE4XP5hfaYypQsWA/yWBqvwUjTzbyEaUo7AO9Ko7/t536FftsvGz5BtfScbWAyh5TkHP10TOmTxAIZra/GSx0yzbAr/Q/5o1OiuzngNvVE65bAL89CKVbXDEloj7pbxbDbUNzrVztvHybhM0inMnbnCf7K8ntlo/drDMBjK9Ug8KiDsHXrUvTJNuTSFBRui/6tV+01D9ywYHdGjJ6m2hp4ivBWULaFGkg6OwL4aVsJZQOK1DW6PWTO1e1rJfywT74IABg7k5NhjvYEE1CZzrEB/FSeDcjq5CM6nIKUjItLdHjzeLsMwwCZTUxUL2T0vWfWFHPpT2haMAMk4YLY3z5lQ062rSrgHwf0d2aEVZG26t1uGCVIrM+FYQ2SM5dw5PZonsqkqHv+8oOHjWef8ScibBTwCAVQ9Y7UqB3Z+YcwFIekjX1KotnPbypdae58mMMyd2imuXPng5d3JkhwWP42LwNFc3RPqF+ck="
+  - TF_VERSION=1.0.5
