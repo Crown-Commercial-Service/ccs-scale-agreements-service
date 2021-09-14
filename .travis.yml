@@ -7,9 +7,8 @@ cache:
 branches:
   only:
   - "/^(feature|bugfix)\\/SCC-[0-9]+.*$/"
+  - "/^(release)\\/.*$/"
   - bat/develop
-  - release/int
-  - release/nft
   - main
 
 # Install dependencies
