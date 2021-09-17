@@ -1,6 +1,6 @@
 terraform {
   backend "s3" {
     region = "eu-west-2"
-    key    = "ccs-scale-agreements-service-sbx1"
+    key    = "ccs-scale-agreements-service-sbx2"
   }
 }
