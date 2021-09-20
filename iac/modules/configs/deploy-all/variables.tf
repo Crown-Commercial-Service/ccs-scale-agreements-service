@@ -13,3 +13,12 @@ variable "cf_username" {
 variable "cf_password" {
   sensitive = true
 }
+
+
+variable "agreement_service_instances" {
+  default = 1
+}
+
+variable "agreement_service_memory" {
+  default = 1024
+}

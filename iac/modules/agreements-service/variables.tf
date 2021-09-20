@@ -16,13 +16,9 @@ variable "healthcheck_timeout" {
   default = 0
 }
 
-variable "instances" {
-  default = 1
-}
+variable "instances" {}
 
-variable "memory" {
-  default = 1024
-}
+variable "memory" {}
 
 variable "path" {
   default = "../../../target/ccs-scale-agreements-service-0.0.1-SNAPSHOT.jar"
