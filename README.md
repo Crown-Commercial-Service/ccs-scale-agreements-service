@@ -29,7 +29,8 @@ These are instructions on how to deploy the Agreements Service manually from you
 terraform init \
    -backend-config="access_key=AWS_ACCESS_KEY_ID" \
    -backend-config="secret_key=AWS_SECRET_ACCESS_KEY" \
-   -backend-config="{bucket=S3_STATE_BUCKET_NAME}" \
+   -backend-config="bucket=S3_STATE_BUCKET_NAME" \
+   -backend-config="dynamodb_table=DDB_LOCK_TABLE_NAME"
 ```
 
 3. Build the Agreements Service using maven `mvn clean package`
