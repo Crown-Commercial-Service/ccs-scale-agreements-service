@@ -11,4 +11,6 @@ module "agreements-service" {
   environment  = var.environment
   cf_username  = var.cf_username
   cf_password  = var.cf_password
+  instances    = var.agreement_service_instances
+  memory       = var.agreement_service_memory
 }
