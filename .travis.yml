@@ -57,6 +57,13 @@ deploy:
   script: CF_ENVIRONMENT=uat bash ./deploy.sh
   on:
     branch: release/uat
+    
+# REF    
+- provider: script
+  skip_cleanup: true
+  script: CF_ENVIRONMENT=ref bash ./deploy.sh
+  on:
+    branch: release/ref
 
 # WARNING! Do NOT use the --add flag of travis cli encrypt - it removes all formatting and comments
 env:
