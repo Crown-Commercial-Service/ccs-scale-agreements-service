@@ -19,5 +19,4 @@ public class LotProcurementEventTypeKey implements Serializable {
 
   @Column(name = "procurement_event_type_id")
   Integer procurementEventTypeId;
-
 }
