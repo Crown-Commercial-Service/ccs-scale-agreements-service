@@ -27,40 +27,40 @@ public class LotController {
   private final AgreementService service;
   private final AgreementConverter converter;
 
-  @GetMapping("/agreements/{ca-number}/lots/{lot-number}")
-  public LotDetail getLot(@PathVariable(value = "ca-number") final String caNumber,
-      @PathVariable(value = "lot-number") final String lotNumber) {
-    log.debug("getLot: caNumber={},lotNumber={}", caNumber, lotNumber);
-    final Lot lot = service.findLotByAgreementNumberAndLotNumber(caNumber, lotNumber);
+  @GetMapping("/agreements/{agreement-id}/lots/{lot-id}")
+  public LotDetail getLot(@PathVariable(value = "agreement-id") final String agreementId,
+      @PathVariable(value = "lot-id") final String lotId) {
+    log.debug("getLot: agreementId={},lotId={}", agreementId, lotId);
+    final Lot lot = service.findLotByAgreementNumberAndLotNumber(agreementId, lotId);
     if (lot == null) {
-      throw new LotNotFoundException(lotNumber, caNumber);
+      throw new LotNotFoundException(lotId, agreementId);
     }
     return converter.convertLotToDTO(lot);
   }
 
-  @GetMapping("/agreements/{ca-number}/lots/{lot-number}/suppliers")
+  @GetMapping("/agreements/{agreement-id}/lots/{lot-id}/suppliers")
   public Collection<LotSupplier> getLotSuppliers(
-      @PathVariable(value = "ca-number") final String caNumber,
-      @PathVariable(value = "lot-number") final String lotNumber) {
+      @PathVariable(value = "agreement-id") final String agreementId,
+      @PathVariable(value = "lot-id") final String lotId) {
 
-    log.debug("getLotSuppliers: caNumber={}, lotNumber={}", caNumber, lotNumber);
+    log.debug("getLotSuppliers: agreementId={}, lotId={}", agreementId, lotId);
 
     final Collection<LotOrganisationRole> lotOrgRoles =
-        service.findLotSupplierOrgRolesByAgreementNumberAndLotNumber(caNumber, lotNumber);
+        service.findLotSupplierOrgRolesByAgreementNumberAndLotNumber(agreementId, lotId);
 
     return converter.convertLotOrgRolesToLotSupplierDTOs(lotOrgRoles);
   }
 
-  @GetMapping("/agreements/{ca-number}/lots/{lot-number}/event-types")
+  @GetMapping("/agreements/{agreement-id}/lots/{lot-id}/event-types")
   public Collection<EventType> getLotEventTypes(
-      @PathVariable(value = "ca-number") final String caNumber,
-      @PathVariable(value = "lot-number") final String lotNumber) {
+      @PathVariable(value = "agreement-id") final String agreementId,
+      @PathVariable(value = "lot-id") final String lotId) {
 
-    log.debug("getLotEventTypes: caNumber={}, lotNumber={}", caNumber, lotNumber);
+    log.debug("getLotEventTypes: agreementId={}, lotId={}", agreementId, lotId);
 
-    final Lot lot = service.findLotByAgreementNumberAndLotNumber(caNumber, lotNumber);
+    final Lot lot = service.findLotByAgreementNumberAndLotNumber(agreementId, lotId);
     if (lot == null) {
-      throw new LotNotFoundException(lotNumber, caNumber);
+      throw new LotNotFoundException(lotId, agreementId);
     }
 
     return converter.convertLotProcurementEventTypesToDTOs(lot.getProcurementEventTypes());

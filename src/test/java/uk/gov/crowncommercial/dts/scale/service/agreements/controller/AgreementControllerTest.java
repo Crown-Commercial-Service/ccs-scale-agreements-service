@@ -34,8 +34,8 @@ class AgreementControllerTest {
   private static final String BUYING_METHOD_VALUE = "EAuction";
 
   private static final String AGREEMENT_NUMBER = "RM3733";
-  private static final String LOT1_NUMBER = "Lot 1";
-  private static final String LOT2_NUMBER = "Lot 2";
+  private static final String LOT1_ID = "Lot 1";
+  private static final String LOT2_ID = "Lot 2";
   private static final String AGREEMENT_UPDATE_TEXT = "Update Text";
 
   private static final String DOCUMENT_NAME = "My Doc";
@@ -117,13 +117,13 @@ class AgreementControllerTest {
   @Test
   void testGetAgreementLotsSuccess() throws Exception {
     final LotDetail lot = new LotDetail();
-    lot.setNumber(LOT1_NUMBER);
+    lot.setNumber(LOT1_ID);
     final Set<Lot> mockLots = new HashSet<>(Arrays.asList(mockLot));
     when(service.findAgreementByNumber(AGREEMENT_NUMBER)).thenReturn(mockCommercialAgreement);
     when(mockCommercialAgreement.getLots()).thenReturn(mockLots);
     when(converter.convertLotsToDTOs(mockLots)).thenReturn(Arrays.asList(lot));
     mockMvc.perform(get(String.format(GET_AGREEMENT_LOTS_PATH, AGREEMENT_NUMBER)))
-        .andExpect(status().isOk()).andExpect(jsonPath("$[0].number", is(LOT1_NUMBER)));
+        .andExpect(status().isOk()).andExpect(jsonPath("$[0].number", is(LOT1_ID)));
   }
 
   @Test
@@ -131,14 +131,14 @@ class AgreementControllerTest {
     final LotDetail lot1 = new LotDetail();
     final RouteToMarketDTO directAward = new RouteToMarketDTO();
     directAward.setBuyingMethod(BuyingMethod.DIRECT_AWARD);
-    lot1.setNumber(LOT1_NUMBER);
+    lot1.setNumber(LOT1_ID);
     lot1.setRoutesToMarket(Arrays.asList(directAward));
 
     final LotDetail lot2 = new LotDetail();
     final RouteToMarketDTO furtherCompetition = new RouteToMarketDTO();
     final RouteToMarketDTO eAuction = new RouteToMarketDTO();
     furtherCompetition.setBuyingMethod(BuyingMethod.E_AUCTION);
-    lot2.setNumber(LOT2_NUMBER);
+    lot2.setNumber(LOT2_ID);
     lot2.setRoutesToMarket(Arrays.asList(furtherCompetition, eAuction));
 
     final Set<Lot> mockLots = new HashSet<>(Arrays.asList(mockLot));
@@ -149,7 +149,7 @@ class AgreementControllerTest {
         .perform(get(String.format(GET_AGREEMENT_LOTS_PATH, AGREEMENT_NUMBER))
             .queryParam(BUYING_METHOD_PARAM, BUYING_METHOD_VALUE))
         .andExpect(status().isOk()).andExpect(jsonPath("$.size()", is(1)))
-        .andExpect(jsonPath("$[0].number", is(LOT2_NUMBER)));
+        .andExpect(jsonPath("$[0].number", is(LOT2_ID)));
   }
 
   @Test

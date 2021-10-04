@@ -33,7 +33,7 @@ class LotControllerTest {
       "/agreements/{agreement-id}/lots/{lot-id}/event-types";
 
   private static final String AGREEMENT_NUMBER = "RM3733";
-  private static final String LOT1_NUMBER = "Lot 1";
+  private static final String LOT1_ID = "Lot 1";
 
   @Autowired
   private MockMvc mockMvc;
@@ -65,34 +65,34 @@ class LotControllerTest {
   @Test
   void testGetLotSuccess() throws Exception {
     final LotDetail lot = new LotDetail();
-    lot.setNumber(LOT1_NUMBER);
+    lot.setNumber(LOT1_ID);
 
-    when(service.findLotByAgreementNumberAndLotNumber(AGREEMENT_NUMBER, LOT1_NUMBER))
+    when(service.findLotByAgreementNumberAndLotNumber(AGREEMENT_NUMBER, LOT1_ID))
         .thenReturn(mockLot);
     when(converter.convertLotToDTO(mockLot)).thenReturn(lot);
-    mockMvc.perform(get(GET_LOT_PATH, AGREEMENT_NUMBER, LOT1_NUMBER)).andExpect(status().isOk())
-        .andExpect(jsonPath("$.number", is(LOT1_NUMBER)));
+    mockMvc.perform(get(GET_LOT_PATH, AGREEMENT_NUMBER, LOT1_ID)).andExpect(status().isOk())
+        .andExpect(jsonPath("$.number", is(LOT1_ID)));
   }
 
   @Test
   void testGetLotNotFound() throws Exception {
-    when(service.findLotByAgreementNumberAndLotNumber(AGREEMENT_NUMBER, LOT1_NUMBER))
+    when(service.findLotByAgreementNumberAndLotNumber(AGREEMENT_NUMBER, LOT1_ID))
         .thenReturn(null);
-    mockMvc.perform(get(GET_LOT_PATH, AGREEMENT_NUMBER, LOT1_NUMBER))
+    mockMvc.perform(get(GET_LOT_PATH, AGREEMENT_NUMBER, LOT1_ID))
         .andExpect(status().is4xxClientError())
         .andExpect(jsonPath("$.errors[0].status", is(HttpStatus.NOT_FOUND.toString())))
         .andExpect(jsonPath("$.errors[0].title", is(GlobalErrorHandler.ERR_MSG_NOT_FOUND_TITLE)))
         .andExpect(jsonPath("$.errors[0].detail",
-            is(String.format(LotNotFoundException.ERROR_MSG_TEMPLATE, LOT1_NUMBER,
+            is(String.format(LotNotFoundException.ERROR_MSG_TEMPLATE, LOT1_ID,
                 AGREEMENT_NUMBER))))
         .andExpect(jsonPath("$.description", is(GlobalErrorHandler.ERR_MSG_NOT_FOUND_DESCRIPTION)));
   }
 
   @Test
   void testGetLotUnexpectedError() throws Exception {
-    when(service.findLotByAgreementNumberAndLotNumber(AGREEMENT_NUMBER, LOT1_NUMBER))
+    when(service.findLotByAgreementNumberAndLotNumber(AGREEMENT_NUMBER, LOT1_ID))
         .thenThrow(new RuntimeException("Something is amiss"));
-    mockMvc.perform(get(GET_LOT_PATH, AGREEMENT_NUMBER, LOT1_NUMBER))
+    mockMvc.perform(get(GET_LOT_PATH, AGREEMENT_NUMBER, LOT1_ID))
         .andExpect(status().is5xxServerError())
         .andExpect(jsonPath("$.description", is(GlobalErrorHandler.ERR_MSG_DEFAULT_DESCRIPTION)));
   }
@@ -114,12 +114,12 @@ class LotControllerTest {
     lotSupplier.setLotContacts(Collections.singleton(contact));
 
     when(
-        service.findLotSupplierOrgRolesByAgreementNumberAndLotNumber(AGREEMENT_NUMBER, LOT1_NUMBER))
+        service.findLotSupplierOrgRolesByAgreementNumberAndLotNumber(AGREEMENT_NUMBER, LOT1_ID))
             .thenReturn(lotOrgRoles);
     when(converter.convertLotOrgRolesToLotSupplierDTOs(lotOrgRoles))
         .thenReturn(Collections.singleton(lotSupplier));
 
-    mockMvc.perform(get(GET_LOT_SUPPLIERS_PATH, AGREEMENT_NUMBER, LOT1_NUMBER))
+    mockMvc.perform(get(GET_LOT_SUPPLIERS_PATH, AGREEMENT_NUMBER, LOT1_ID))
         .andExpect(content().contentType(MediaType.APPLICATION_JSON))
         .andExpect(status().is2xxSuccessful()).andExpect(jsonPath("$.size()", is(1)))
         .andExpect(jsonPath("$.[0].organization.name", is("ABC Ltd")))
@@ -132,15 +132,15 @@ class LotControllerTest {
   @Test
   void testGetLotSuppliersNotFound() throws Exception {
     when(
-        service.findLotSupplierOrgRolesByAgreementNumberAndLotNumber(AGREEMENT_NUMBER, LOT1_NUMBER))
-            .thenThrow(new LotNotFoundException(LOT1_NUMBER, AGREEMENT_NUMBER));
+        service.findLotSupplierOrgRolesByAgreementNumberAndLotNumber(AGREEMENT_NUMBER, LOT1_ID))
+            .thenThrow(new LotNotFoundException(LOT1_ID, AGREEMENT_NUMBER));
 
-    mockMvc.perform(get(GET_LOT_SUPPLIERS_PATH, AGREEMENT_NUMBER, LOT1_NUMBER))
+    mockMvc.perform(get(GET_LOT_SUPPLIERS_PATH, AGREEMENT_NUMBER, LOT1_ID))
         .andExpect(status().is4xxClientError())
         .andExpect(jsonPath("$.errors[0].status", is(HttpStatus.NOT_FOUND.toString())))
         .andExpect(jsonPath("$.errors[0].title", is(GlobalErrorHandler.ERR_MSG_NOT_FOUND_TITLE)))
         .andExpect(jsonPath("$.errors[0].detail",
-            is(String.format(LotNotFoundException.ERROR_MSG_TEMPLATE, LOT1_NUMBER,
+            is(String.format(LotNotFoundException.ERROR_MSG_TEMPLATE, LOT1_ID,
                 AGREEMENT_NUMBER))))
         .andExpect(jsonPath("$.description", is(GlobalErrorHandler.ERR_MSG_NOT_FOUND_DESCRIPTION)));
   }
@@ -153,13 +153,13 @@ class LotControllerTest {
     EventType eventType = new EventType();
     eventType.setType("RFI");
 
-    when(service.findLotByAgreementNumberAndLotNumber(AGREEMENT_NUMBER, LOT1_NUMBER))
+    when(service.findLotByAgreementNumberAndLotNumber(AGREEMENT_NUMBER, LOT1_ID))
         .thenReturn(mockLot);
     when(mockLot.getProcurementEventTypes()).thenReturn(lotProcurementEventTypes);
     when(converter.convertLotProcurementEventTypesToDTOs(lotProcurementEventTypes))
         .thenReturn(Collections.singleton(eventType));
 
-    mockMvc.perform(get(GET_LOT_EVENT_TYPES_PATH, AGREEMENT_NUMBER, LOT1_NUMBER))
+    mockMvc.perform(get(GET_LOT_EVENT_TYPES_PATH, AGREEMENT_NUMBER, LOT1_ID))
         .andExpect(content().contentType(MediaType.APPLICATION_JSON))
         .andExpect(status().is2xxSuccessful()).andExpect(jsonPath("$.size()", is(1)))
         .andExpect(jsonPath("$.[0].type", is("RFI")));
@@ -167,14 +167,14 @@ class LotControllerTest {
 
   @Test
   void testGetLotEventTypesNotFound() throws Exception {
-    when(service.findLotByAgreementNumberAndLotNumber(AGREEMENT_NUMBER, LOT1_NUMBER))
+    when(service.findLotByAgreementNumberAndLotNumber(AGREEMENT_NUMBER, LOT1_ID))
         .thenReturn(null);
-    mockMvc.perform(get(GET_LOT_EVENT_TYPES_PATH, AGREEMENT_NUMBER, LOT1_NUMBER))
+    mockMvc.perform(get(GET_LOT_EVENT_TYPES_PATH, AGREEMENT_NUMBER, LOT1_ID))
         .andExpect(status().is4xxClientError())
         .andExpect(jsonPath("$.errors[0].status", is(HttpStatus.NOT_FOUND.toString())))
         .andExpect(jsonPath("$.errors[0].title", is(GlobalErrorHandler.ERR_MSG_NOT_FOUND_TITLE)))
         .andExpect(jsonPath("$.errors[0].detail",
-            is(String.format(LotNotFoundException.ERROR_MSG_TEMPLATE, LOT1_NUMBER,
+            is(String.format(LotNotFoundException.ERROR_MSG_TEMPLATE, LOT1_ID,
                 AGREEMENT_NUMBER))))
         .andExpect(jsonPath("$.description", is(GlobalErrorHandler.ERR_MSG_NOT_FOUND_DESCRIPTION)));
   }
