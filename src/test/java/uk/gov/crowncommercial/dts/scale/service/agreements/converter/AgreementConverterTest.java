@@ -28,7 +28,8 @@ import uk.gov.crowncommercial.dts.scale.service.agreements.service.AgreementServ
     SectorConverter.class, AgreementUpdateConverter.class, RouteToMarketConverter.class,
     AgreementContactsConverter.class, LotSupplierPropertyMap.class, LotSupplierOrgConverter.class,
     LotContactsConverter.class, SupplierStatusConverter.class, TimestampConverter.class,
-    AgreementOwnerConverter.class, AgreementBenefitConverter.class, ConverterUtils.class})
+    AgreementOwnerConverter.class, AgreementBenefitConverter.class, ConverterUtils.class,
+    EventTypeConverter.class})
 @ActiveProfiles("test")
 class AgreementConverterTest {
 

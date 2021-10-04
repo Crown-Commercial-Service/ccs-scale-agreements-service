@@ -12,11 +12,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import uk.gov.crowncommercial.dts.scale.service.agreements.converter.AgreementConverter;
 import uk.gov.crowncommercial.dts.scale.service.agreements.exception.AgreementNotFoundException;
-import uk.gov.crowncommercial.dts.scale.service.agreements.exception.LotNotFoundException;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.*;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.CommercialAgreement;
-import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.Lot;
-import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.LotOrganisationRole;
 import uk.gov.crowncommercial.dts.scale.service.agreements.service.AgreementService;
 
 /**
@@ -27,8 +24,6 @@ import uk.gov.crowncommercial.dts.scale.service.agreements.service.AgreementServ
 @RequiredArgsConstructor
 @Slf4j
 public class AgreementController {
-
-  static final String METHOD_NOT_IMPLEMENTED_MSG = "This method is not yet implemented by the API";
 
   private final AgreementService service;
   private final AgreementConverter converter;
@@ -63,17 +58,6 @@ public class AgreementController {
     }
   }
 
-  @GetMapping("/agreements/{ca-number}/lots/{lot-number}")
-  public LotDetail getLot(@PathVariable(value = "ca-number") final String caNumber,
-      @PathVariable(value = "lot-number") final String lotNumber) {
-    log.debug("getLot: caNumber={},lotNumber={}", caNumber, lotNumber);
-    final Lot lot = service.findLotByAgreementNumberAndLotNumber(caNumber, lotNumber);
-    if (lot == null) {
-      throw new LotNotFoundException(lotNumber, caNumber);
-    }
-    return converter.convertLotToDTO(lot);
-  }
-
   @GetMapping("/agreements/{ca-number}/documents")
   public Collection<Document> getAgreementDocuments(
       @PathVariable(value = "ca-number") final String caNumber) {
@@ -88,19 +72,6 @@ public class AgreementController {
     log.debug("getAgreementUpdates: {}", caNumber);
     final CommercialAgreement ca = getAgreement(caNumber);
     return converter.convertAgreementUpdatesToDTOs(ca.getUpdates());
-  }
-
-  @GetMapping("/agreements/{ca-number}/lots/{lot-number}/suppliers")
-  public Collection<LotSupplier> getLotSuppliers(
-      @PathVariable(value = "ca-number") final String caNumber,
-      @PathVariable(value = "lot-number") final String lotNumber) {
-
-    log.debug("getLotSuppliers: caNumber={}, lotNumber={}", caNumber, lotNumber);
-
-    final Collection<LotOrganisationRole> lotOrgRoles =
-        service.findLotSupplierOrgRolesByAgreementNumberAndLotNumber(caNumber, lotNumber);
-
-    return converter.convertLotOrgRolesToLotSupplierDTOs(lotOrgRoles);
   }
 
   private CommercialAgreement getAgreement(final String caNumber) {
