@@ -10,7 +10,7 @@ import lombok.Data;
 import lombok.experimental.FieldDefaults;
 
 /**
- * Lot Procurement Event Type.
+ * Procurement Event Type.
  */
 @Entity
 @Immutable
