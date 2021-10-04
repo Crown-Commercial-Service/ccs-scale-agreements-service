@@ -67,7 +67,7 @@ public class Lot {
   @JoinColumn(name = "lot_id")
   Set<LotOrganisationRole> organisationRoles;
 
-  @OneToMany
+  @OneToMany(fetch = FetchType.LAZY)
   @JoinColumn(name = "lot_id")
   Set<LotProcurementEventType> procurementEventTypes;
 }
