@@ -4,10 +4,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import uk.gov.crowncommercial.dts.scale.service.agreements.converter.AgreementConverter;
@@ -21,6 +18,7 @@ import uk.gov.crowncommercial.dts.scale.service.agreements.service.AgreementServ
  *
  */
 @RestController
+@RequestMapping("/agreements")
 @RequiredArgsConstructor
 @Slf4j
 public class AgreementController {
@@ -28,7 +26,7 @@ public class AgreementController {
   private final AgreementService service;
   private final AgreementConverter converter;
 
-  @GetMapping("/agreements")
+  @GetMapping
   public Collection<AgreementSummary> getAgreements() {
     log.debug("getAgreements");
     final List<CommercialAgreement> agreements = service.getAgreements();
@@ -36,7 +34,7 @@ public class AgreementController {
         .collect(Collectors.toList());
   }
 
-  @GetMapping("/agreements/{agreement-id}")
+  @GetMapping("/{agreement-id}")
   public AgreementDetail getAgreementDetail(
       @PathVariable(value = "agreement-id") final String agreementId) {
     log.debug("getAgreement: {}", agreementId);
@@ -44,7 +42,7 @@ public class AgreementController {
     return converter.convertAgreementToDTO(ca);
   }
 
-  @GetMapping("/agreements/{agreement-id}/lots")
+  @GetMapping("/{agreement-id}/lots")
   public Collection<LotDetail> getAgreementLots(
       @PathVariable(value = "agreement-id") final String agreementId,
       @RequestParam Optional<BuyingMethod> buyingMethod) {
@@ -58,7 +56,7 @@ public class AgreementController {
     }
   }
 
-  @GetMapping("/agreements/{agreement-id}/documents")
+  @GetMapping("/{agreement-id}/documents")
   public Collection<Document> getAgreementDocuments(
       @PathVariable(value = "agreement-id") final String agreementId) {
     log.debug("getAgreementDocuments: {}", agreementId);
@@ -66,7 +64,7 @@ public class AgreementController {
     return converter.convertAgreementDocumentsToDTOs(ca.getDocuments());
   }
 
-  @GetMapping("/agreements/{agreement-id}/updates")
+  @GetMapping("/{agreement-id}/updates")
   public Collection<AgreementUpdate> getAgreementUpdates(
       @PathVariable(value = "agreement-id") final String agreementId) {
     log.debug("getAgreementUpdates: {}", agreementId);

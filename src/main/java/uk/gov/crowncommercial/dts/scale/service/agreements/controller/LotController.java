@@ -3,6 +3,7 @@ package uk.gov.crowncommercial.dts.scale.service.agreements.controller;
 import java.util.Collection;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,6 +21,7 @@ import uk.gov.crowncommercial.dts.scale.service.agreements.service.AgreementServ
  *
  */
 @RestController
+@RequestMapping("/agreements/{agreement-id}/lots/{lot-id}")
 @RequiredArgsConstructor
 @Slf4j
 public class LotController {
@@ -27,7 +29,7 @@ public class LotController {
   private final AgreementService service;
   private final AgreementConverter converter;
 
-  @GetMapping("/agreements/{agreement-id}/lots/{lot-id}")
+  @GetMapping
   public LotDetail getLot(@PathVariable(value = "agreement-id") final String agreementId,
       @PathVariable(value = "lot-id") final String lotId) {
     log.debug("getLot: agreementId={},lotId={}", agreementId, lotId);
@@ -38,7 +40,7 @@ public class LotController {
     return converter.convertLotToDTO(lot);
   }
 
-  @GetMapping("/agreements/{agreement-id}/lots/{lot-id}/suppliers")
+  @GetMapping("/suppliers")
   public Collection<LotSupplier> getLotSuppliers(
       @PathVariable(value = "agreement-id") final String agreementId,
       @PathVariable(value = "lot-id") final String lotId) {
@@ -51,7 +53,7 @@ public class LotController {
     return converter.convertLotOrgRolesToLotSupplierDTOs(lotOrgRoles);
   }
 
-  @GetMapping("/agreements/{agreement-id}/lots/{lot-id}/event-types")
+  @GetMapping("/event-types")
   public Collection<EventType> getLotEventTypes(
       @PathVariable(value = "agreement-id") final String agreementId,
       @PathVariable(value = "lot-id") final String lotId) {
