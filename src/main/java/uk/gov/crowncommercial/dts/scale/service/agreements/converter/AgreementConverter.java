@@ -99,4 +99,13 @@ public class AgreementConverter {
     return lotProcurementEventTypes.stream().map(lpet -> modelMapper.map(lpet, EventType.class))
         .collect(Collectors.toSet());
   }
+
+  public Collection<Object> convertLotProcurementQuestionTemplateToString(
+      final Collection<LotProcurementQuestionTemplate> lotProcurementQuestionTemplates) {
+
+    return lotProcurementQuestionTemplates.stream()
+        .map(t -> t.getProcurementQuestionTemplate().getTemplatePayload())
+        .collect(Collectors.toSet());
+
+  }
 }

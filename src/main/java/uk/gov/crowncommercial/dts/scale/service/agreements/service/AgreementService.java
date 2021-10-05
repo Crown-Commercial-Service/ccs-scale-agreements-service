@@ -10,7 +10,9 @@ import uk.gov.crowncommercial.dts.scale.service.agreements.exception.LotNotFound
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.CommercialAgreement;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.Lot;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.LotOrganisationRole;
+import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.LotProcurementQuestionTemplate;
 import uk.gov.crowncommercial.dts.scale.service.agreements.repository.CommercialAgreementRepo;
+import uk.gov.crowncommercial.dts.scale.service.agreements.repository.LotProcurementQuestionTemplateRepo;
 import uk.gov.crowncommercial.dts.scale.service.agreements.repository.LotRepo;
 
 /**
@@ -24,6 +26,7 @@ public class AgreementService {
 
   private final CommercialAgreementRepo commercialAgreementRepo;
   private final LotRepo lotRepo;
+  private final LotProcurementQuestionTemplateRepo questionTemplateRepo;
 
   /**
    * Get all agreements.
@@ -53,10 +56,11 @@ public class AgreementService {
    * @param lotNumber Lot number
    * @return Lot
    */
-  public Lot findLotByAgreementNumberAndLotNumber(final String caNumber, final String lotNumber) {
-    log.debug("findLotByAgreementNumberAndLotNumber: caNumber={},lotNumber={}", caNumber,
-        lotNumber);
-    return lotRepo.findByAgreementNumberAndNumber(caNumber, lotNumber);
+  public Lot findLotByAgreementNumberAndLotNumber(final String agreementNumber,
+      final String lotNumber) {
+    log.debug("findLotByAgreementNumberAndLotNumber: agreementNumber={},lotNumber={}",
+        agreementNumber, lotNumber);
+    return lotRepo.findByAgreementNumberAndNumber(agreementNumber, lotNumber);
   }
 
   /**
@@ -79,17 +83,32 @@ public class AgreementService {
    * @throws LotNotFoundException if CA or lot not found
    */
   public Collection<LotOrganisationRole> findLotSupplierOrgRolesByAgreementNumberAndLotNumber(
-      final String caNumber, final String lotNumber) {
+      final String agreementNumber, final String lotNumber) {
 
-    final Lot lot = lotRepo.findByAgreementNumberAndNumber(caNumber, lotNumber);
+    final Lot lot = lotRepo.findByAgreementNumberAndNumber(agreementNumber, lotNumber);
     if (lot == null) {
-      throw new LotNotFoundException(lotNumber, caNumber);
+      throw new LotNotFoundException(lotNumber, agreementNumber);
     }
 
     // Filter the lot organisation roles for role-type 'supplier'
     return lot.getOrganisationRoles().stream()
         .filter(lor -> "supplier".equalsIgnoreCase(lor.getRoleType().getName()))
         .collect(Collectors.toSet());
+  }
+
+  /**
+   * Find ProcurementQuestionTemplates
+   * 
+   * @param caNumber Commercial Agreement number
+   * @param lotNumber Lot number
+   * @param eventType Event type (e.g. RFI)
+   * @return
+   */
+  public Collection<LotProcurementQuestionTemplate> findLotProcurementQuestionTemplates(
+      final String agreementNumber, final String lotNumber, final String eventType) {
+
+    return questionTemplateRepo.findByLotAgreementNumberAndLotNumberAndProcurementEventTypeName(
+        agreementNumber, lotNumber, eventType);
   }
 
 }
