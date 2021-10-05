@@ -32,6 +32,7 @@ public class AgreementConverter {
   private final TimestampConverter timestampConverter;
   private final AgreementOwnerConverter agreementOwnerConverter;
   private final AgreementBenefitConverter agreementBenefitConverter;
+  private final EventTypeConverter eventTypeConverter;
 
   @PostConstruct
   public void init() {
@@ -43,6 +44,7 @@ public class AgreementConverter {
     modelMapper.addConverter(agreementUpdateConverter);
     modelMapper.addConverter(routeToMarketConverter);
     modelMapper.addConverter(timestampConverter);
+    modelMapper.addConverter(eventTypeConverter);
 
     /*
      * Specific mismatched properties / converters (do not set globally on modelMapper)
@@ -89,6 +91,12 @@ public class AgreementConverter {
   public Collection<LotSupplier> convertLotOrgRolesToLotSupplierDTOs(
       final Collection<LotOrganisationRole> lotOrgRoles) {
     return lotOrgRoles.stream().map(lor -> modelMapper.map(lor, LotSupplier.class))
+        .collect(Collectors.toSet());
+  }
+
+  public Collection<EventType> convertLotProcurementEventTypesToDTOs(
+      final Collection<LotProcurementEventType> lotProcurementEventTypes) {
+    return lotProcurementEventTypes.stream().map(lpet -> modelMapper.map(lpet, EventType.class))
         .collect(Collectors.toSet());
   }
 }
