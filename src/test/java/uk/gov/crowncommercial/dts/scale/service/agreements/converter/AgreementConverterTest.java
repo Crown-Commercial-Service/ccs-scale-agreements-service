@@ -117,6 +117,8 @@ class AgreementConverterTest {
   private static final String BENEFIT_ONE = "Benefit 1";
   private static final String BENEFIT_TWO = "Benefit 2";
 
+  // Procurement Question Templates
+  private static final String CRITERION_PAYLOAD_ONE = "[[{\"id\\\": \\\"Criterion 1\\\"}]]";
 
   @Autowired
   AgreementConverter converter;
@@ -251,6 +253,19 @@ class AgreementConverterTest {
     LotSupplier lotSupplier2 = getLotSupplier(2, 3, 3);
 
     assertThat(lotSuppliers, hasItems(lotSupplier1, lotSupplier2));
+  }
+
+  @Test
+  void testDataTemplates() {
+    ProcurementQuestionTemplate template = new ProcurementQuestionTemplate();
+    template.setTemplatePayload(CRITERION_PAYLOAD_ONE);
+    LotProcurementQuestionTemplate lotTemplate = new LotProcurementQuestionTemplate();
+    lotTemplate.setProcurementQuestionTemplate(template);
+    Collection<Object> criterionPayloads =
+        converter.convertLotProcurementQuestionTemplateToString(Collections.singleton(lotTemplate));
+
+    assertEquals(1, criterionPayloads.size());
+    assertEquals(CRITERION_PAYLOAD_ONE, criterionPayloads.stream().findFirst().get());
   }
 
   private LotSupplier getLotSupplier(int instance, int minContactPoint, int maxContactPoint) {

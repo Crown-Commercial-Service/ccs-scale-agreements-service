@@ -75,7 +75,8 @@ public class LotController {
       @PathVariable(value = "lot-id") final String lotNumber,
       @PathVariable(value = "event-type") final String eventType) {
 
-    log.debug("getDataTemplates: agreementNumber={}, lotNumber={}", agreementNumber, lotNumber);
+    log.debug("getDataTemplates: agreementNumber={}, lotNumber={}, eventType={}", agreementNumber,
+        lotNumber, eventType);
 
     final Collection<LotProcurementQuestionTemplate> questions =
         service.findLotProcurementQuestionTemplates(agreementNumber, lotNumber, eventType);
