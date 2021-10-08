@@ -41,6 +41,7 @@ resource "cloudfoundry_app" "agreements_service" {
   memory               = var.memory
   name                 = "${var.environment}-ccs-scale-shared-agreements-service"
   path                 = var.path
+  source_code_hash     = filebase64sha256(var.path)
   ports                = [8080]
   space                = data.cloudfoundry_space.space.id
   stopped              = false

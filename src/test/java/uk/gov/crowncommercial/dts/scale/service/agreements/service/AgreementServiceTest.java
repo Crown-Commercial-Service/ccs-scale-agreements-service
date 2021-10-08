@@ -13,7 +13,6 @@ import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.Commerci
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.Lot;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.LotProcurementQuestionTemplate;
 import uk.gov.crowncommercial.dts.scale.service.agreements.repository.CommercialAgreementRepo;
-import uk.gov.crowncommercial.dts.scale.service.agreements.repository.LotProcurementQuestionTemplateRepo;
 import uk.gov.crowncommercial.dts.scale.service.agreements.repository.LotRepo;
 
 @SpringBootTest
@@ -35,9 +34,6 @@ class AgreementServiceTest {
 
   @MockBean
   private LotRepo mockLotRepo;
-
-  @MockBean
-  private LotProcurementQuestionTemplateRepo mockLotProcurementQuestionTemplateRepo;
 
   @MockBean
   private Lot mockLot;
@@ -67,14 +63,5 @@ class AgreementServiceTest {
         .thenReturn(mockLot);
     assertEquals(mockLot,
         service.findLotByAgreementNumberAndLotNumber(AGREEMENT_NUMBER, LOT_NUMBER));
-  }
-
-  @Test
-  void testFindLotProcurementQuestionTemplates() throws Exception {
-    when(mockLotProcurementQuestionTemplateRepo
-        .findByLotAgreementNumberAndLotNumberAndProcurementEventTypeName(AGREEMENT_NUMBER,
-            LOT_NUMBER, EVENT_TYPE)).thenReturn(mockTemplates);
-    assertEquals(mockTemplates,
-        service.findLotProcurementQuestionTemplates(AGREEMENT_NUMBER, LOT_NUMBER, EVENT_TYPE));
   }
 }

@@ -118,7 +118,9 @@ class AgreementConverterTest {
   private static final String BENEFIT_TWO = "Benefit 2";
 
   // Procurement Question Templates
-  private static final String CRITERION_PAYLOAD_ONE = "[[{\"id\\\": \\\"Criterion 1\\\"}]]";
+  private static final String TEMPLATE_PAYLOAD = "[[{\"id\\\": \\\"Criterion 1\\\"}]]";
+  private static final String TEMPLATE_URL = "http://url";
+  private static final String EVENT_TYPE = "RFI";
 
   @Autowired
   AgreementConverter converter;
@@ -257,15 +259,42 @@ class AgreementConverterTest {
 
   @Test
   void testDataTemplates() {
-    ProcurementQuestionTemplate template = new ProcurementQuestionTemplate();
-    template.setTemplatePayload(CRITERION_PAYLOAD_ONE);
-    LotProcurementQuestionTemplate lotTemplate = new LotProcurementQuestionTemplate();
-    lotTemplate.setProcurementQuestionTemplate(template);
-    Collection<Object> criterionPayloads =
-        converter.convertLotProcurementQuestionTemplateToString(Collections.singleton(lotTemplate));
+    // Payload with matching EventType
+    LotProcurementQuestionTemplate lotTemplate1 =
+        createLotProcurementQuestionTemplate(TEMPLATE_PAYLOAD, null, EVENT_TYPE);
+    // No payload - gets ignored
+    LotProcurementQuestionTemplate lotTemplate2 =
+        createLotProcurementQuestionTemplate(null, null, EVENT_TYPE);
+    // Payload with non-matching EventType
+    LotProcurementQuestionTemplate lotTemplate3 =
+        createLotProcurementQuestionTemplate(TEMPLATE_PAYLOAD, null, "Non-matching event type");
 
-    assertEquals(1, criterionPayloads.size());
-    assertEquals(CRITERION_PAYLOAD_ONE, criterionPayloads.stream().findFirst().get());
+    Collection<Object> templatePayloads =
+        converter.convertLotProcurementQuestionTemplateToDataTemplates(
+            Arrays.asList(lotTemplate1, lotTemplate2, lotTemplate3), EVENT_TYPE);
+
+    assertEquals(1, templatePayloads.size());
+    assertEquals(TEMPLATE_PAYLOAD, templatePayloads.stream().findFirst().get());
+  }
+
+  @Test
+  void testDocumentTemplates() {
+    // Url with matching EventType
+    LotProcurementQuestionTemplate lotTemplate1 =
+        createLotProcurementQuestionTemplate(null, TEMPLATE_URL, EVENT_TYPE);
+    // No url - gets ignored
+    LotProcurementQuestionTemplate lotTemplate2 =
+        createLotProcurementQuestionTemplate(null, null, EVENT_TYPE);
+    // Url with non-matching EventType
+    LotProcurementQuestionTemplate lotTemplate3 =
+        createLotProcurementQuestionTemplate(null, TEMPLATE_URL, "Non-matching event type");
+
+    Collection<Document> templateUrls =
+        converter.convertLotProcurementQuestionTemplateToDocumentTemplates(
+            Arrays.asList(lotTemplate1, lotTemplate2, lotTemplate3), EVENT_TYPE);
+
+    assertEquals(1, templateUrls.size());
+    assertEquals(TEMPLATE_URL, templateUrls.stream().findFirst().get().getUrl());
   }
 
   private LotSupplier getLotSupplier(int instance, int minContactPoint, int maxContactPoint) {
@@ -652,7 +681,6 @@ class AgreementConverterTest {
   }
 
   private Set<CommercialAgreementBenefit> createBenefits() {
-
     CommercialAgreementBenefit benefit1 = new CommercialAgreementBenefit();
     benefit1.setDescription(BENEFIT_ONE);
     benefit1.setSequence(1);
@@ -665,6 +693,19 @@ class AgreementConverterTest {
     benefits.add(benefit2);
     benefits.add(benefit1);
     return benefits;
+  }
+
+  private LotProcurementQuestionTemplate createLotProcurementQuestionTemplate(String payload,
+      String url, String eventType) {
+    ProcurementQuestionTemplate template = new ProcurementQuestionTemplate();
+    template.setTemplatePayload(payload);
+    template.setTemplateUrl(url);
+    LotProcurementQuestionTemplate lotTemplate = new LotProcurementQuestionTemplate();
+    lotTemplate.setProcurementQuestionTemplate(template);
+    ProcurementEventType pet = new ProcurementEventType();
+    pet.setName(eventType);
+    lotTemplate.setProcurementEventType(pet);
+    return lotTemplate;
   }
 
 }

@@ -10,9 +10,7 @@ import uk.gov.crowncommercial.dts.scale.service.agreements.exception.LotNotFound
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.CommercialAgreement;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.Lot;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.LotOrganisationRole;
-import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.LotProcurementQuestionTemplate;
 import uk.gov.crowncommercial.dts.scale.service.agreements.repository.CommercialAgreementRepo;
-import uk.gov.crowncommercial.dts.scale.service.agreements.repository.LotProcurementQuestionTemplateRepo;
 import uk.gov.crowncommercial.dts.scale.service.agreements.repository.LotRepo;
 
 /**
@@ -26,7 +24,6 @@ public class AgreementService {
 
   private final CommercialAgreementRepo commercialAgreementRepo;
   private final LotRepo lotRepo;
-  private final LotProcurementQuestionTemplateRepo questionTemplateRepo;
 
   /**
    * Get all agreements.
@@ -94,21 +91,6 @@ public class AgreementService {
     return lot.getOrganisationRoles().stream()
         .filter(lor -> "supplier".equalsIgnoreCase(lor.getRoleType().getName()))
         .collect(Collectors.toSet());
-  }
-
-  /**
-   * Find ProcurementQuestionTemplates
-   * 
-   * @param caNumber Commercial Agreement number
-   * @param lotNumber Lot number
-   * @param eventType Event type (e.g. RFI)
-   * @return
-   */
-  public Collection<LotProcurementQuestionTemplate> findLotProcurementQuestionTemplates(
-      final String agreementNumber, final String lotNumber, final String eventType) {
-
-    return questionTemplateRepo.findByLotAgreementNumberAndLotNumberAndProcurementEventTypeName(
-        agreementNumber, lotNumber, eventType);
   }
 
 }

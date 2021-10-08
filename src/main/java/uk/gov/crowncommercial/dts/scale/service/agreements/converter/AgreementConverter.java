@@ -100,11 +100,26 @@ public class AgreementConverter {
         .collect(Collectors.toSet());
   }
 
-  public Collection<Object> convertLotProcurementQuestionTemplateToString(
-      final Collection<LotProcurementQuestionTemplate> lotProcurementQuestionTemplates) {
+  public Collection<Object> convertLotProcurementQuestionTemplateToDataTemplates(
+      final Collection<LotProcurementQuestionTemplate> lotProcurementQuestionTemplates,
+      final String eventType) {
     return lotProcurementQuestionTemplates.stream()
+        .filter(t -> t.getProcurementQuestionTemplate().getTemplatePayload() != null
+            && eventType.equalsIgnoreCase(t.getProcurementEventType().getName()))
         .map(t -> t.getProcurementQuestionTemplate().getTemplatePayload())
         .collect(Collectors.toSet());
+  }
 
+  public Collection<Document> convertLotProcurementQuestionTemplateToDocumentTemplates(
+      final Collection<LotProcurementQuestionTemplate> lotProcurementQuestionTemplates,
+      final String eventType) {
+    return lotProcurementQuestionTemplates.stream()
+        .filter(t -> t.getProcurementQuestionTemplate().getTemplateUrl() != null
+            && eventType.equalsIgnoreCase(t.getProcurementEventType().getName()))
+        .map(t -> {
+          Document doc = new Document();
+          doc.setUrl(t.getProcurementQuestionTemplate().getTemplateUrl());
+          return doc;
+        }).collect(Collectors.toSet());
   }
 }

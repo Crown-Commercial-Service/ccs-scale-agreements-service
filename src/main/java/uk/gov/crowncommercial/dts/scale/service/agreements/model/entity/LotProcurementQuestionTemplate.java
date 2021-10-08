@@ -19,11 +19,6 @@ public class LotProcurementQuestionTemplate {
   @EmbeddedId
   LotProcurementQuestionTemplateKey key;
 
-  @MapsId("lotId")
-  @ManyToOne
-  @JoinColumn(name = "lot_id")
-  Lot lot;
-
   @MapsId("templateId")
   @ManyToOne
   @JoinColumn(name = "template_id")

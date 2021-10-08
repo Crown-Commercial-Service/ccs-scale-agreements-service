@@ -33,6 +33,8 @@ class LotControllerTest {
       "/agreements/{agreement-id}/lots/{lot-id}/event-types";
   private static final String GET_LOT_DATA_TEMPLATES_PATH =
       "/agreements/{agreement-id}/lots/{lot-id}/event-types/{event-type}/data-templates";
+  private static final String GET_LOT_DOCUMENT_TEMPLATES_PATH =
+      "/agreements/{agreement-id}/lots/{lot-id}/event-types/{event-type}/document-templates";
 
   private static final String AGREEMENT_NUMBER = "RM3733";
   private static final String LOT1_NUMBER = "Lot 1";
@@ -64,6 +66,9 @@ class LotControllerTest {
 
   @MockBean
   private LotProcurementEventType lotProcurementEventType;
+
+  @MockBean
+  private Set<LotProcurementQuestionTemplate> lotProcurementQuestionTemplates;
 
   @Test
   void testGetLotSuccess() throws Exception {
@@ -184,22 +189,64 @@ class LotControllerTest {
 
   @Test
   void testGetDataTemplates() throws Exception {
-    final String jsonPayload = "[[{\"id\\\": \\\"Criterion 1\\\"}]]";
-    ProcurementQuestionTemplate template = new ProcurementQuestionTemplate();
-    template.setTemplatePayload(jsonPayload);
-    LotProcurementQuestionTemplate lotTemplate = new LotProcurementQuestionTemplate();
-    lotTemplate.setProcurementQuestionTemplate(template);
-    final Set<LotProcurementQuestionTemplate> lotProcurementQuestionTemplates =
-        Collections.singleton(lotTemplate);
-
-    when(service.findLotProcurementQuestionTemplates(AGREEMENT_NUMBER, LOT1_NUMBER, EVENT_TYPE_RFI))
-        .thenReturn(lotProcurementQuestionTemplates);
-    when(converter.convertLotProcurementQuestionTemplateToString(lotProcurementQuestionTemplates))
-        .thenReturn(Collections.singleton(jsonPayload));
-
+    final String templatePayload = "[[{\"id\\\": \\\"Criterion 1\\\"}]]";
+    when(mockLot.getProcurementQuestionTemplates()).thenReturn(lotProcurementQuestionTemplates);
+    when(service.findLotByAgreementNumberAndLotNumber(AGREEMENT_NUMBER, LOT1_NUMBER))
+        .thenReturn(mockLot);
+    when(converter.convertLotProcurementQuestionTemplateToDataTemplates(
+        lotProcurementQuestionTemplates, EVENT_TYPE_RFI))
+            .thenReturn(Collections.singleton(templatePayload));
     mockMvc.perform(get(GET_LOT_DATA_TEMPLATES_PATH, AGREEMENT_NUMBER, LOT1_NUMBER, EVENT_TYPE_RFI))
         .andExpect(content().contentType(MediaType.APPLICATION_JSON))
         .andExpect(status().is2xxSuccessful()).andExpect(jsonPath("$.size()", is(1)))
-        .andExpect(jsonPath("$.[0]", is(jsonPayload)));
+        .andExpect(jsonPath("$.[0]", is(templatePayload)));
+  }
+
+  @Test
+  void testGetDataTemplatesNotFound() throws Exception {
+    when(service.findLotByAgreementNumberAndLotNumber(AGREEMENT_NUMBER, LOT1_NUMBER))
+        .thenReturn(null);
+    mockMvc.perform(get(GET_LOT_DATA_TEMPLATES_PATH, AGREEMENT_NUMBER, LOT1_NUMBER, EVENT_TYPE_RFI))
+        .andExpect(status().is4xxClientError())
+        .andExpect(jsonPath("$.errors[0].status", is(HttpStatus.NOT_FOUND.toString())))
+        .andExpect(jsonPath("$.errors[0].title", is(GlobalErrorHandler.ERR_MSG_NOT_FOUND_TITLE)))
+        .andExpect(jsonPath("$.errors[0].detail",
+            is(String.format(LotNotFoundException.ERROR_MSG_TEMPLATE, LOT1_NUMBER,
+                AGREEMENT_NUMBER))))
+        .andExpect(jsonPath("$.description", is(GlobalErrorHandler.ERR_MSG_NOT_FOUND_DESCRIPTION)));
+  }
+
+  @Test
+  void testGetDocumentTemplates() throws Exception {
+    final String templateUrl = "http://url";
+    Document doc = new Document();
+    doc.setUrl(templateUrl);
+    when(service.findLotByAgreementNumberAndLotNumber(AGREEMENT_NUMBER, LOT1_NUMBER))
+        .thenReturn(mockLot);
+    when(mockLot.getProcurementQuestionTemplates()).thenReturn(lotProcurementQuestionTemplates);
+    when(converter.convertLotProcurementQuestionTemplateToDocumentTemplates(
+        lotProcurementQuestionTemplates, EVENT_TYPE_RFI)).thenReturn(Collections.singleton(doc));
+    mockMvc
+        .perform(
+            get(GET_LOT_DOCUMENT_TEMPLATES_PATH, AGREEMENT_NUMBER, LOT1_NUMBER, EVENT_TYPE_RFI))
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().is2xxSuccessful()).andExpect(jsonPath("$.size()", is(1)))
+        .andExpect(jsonPath("$.[0].url", is(templateUrl)));
+  }
+
+  @Test
+  void testGetDocumentTemplatesNotFound() throws Exception {
+    when(service.findLotByAgreementNumberAndLotNumber(AGREEMENT_NUMBER, LOT1_NUMBER))
+        .thenReturn(null);
+    mockMvc
+        .perform(
+            get(GET_LOT_DOCUMENT_TEMPLATES_PATH, AGREEMENT_NUMBER, LOT1_NUMBER, EVENT_TYPE_RFI))
+        .andExpect(status().is4xxClientError())
+        .andExpect(jsonPath("$.errors[0].status", is(HttpStatus.NOT_FOUND.toString())))
+        .andExpect(jsonPath("$.errors[0].title", is(GlobalErrorHandler.ERR_MSG_NOT_FOUND_TITLE)))
+        .andExpect(jsonPath("$.errors[0].detail",
+            is(String.format(LotNotFoundException.ERROR_MSG_TEMPLATE, LOT1_NUMBER,
+                AGREEMENT_NUMBER))))
+        .andExpect(jsonPath("$.description", is(GlobalErrorHandler.ERR_MSG_NOT_FOUND_DESCRIPTION)));
   }
 }
