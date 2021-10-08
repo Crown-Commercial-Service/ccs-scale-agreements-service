@@ -93,8 +93,8 @@ public class LotController {
       @PathVariable(value = "lot-id") final String lotNumber,
       @PathVariable(value = "event-type") final String eventType) {
 
-    log.debug("getDataTemplates: agreementNumber={}, lotNumber={}, eventType={}", agreementNumber,
-        lotNumber, eventType);
+    log.debug("getDocumentTemplates: agreementNumber={}, lotNumber={}, eventType={}",
+        agreementNumber, lotNumber, eventType);
 
     final Lot lot = service.findLotByAgreementNumberAndLotNumber(agreementNumber, lotNumber);
     if (lot == null) {
