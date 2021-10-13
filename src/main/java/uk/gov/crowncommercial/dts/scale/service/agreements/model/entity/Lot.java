@@ -70,4 +70,8 @@ public class Lot {
   @OneToMany(fetch = FetchType.LAZY)
   @JoinColumn(name = "lot_id")
   Set<LotProcurementEventType> procurementEventTypes;
+
+  @OneToMany(fetch = FetchType.LAZY)
+  @JoinColumn(name = "lot_id")
+  Set<LotProcurementQuestionTemplate> procurementQuestionTemplates;
 }

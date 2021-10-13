@@ -36,18 +36,19 @@ public class AgreementController {
 
   @GetMapping("/{agreement-id}")
   public AgreementDetail getAgreementDetail(
-      @PathVariable(value = "agreement-id") final String agreementId) {
-    log.debug("getAgreement: {}", agreementId);
-    final CommercialAgreement ca = getAgreement(agreementId);
+      @PathVariable(value = "agreement-id") final String agreementNumber) {
+    log.debug("getAgreement: {}", agreementNumber);
+    final CommercialAgreement ca = getAgreement(agreementNumber);
     return converter.convertAgreementToDTO(ca);
   }
 
   @GetMapping("/{agreement-id}/lots")
   public Collection<LotDetail> getAgreementLots(
-      @PathVariable(value = "agreement-id") final String agreementId,
+      @PathVariable(value = "agreement-id") final String agreementNumber,
       @RequestParam Optional<BuyingMethod> buyingMethod) {
-    log.debug("getAgreementLots: agreementId={}, buyingMethod={}", agreementId, buyingMethod);
-    final CommercialAgreement ca = getAgreement(agreementId);
+    log.debug("getAgreementLots: agreementNumber={}, buyingMethod={}", agreementNumber,
+        buyingMethod);
+    final CommercialAgreement ca = getAgreement(agreementNumber);
     Collection<LotDetail> lots = converter.convertLotsToDTOs(ca.getLots());
     if (buyingMethod.isPresent()) {
       return filterLotsByBuyingMethod(lots, buyingMethod.get());
@@ -58,24 +59,24 @@ public class AgreementController {
 
   @GetMapping("/{agreement-id}/documents")
   public Collection<Document> getAgreementDocuments(
-      @PathVariable(value = "agreement-id") final String agreementId) {
-    log.debug("getAgreementDocuments: {}", agreementId);
-    final CommercialAgreement ca = getAgreement(agreementId);
+      @PathVariable(value = "agreement-id") final String agreementNumber) {
+    log.debug("getAgreementDocuments: {}", agreementNumber);
+    final CommercialAgreement ca = getAgreement(agreementNumber);
     return converter.convertAgreementDocumentsToDTOs(ca.getDocuments());
   }
 
   @GetMapping("/{agreement-id}/updates")
   public Collection<AgreementUpdate> getAgreementUpdates(
-      @PathVariable(value = "agreement-id") final String agreementId) {
-    log.debug("getAgreementUpdates: {}", agreementId);
-    final CommercialAgreement ca = getAgreement(agreementId);
+      @PathVariable(value = "agreement-id") final String agreementNumber) {
+    log.debug("getAgreementUpdates: {}", agreementNumber);
+    final CommercialAgreement ca = getAgreement(agreementNumber);
     return converter.convertAgreementUpdatesToDTOs(ca.getUpdates());
   }
 
-  private CommercialAgreement getAgreement(final String caNumber) {
-    final CommercialAgreement ca = service.findAgreementByNumber(caNumber);
+  private CommercialAgreement getAgreement(final String agreementNumber) {
+    final CommercialAgreement ca = service.findAgreementByNumber(agreementNumber);
     if (ca == null) {
-      throw new AgreementNotFoundException(caNumber);
+      throw new AgreementNotFoundException(agreementNumber);
     }
     return ca;
   }

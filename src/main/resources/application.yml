@@ -16,6 +16,9 @@ spring:
     show-sql: false
     hibernate:
       ddl-auto: validate
+    properties:
+      hibernate:
+        dialect: uk.gov.crowncommercial.dts.scale.service.agreements.config.PostgreSQL10JsonDialect
     
 ---
 spring:
