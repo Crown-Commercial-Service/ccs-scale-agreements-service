@@ -6,7 +6,7 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>2.2.6.RELEASE</version>
+		<version>2.5.5</version>
 		<relativePath /> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>uk.gov.crowncommercial.dts</groupId>
@@ -16,8 +16,8 @@
 	<description>SCALE Agreements service</description>
 
 	<properties>
-		<java.version>1.8</java.version>
-		<modelmapper.version>2.3.5</modelmapper.version>
+		<java.version>11</java.version>
+		<modelmapper.version>2.4.4</modelmapper.version>
 		<hibernate-types.version>2.12.1</hibernate-types.version>
 	</properties>
 

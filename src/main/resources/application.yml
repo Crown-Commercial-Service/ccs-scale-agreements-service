@@ -1,5 +1,7 @@
 server:
   port: 9010
+  error:
+    path: "/error"
 
 logging:
   level:
