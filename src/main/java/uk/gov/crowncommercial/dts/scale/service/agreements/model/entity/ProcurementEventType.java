@@ -30,6 +30,6 @@ public class ProcurementEventType {
   String description;
 
   @Column(name = "premarket_activity_ind")
-  Boolean isPreMarketEvent;
+  Boolean preMarketActivity;
 
 }

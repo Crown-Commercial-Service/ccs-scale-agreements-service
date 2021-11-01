@@ -1,10 +1,7 @@
 package uk.gov.crowncommercial.dts.scale.service.agreements.converter;
 
 import static org.junit.jupiter.api.Assertions.*;
-import java.util.Arrays;
-import java.util.Collection;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.EventType;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.LotProcurementEventType;
@@ -23,7 +20,7 @@ class EventTypeConverterTest {
     ProcurementEventType procurementEventType = new ProcurementEventType();
     procurementEventType.setName(EOI);
     procurementEventType.setDescription(EXPRESSION_OF_INTEREST);
-    procurementEventType.setIsPreMarketEvent(IS_PRE_MARKET_EVENT);
+    procurementEventType.setPreMarketActivity(IS_PRE_MARKET_EVENT);
     LotProcurementEventType lotEventType = new LotProcurementEventType();
     lotEventType.setProcurementEventType(procurementEventType);
 

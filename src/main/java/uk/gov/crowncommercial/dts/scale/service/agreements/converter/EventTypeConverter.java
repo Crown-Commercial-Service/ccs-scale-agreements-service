@@ -18,7 +18,7 @@ public class EventTypeConverter extends AbstractConverter<LotProcurementEventTyp
   protected EventType convert(LotProcurementEventType lotProcurementEventType) {
     EventType eventType = new EventType();
     eventType.setType(lotProcurementEventType.getProcurementEventType().getName());
-    eventType.setIsPreMarketEvent(lotProcurementEventType.getProcurementEventType().getIsPreMarketEvent());
+    eventType.setIsPreMarketEvent(lotProcurementEventType.getProcurementEventType().getPreMarketActivity());
     eventType.setDescription(lotProcurementEventType.getProcurementEventType().getDescription());
     return eventType;
   }
