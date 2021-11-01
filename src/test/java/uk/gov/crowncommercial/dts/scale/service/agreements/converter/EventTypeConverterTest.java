@@ -27,7 +27,7 @@ class EventTypeConverterTest {
     EventType eventType = converter.convert(lotEventType);
     assertEquals(EOI,eventType.getType());
     assertEquals(EXPRESSION_OF_INTEREST,eventType.getDescription());
-    assertEquals(IS_PRE_MARKET_EVENT,eventType.getIsPreMarketEvent());
+    assertEquals(IS_PRE_MARKET_EVENT,eventType.getPreMarketEvent());
   }
 
 }
