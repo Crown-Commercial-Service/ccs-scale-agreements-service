@@ -18,8 +18,8 @@ public class EventTypeConverter extends AbstractConverter<LotProcurementEventTyp
   protected EventType convert(LotProcurementEventType lotProcurementEventType) {
     EventType eventType = new EventType();
     eventType.setType(lotProcurementEventType.getProcurementEventType().getName());
-    // TODO: Description needs to be added to the database table - see SCAT-1767
-    // eventType.setDescription(null);
+    eventType.setPreMarketEvent(lotProcurementEventType.getProcurementEventType().getPreMarketActivity());
+    eventType.setDescription(lotProcurementEventType.getProcurementEventType().getDescription());
     return eventType;
   }
 

@@ -25,4 +25,11 @@ public class ProcurementEventType {
 
   @Column(name = "procurement_event_type_name")
   String name;
+
+  @Column(name = "procurement_event_type_description")
+  String description;
+
+  @Column(name = "premarket_activity_ind")
+  Boolean preMarketActivity;
+
 }
