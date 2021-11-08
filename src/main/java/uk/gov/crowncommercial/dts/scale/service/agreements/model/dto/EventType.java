@@ -12,6 +12,6 @@ public class EventType {
 
   private String description;
 
-  private  Boolean preMarketEvent;
+  private  Boolean preMarketActivity;
 
 }
