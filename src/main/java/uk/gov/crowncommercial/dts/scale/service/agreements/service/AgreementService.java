@@ -53,10 +53,11 @@ public class AgreementService {
    * @param lotNumber Lot number
    * @return Lot
    */
-  public Lot findLotByAgreementNumberAndLotNumber(final String caNumber, final String lotNumber) {
-    log.debug("findLotByAgreementNumberAndLotNumber: caNumber={},lotNumber={}", caNumber,
-        lotNumber);
-    return lotRepo.findByAgreementNumberAndNumber(caNumber, lotNumber);
+  public Lot findLotByAgreementNumberAndLotNumber(final String agreementNumber,
+      final String lotNumber) {
+    log.debug("findLotByAgreementNumberAndLotNumber: agreementNumber={},lotNumber={}",
+        agreementNumber, lotNumber);
+    return lotRepo.findByAgreementNumberAndNumber(agreementNumber, lotNumber);
   }
 
   /**
@@ -79,11 +80,11 @@ public class AgreementService {
    * @throws LotNotFoundException if CA or lot not found
    */
   public Collection<LotOrganisationRole> findLotSupplierOrgRolesByAgreementNumberAndLotNumber(
-      final String caNumber, final String lotNumber) {
+      final String agreementNumber, final String lotNumber) {
 
-    final Lot lot = lotRepo.findByAgreementNumberAndNumber(caNumber, lotNumber);
+    final Lot lot = lotRepo.findByAgreementNumberAndNumber(agreementNumber, lotNumber);
     if (lot == null) {
-      throw new LotNotFoundException(lotNumber, caNumber);
+      throw new LotNotFoundException(lotNumber, agreementNumber);
     }
 
     // Filter the lot organisation roles for role-type 'supplier'
