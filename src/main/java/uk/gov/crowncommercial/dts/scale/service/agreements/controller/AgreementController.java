@@ -1,11 +1,26 @@
 package uk.gov.crowncommercial.dts.scale.service.agreements.controller;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.time.LocalDate;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
+import org.json.JSONObject;
+import org.json.JSONTokener;
+import org.json.simple.parser.ParseException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
+
+import com.rollbar.notifier.Rollbar;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import uk.gov.crowncommercial.dts.scale.service.agreements.converter.AgreementConverter;
@@ -30,6 +45,12 @@ import uk.gov.crowncommercial.dts.scale.service.agreements.service.AgreementServ
 @Slf4j
 public class AgreementController {
 
+  @Autowired
+  private Rollbar rollbar;
+  
+  @Value("${wordpressURL:https://webdev-cms.crowncommercial.gov.uk/}")
+  private String wordpressURL;
+  
   static final String METHOD_NOT_IMPLEMENTED_MSG = "This method is not yet implemented by the API";
 
   private final AgreementService service;
@@ -44,13 +65,40 @@ public class AgreementController {
   }
 
   @GetMapping("/agreements/{ca-number}")
-  public AgreementDetail getAgreement(@PathVariable(value = "ca-number") String caNumber) {
+  public AgreementDetail getAgreement(@PathVariable(value = "ca-number") String caNumber) throws ParseException {
     log.debug("getAgreement: {}", caNumber);
     CommercialAgreement ca = service.findAgreementByNumber(caNumber);
     if (ca == null) {
       throw new ResourceNotFoundException(
           String.format("Agreement number '%s' not found", caNumber));
     }
+    try {
+      URL url = new URL( wordpressURL + "wp-json/ccs/v1/frameworks/" + caNumber);
+      HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+      connection.setRequestMethod("GET");
+      connection.setRequestProperty("Accept", "application/json");
+
+      if (connection.getResponseCode() != 200) {
+    	  rollbar.error(String.format("Wordpress API returned %s" ,connection.getResponseCode()));
+      }else {
+        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(connection.getInputStream(), "UTF-8"));
+        JSONTokener tokener = new JSONTokener(bufferedReader);
+        JSONObject jsonObject = new JSONObject(tokener);
+    	    
+        ca.setDescription((String) jsonObject.get("summary"));
+        ca.setEndDate(LocalDate.parse((String) jsonObject.get("end_date")));
+
+        connection.disconnect();
+        log.debug("Using Wordpress API for summary and end date");
+      }
+      } catch (MalformedURLException e) {
+        e.printStackTrace();
+        rollbar.error(e);
+      } catch (IOException e) {
+        e.printStackTrace();
+        rollbar.error(e);
+	  }
+
     return converter.convertAgreementToDTO(ca);
   }
 
