@@ -6,6 +6,7 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.util.Collection;
 import java.util.List;
@@ -80,9 +81,9 @@ public class AgreementController {
       connection.setRequestProperty("Accept", "application/json");
 
       if (connection.getResponseCode() != 200) {
-    	  rollbar.error(String.format("Wordpress API returned %s, using database for summary and endDate" ,connection.getResponseCode()));
+    	  rollbar.error(String.format("Wordpress API returned %s, using database for summary and end date" ,connection.getResponseCode()));
       }else {
-        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(connection.getInputStream(), "UTF-8"));
+        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(connection.getInputStream(), StandardCharsets.UTF_8));
         JSONTokener tokener = new JSONTokener(bufferedReader);
         JSONObject jsonObject = new JSONObject(tokener);
 
@@ -99,11 +100,11 @@ public class AgreementController {
         connection.disconnect();
       }
       } catch (MalformedURLException e) {
-        rollbar.error("MalformedURLException when connecting to WordPress API");
-        log.error("MalformedURLException when connecting to WordPress API" + e.getMessage());
+    	  rollbar.error("MalformedURLException when connecting to WordPress API");
+    	  log.error("MalformedURLException when connecting to WordPress API" + e.getMessage());
       } catch (IOException e) {
-        rollbar.error("IOException when connecting to WordPress API");
-        log.error("IOException when connecting to WordPress API" + e.getMessage());
+    	  rollbar.error("IOException when connecting to WordPress API");
+    	  log.error("IOException when connecting to WordPress API" + e.getMessage());
 	  }
 
     return converter.convertAgreementToDTO(ca);
