@@ -10,9 +10,10 @@ import java.time.LocalDate;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import org.apache.commons.lang.StringUtils;
 import org.json.JSONObject;
 import org.json.JSONTokener;
-import org.json.simple.parser.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -65,7 +66,7 @@ public class AgreementController {
   }
 
   @GetMapping("/agreements/{ca-number}")
-  public AgreementDetail getAgreement(@PathVariable(value = "ca-number") String caNumber) throws ParseException {
+  public AgreementDetail getAgreement(@PathVariable(value = "ca-number") String caNumber) {
     log.debug("getAgreement: {}", caNumber);
     CommercialAgreement ca = service.findAgreementByNumber(caNumber);
     if (ca == null) {
@@ -79,24 +80,30 @@ public class AgreementController {
       connection.setRequestProperty("Accept", "application/json");
 
       if (connection.getResponseCode() != 200) {
-    	  rollbar.error(String.format("Wordpress API returned %s" ,connection.getResponseCode()));
+    	  rollbar.error(String.format("Wordpress API returned %s, using database for summary and endDate" ,connection.getResponseCode()));
       }else {
         BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(connection.getInputStream(), "UTF-8"));
         JSONTokener tokener = new JSONTokener(bufferedReader);
         JSONObject jsonObject = new JSONObject(tokener);
-    	    
-        ca.setDescription((String) jsonObject.get("summary"));
-        ca.setEndDate(LocalDate.parse((String) jsonObject.get("end_date")));
 
+        if (!StringUtils.isEmpty((String) jsonObject.get("summary"))) {
+        	ca.setDescription((String) jsonObject.get("summary"));
+        	log.debug("Using Wordpress API for summary");
+        }
+        
+        if (!StringUtils.isEmpty((String) jsonObject.get("end_date"))) {
+        	ca.setEndDate(LocalDate.parse((String) jsonObject.get("end_date")));
+            log.debug("Using Wordpress API for end date");
+        }
+        
         connection.disconnect();
-        log.debug("Using Wordpress API for summary and end date");
       }
       } catch (MalformedURLException e) {
-        e.printStackTrace();
-        rollbar.error(e);
+        rollbar.error("MalformedURLException when connecting to WordPress API");
+        log.error("MalformedURLException when connecting to WordPress API" + e.getMessage());
       } catch (IOException e) {
-        e.printStackTrace();
-        rollbar.error(e);
+        rollbar.error("IOException when connecting to WordPress API");
+        log.error("IOException when connecting to WordPress API" + e.getMessage());
 	  }
 
     return converter.convertAgreementToDTO(ca);
