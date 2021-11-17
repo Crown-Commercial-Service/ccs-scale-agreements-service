@@ -89,12 +89,12 @@ public class AgreementController {
 
         if (!StringUtils.isEmpty((String) jsonObject.get("summary"))) {
         	ca.setDescription((String) jsonObject.get("summary"));
-        	log.debug("Using Wordpress API for summary");
+        	log.info("Using Wordpress API for summary for '%s'" , caNumber);
         }
         
         if (!StringUtils.isEmpty((String) jsonObject.get("end_date"))) {
         	ca.setEndDate(LocalDate.parse((String) jsonObject.get("end_date")));
-            log.debug("Using Wordpress API for end date");
+            log.info("Using Wordpress API for end date for '%s'" , caNumber);
         }
         
         connection.disconnect();

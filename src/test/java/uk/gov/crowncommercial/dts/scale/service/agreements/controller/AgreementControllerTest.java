@@ -11,6 +11,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.MockMvc;
+
+import com.rollbar.notifier.Rollbar;
+
 import uk.gov.crowncommercial.dts.scale.service.agreements.converter.AgreementConverter;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.AgreementDetail;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.AgreementSummary;
@@ -39,6 +42,9 @@ public class AgreementControllerTest {
 
   @MockBean
   private Lot mockLot;
+  
+  @MockBean 
+  private Rollbar rollbar;
 
   @Test
   public void testGetAgreementSummariesSuccess() throws Exception {
