@@ -32,6 +32,7 @@ public class AgreementConverter {
   private final TimestampConverter timestampConverter;
   private final AgreementOwnerConverter agreementOwnerConverter;
   private final AgreementBenefitConverter agreementBenefitConverter;
+  private final EventTypeConverter eventTypeConverter;
 
   @PostConstruct
   public void init() {
@@ -43,6 +44,7 @@ public class AgreementConverter {
     modelMapper.addConverter(agreementUpdateConverter);
     modelMapper.addConverter(routeToMarketConverter);
     modelMapper.addConverter(timestampConverter);
+    modelMapper.addConverter(eventTypeConverter);
 
     /*
      * Specific mismatched properties / converters (do not set globally on modelMapper)
@@ -90,5 +92,34 @@ public class AgreementConverter {
       final Collection<LotOrganisationRole> lotOrgRoles) {
     return lotOrgRoles.stream().map(lor -> modelMapper.map(lor, LotSupplier.class))
         .collect(Collectors.toSet());
+  }
+
+  public Collection<EventType> convertLotProcurementEventTypesToDTOs(
+      final Collection<LotProcurementEventType> lotProcurementEventTypes) {
+    return lotProcurementEventTypes.stream().map(lpet -> modelMapper.map(lpet, EventType.class))
+        .collect(Collectors.toSet());
+  }
+
+  public Collection<Object> convertLotProcurementQuestionTemplateToDataTemplates(
+      final Collection<LotProcurementQuestionTemplate> lotProcurementQuestionTemplates,
+      final String eventType) {
+    return lotProcurementQuestionTemplates.stream()
+        .filter(t -> t.getProcurementQuestionTemplate().getTemplatePayload() != null
+            && eventType.equalsIgnoreCase(t.getProcurementEventType().getName()))
+        .map(t -> t.getProcurementQuestionTemplate().getTemplatePayload())
+        .collect(Collectors.toSet());
+  }
+
+  public Collection<Document> convertLotProcurementQuestionTemplateToDocumentTemplates(
+      final Collection<LotProcurementQuestionTemplate> lotProcurementQuestionTemplates,
+      final String eventType) {
+    return lotProcurementQuestionTemplates.stream()
+        .filter(t -> t.getProcurementQuestionTemplate().getTemplateUrl() != null
+            && eventType.equalsIgnoreCase(t.getProcurementEventType().getName()))
+        .map(t -> {
+          Document doc = new Document();
+          doc.setUrl(t.getProcurementQuestionTemplate().getTemplateUrl());
+          return doc;
+        }).collect(Collectors.toSet());
   }
 }

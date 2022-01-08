@@ -32,7 +32,7 @@ resource "cloudfoundry_app" "agreements_service" {
   disk_quota  = var.disk_quota
   enable_ssh  = true
   environment = {
-    #ENV_VAR: var.variable_name
+    JBP_CONFIG_OPEN_JDK_JRE : "{ \"jre\": { version: 11.+ } }"
   }
   health_check_timeout = var.healthcheck_timeout
   health_check_type    = "port"
@@ -41,6 +41,7 @@ resource "cloudfoundry_app" "agreements_service" {
   memory               = var.memory
   name                 = "${var.environment}-ccs-scale-shared-agreements-service"
   path                 = var.path
+  source_code_hash     = filebase64sha256(var.path)
   ports                = [8080]
   space                = data.cloudfoundry_space.space.id
   stopped              = false

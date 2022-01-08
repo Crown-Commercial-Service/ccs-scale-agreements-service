@@ -78,9 +78,4 @@ public class GlobalErrorHandler implements ErrorController {
     return ResponseEntity.badRequest().body(new ApiErrors(null, ERR_MSG_DEFAULT_DESCRIPTION));
   }
 
-  @Override
-  public String getErrorPath() {
-    return "/error";
-  }
-
 }
