@@ -72,7 +72,7 @@ class LotControllerTest {
 
   @Test
   void testGetLotSuccess() throws Exception {
-    final LotDetail lot = new LotDetail();
+    final var lot = new LotDetail();
     lot.setNumber(LOT1_NUMBER);
 
     when(service.findLotByAgreementNumberAndLotNumber(AGREEMENT_NUMBER, LOT1_NUMBER))
@@ -109,14 +109,14 @@ class LotControllerTest {
   void testGetLotSuppliers() throws Exception {
     final Set<LotOrganisationRole> lotOrgRoles = Collections.singleton(lotOrganisationRole);
 
-    final Organization org = new Organization();
+    final var org = new Organization();
     org.setName("ABC Ltd");
-    final ContactPoint contactPoint = new ContactPoint();
+    final var contactPoint = new ContactPoint();
     contactPoint.setName("Procurement");
-    final Contact contact = new Contact();
+    final var contact = new Contact();
     contact.setContactId("abc123");
     contact.setContactPoint(contactPoint);
-    final LotSupplier lotSupplier = new LotSupplier();
+    final var lotSupplier = new LotSupplier();
     lotSupplier.setOrganization(org);
     lotSupplier.setSupplierStatus(SupplierStatus.ACTIVE);
     lotSupplier.setLotContacts(Collections.singleton(contact));
@@ -158,8 +158,9 @@ class LotControllerTest {
     final Set<LotProcurementEventType> lotProcurementEventTypes =
         Collections.singleton(lotProcurementEventType);
 
-    EventType eventType = new EventType();
+    var eventType = new EventType();
     eventType.setType("RFI");
+    eventType.setAssessmentToolId("FCA_TOOL_1");
 
     when(service.findLotByAgreementNumberAndLotNumber(AGREEMENT_NUMBER, LOT1_NUMBER))
         .thenReturn(mockLot);
@@ -170,7 +171,8 @@ class LotControllerTest {
     mockMvc.perform(get(GET_LOT_EVENT_TYPES_PATH, AGREEMENT_NUMBER, LOT1_NUMBER))
         .andExpect(content().contentType(MediaType.APPLICATION_JSON))
         .andExpect(status().is2xxSuccessful()).andExpect(jsonPath("$.size()", is(1)))
-        .andExpect(jsonPath("$.[0].type", is("RFI")));
+        .andExpect(jsonPath("$.[0].type", is("RFI")))
+        .andExpect(jsonPath("$.[0].assessmentToolId", is("FCA_TOOL_1")));
   }
 
   @Test
@@ -189,7 +191,7 @@ class LotControllerTest {
 
   @Test
   void testGetDataTemplates() throws Exception {
-    final String templatePayload = "[[{\"id\\\": \\\"Criterion 1\\\"}]]";
+    final var templatePayload = "[[{\"id\\\": \\\"Criterion 1\\\"}]]";
     when(mockLot.getProcurementQuestionTemplates()).thenReturn(lotProcurementQuestionTemplates);
     when(service.findLotByAgreementNumberAndLotNumber(AGREEMENT_NUMBER, LOT1_NUMBER))
         .thenReturn(mockLot);
@@ -218,8 +220,8 @@ class LotControllerTest {
 
   @Test
   void testGetDocumentTemplates() throws Exception {
-    final String templateUrl = "http://url";
-    Document doc = new Document();
+    final var templateUrl = "http://url";
+    var doc = new Document();
     doc.setUrl(templateUrl);
     when(service.findLotByAgreementNumberAndLotNumber(AGREEMENT_NUMBER, LOT1_NUMBER))
         .thenReturn(mockLot);
