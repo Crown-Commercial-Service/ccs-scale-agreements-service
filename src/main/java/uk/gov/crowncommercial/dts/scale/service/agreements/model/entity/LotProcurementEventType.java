@@ -29,4 +29,7 @@ public class LotProcurementEventType {
 
   @Column(name = "repeatable_event_ind")
   Boolean isRepeatableEvent;
+
+  @Column(name = "assessment_tool_id")
+  String assessmentToolId;
 }
