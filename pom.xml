@@ -17,8 +17,8 @@
 
 	<properties>
 		<java.version>11</java.version>
-		<modelmapper.version>2.4.4</modelmapper.version>
-		<hibernate-types.version>2.12.1</hibernate-types.version>
+		<modelmapper.version>2.4.5</modelmapper.version>
+		<hibernate-types.version>2.14.0</hibernate-types.version>
 	</properties>
 
 	<dependencies>
