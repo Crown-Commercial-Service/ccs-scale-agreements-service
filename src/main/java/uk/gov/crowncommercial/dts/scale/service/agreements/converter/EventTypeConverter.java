@@ -15,11 +15,13 @@ import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.LotProcu
 public class EventTypeConverter extends AbstractConverter<LotProcurementEventType, EventType> {
 
   @Override
-  protected EventType convert(LotProcurementEventType lotProcurementEventType) {
-    EventType eventType = new EventType();
+  protected EventType convert(final LotProcurementEventType lotProcurementEventType) {
+    var eventType = new EventType();
     eventType.setType(lotProcurementEventType.getProcurementEventType().getName());
-    eventType.setPreMarketActivity(lotProcurementEventType.getProcurementEventType().getPreMarketActivity());
+    eventType.setPreMarketActivity(
+        lotProcurementEventType.getProcurementEventType().getPreMarketActivity());
     eventType.setDescription(lotProcurementEventType.getProcurementEventType().getDescription());
+    eventType.setAssessmentToolId(lotProcurementEventType.getAssessmentToolId());
     return eventType;
   }
 

@@ -12,6 +12,8 @@ public class EventType {
 
   private String description;
 
-  private  Boolean preMarketActivity;
+  private Boolean preMarketActivity;
+
+  private String assessmentToolId;
 
 }
