@@ -1,18 +1,21 @@
 package uk.gov.crowncommercial.dts.scale.service.agreements.controller;
 
 import static org.hamcrest.CoreMatchers.containsString;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import java.util.Arrays;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 import com.rollbar.notifier.Rollbar;
+import org.json.JSONObject;
 
 import uk.gov.crowncommercial.dts.scale.service.agreements.converter.AgreementConverter;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.AgreementDetail;
@@ -36,6 +39,9 @@ public class AgreementControllerTest {
 
   @MockBean
   private AgreementConverter converter;
+  
+  @Autowired
+  private AgreementController controller;
 
   @MockBean
   private CommercialAgreement mockCommercialAgreement;
@@ -55,6 +61,50 @@ public class AgreementControllerTest {
     when(service.getAgreements()).thenReturn(Arrays.asList(mockCommercialAgreement));
     this.mockMvc.perform(get("/agreements")).andExpect(status().isOk())
         .andExpect(content().string(containsString(AGREEMENT_NUMBER)));
+  }
+  
+  @Test
+  public void testValidateAndLogToExtractDataFromValidJSON() throws Exception {
+	JSONObject jsonObjectFromWordPress = new JSONObject();
+	jsonObjectFromWordPress.put("summary", "This is a dummy summary for RM1234");
+
+    String result = this.controller.validateAndLog("summary", jsonObjectFromWordPress, "RM1234");
+    assertEquals("This is a dummy summary for RM1234", result);
+  }
+  
+  @Test
+  public void testValidateAndLogToExtractDataFromValidJSONWithoutCorrectField() throws Exception {
+	JSONObject jsonObjectFromWordPress = new JSONObject();
+	jsonObjectFromWordPress.put("end_date", "This is a dummy end date for RM1234");
+
+    String result = this.controller.validateAndLog("summary", jsonObjectFromWordPress, "RM1234");
+    assertEquals(null, result);
+  }
+  
+  @Test
+  public void testValidateAndLogToExtractDataFromValidJSONWithoutContent() throws Exception {
+	JSONObject jsonObjectFromWordPress = new JSONObject();
+	jsonObjectFromWordPress.put("summary", "");
+
+    String result = this.controller.validateAndLog("summary", jsonObjectFromWordPress, "RM1234");
+    assertEquals(null, result);
+  }
+  
+  @Test
+  public void testValidateAndLogToExtractDataFromValidJSONWithNullContent() throws Exception {
+	JSONObject jsonObjectFromWordPress = new JSONObject();
+	jsonObjectFromWordPress.put("summary", JSONObject.NULL);
+
+    String result = this.controller.validateAndLog("summary", jsonObjectFromWordPress, "RM1234");
+    assertEquals(null, result);
+  }
+  
+  @Test
+  public void testValidateAndLogToExtractDataFromEmptyJSON() throws Exception {
+	JSONObject jsonObjectFromWordPress = new JSONObject();
+
+    String result = this.controller.validateAndLog("summary", jsonObjectFromWordPress, "RM1234");
+    assertEquals(null, result);
   }
 
   @Test
