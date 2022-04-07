@@ -74,39 +74,17 @@ public class AgreementController {
       throw new ResourceNotFoundException(
           String.format("Agreement number '%s' not found", caNumber));
     }
-    try {
-      URL url = new URL( wordpressURL + "wp-json/ccs/v1/frameworks/" + caNumber);
-      HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-      connection.setRequestMethod("GET");
-      connection.setRequestProperty("Accept", "application/json");
 
-      if (connection.getResponseCode() != 200) {
-    	  rollbar.error(String.format("Wordpress API returned %s, using database for summary and end date" ,connection.getResponseCode()));
-      }else {
-        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(connection.getInputStream(), StandardCharsets.UTF_8));
-        JSONTokener tokener = new JSONTokener(bufferedReader);
-        JSONObject jsonObject = new JSONObject(tokener);
+    JSONObject jsonData = connectWordpress(wordpressURL + "wp-json/ccs/v1/frameworks/" + caNumber);
+    
+    if(jsonData != null) {
+    	String caDescriptionFromWordpress = validateAndLog("summary", jsonData, caNumber);
+        String caEndDateFromWordpress = validateAndLog("end_date", jsonData, caNumber);
 
-        if (!StringUtils.isEmpty((String) jsonObject.get("summary"))) {
-        	ca.setDescription((String) jsonObject.get("summary"));
-        	log.info("Using Wordpress API for summary for '%s'" , caNumber);
-        }
-        
-        if (!StringUtils.isEmpty((String) jsonObject.get("end_date"))) {
-        	ca.setEndDate(LocalDate.parse((String) jsonObject.get("end_date")));
-            log.info("Using Wordpress API for end date for '%s'" , caNumber);
-        }
-        
-        connection.disconnect();
-      }
-      } catch (MalformedURLException e) {
-    	  rollbar.error("MalformedURLException when connecting to WordPress API");
-    	  log.error("MalformedURLException when connecting to WordPress API" + e.getMessage());
-      } catch (IOException e) {
-    	  rollbar.error("IOException when connecting to WordPress API");
-    	  log.error("IOException when connecting to WordPress API" + e.getMessage());
-	  }
-
+        if(caDescriptionFromWordpress != null) ca.setDescription(caDescriptionFromWordpress);
+        if(caEndDateFromWordpress != null) ca.setEndDate(LocalDate.parse(caEndDateFromWordpress));
+    }
+    
     return converter.convertAgreementToDTO(ca);
   }
 
@@ -119,6 +97,15 @@ public class AgreementController {
       throw new ResourceNotFoundException(String
           .format("Lot number '%s' for agreement number '%s' not found", lotNumber, caNumber));
     }
+    
+    JSONObject jsonData = connectWordpress(wordpressURL + "wp-json/ccs/v1/frameworks/" + caNumber + "/lot/" + lotNumber.substring(lotNumber.indexOf(" ") + 1));
+    
+    if(jsonData != null) {
+	    String lotDescriptionFromWordpress = validateAndLog("description", jsonData, caNumber);
+	    
+	    lot.setDescription(lotDescriptionFromWordpress != null ? lotDescriptionFromWordpress : " ");
+    }
+    
     return converter.convertLotToDTO(lot);
   }
 
@@ -151,4 +138,41 @@ public class AgreementController {
     throw new MethodNotImplementedException(METHOD_NOT_IMPLEMENTED_MSG);
   }
 
+  JSONObject connectWordpress(String endpoint) {
+	  JSONObject jsonObjectFromWordpress = null;
+	  
+	  try {
+		  URL url = new URL(endpoint);
+		  HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+		  connection.setRequestMethod("GET");
+		  connection.setRequestProperty("Accept", "application/json");
+
+        if (connection.getResponseCode() != 200) {
+        	rollbar.error(String.format("Wordpress endpoint (%s) returned %s, using agreement service database" ,url.toString(),connection.getResponseCode()));
+        }else {
+        	BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(connection.getInputStream(), StandardCharsets.UTF_8));
+        	JSONTokener tokener = new JSONTokener(bufferedReader);
+        	jsonObjectFromWordpress = new JSONObject(tokener);
+          
+        	connection.disconnect();
+        }
+	    } catch (MalformedURLException e) {
+	    	rollbar.error("MalformedURLException when connecting to WordPress API");
+	    	log.error("MalformedURLException when connecting to WordPress API: " + e.getMessage());
+	    } catch (IOException e) {
+	    	rollbar.error("IOException when connecting to WordPress API");
+	    	log.error("IOException when connecting to WordPress API: " + e.getMessage());
+	    }
+
+	  return jsonObjectFromWordpress;
+  }
+  
+  String validateAndLog(String field, JSONObject jsonData, String caNumber) {
+	  
+	  if (jsonData.has(field) && !jsonData.isNull(field) && jsonData.getString(field).length() != 0) {
+	        log.info(String.format("Using Wordpress API %s for %s" ,field, caNumber));
+	        return jsonData.getString(field);
+	  }
+	  return null;
+  }
 }
