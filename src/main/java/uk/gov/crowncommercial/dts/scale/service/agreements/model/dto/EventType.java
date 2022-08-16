@@ -16,4 +16,6 @@ public class EventType {
 
   private String assessmentToolId;
 
+  private Boolean mandatoryEventInd;
+
 }
