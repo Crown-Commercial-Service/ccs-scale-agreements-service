@@ -28,7 +28,7 @@ public class TemplateGroupMapping {
 
   @ToString.Exclude
   @ManyToOne
-  @JoinColumn(name = "procurement_event_type_id")
+  @JoinColumn(name = "template_id")
   ProcurementQuestionTemplate template;
 
 //  @ToString.Exclude
