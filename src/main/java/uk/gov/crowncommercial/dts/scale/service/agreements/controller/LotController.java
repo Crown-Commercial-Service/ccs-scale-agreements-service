@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RestController;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import uk.gov.crowncommercial.dts.scale.service.agreements.converter.AgreementConverter;
+import uk.gov.crowncommercial.dts.scale.service.agreements.converter.TemplateGroupConverter;
 import uk.gov.crowncommercial.dts.scale.service.agreements.exception.LotNotFoundException;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.Document;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.EventType;
@@ -29,6 +30,7 @@ public class LotController {
 
   private final AgreementService service;
   private final AgreementConverter converter;
+  private TemplateGroupConverter templateGroupConverter = new TemplateGroupConverter();
 
   @GetMapping
   public LotDetail getLot(@PathVariable(value = "agreement-id") final String agreementNumber,
@@ -66,7 +68,9 @@ public class LotController {
       throw new LotNotFoundException(lotNumber, agreementNumber);
     }
 
-    return converter.convertLotProcurementEventTypesToDTOs(lot.getProcurementEventTypes());
+    Collection<EventType> result = converter.convertLotProcurementEventTypesToDTOs(lot.getProcurementEventTypes());
+    templateGroupConverter.assignTemplates(lot, result);
+    return result;
   }
 
   @GetMapping("/event-types/{event-type}/data-templates")
