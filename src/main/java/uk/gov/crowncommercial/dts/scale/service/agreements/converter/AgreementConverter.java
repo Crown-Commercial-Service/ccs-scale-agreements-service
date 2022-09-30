@@ -100,14 +100,24 @@ public class AgreementConverter {
         .collect(Collectors.toSet());
   }
 
-  public Collection<Object> convertLotProcurementQuestionTemplateToDataTemplates(
+  public Collection<ProcurementDataTemplate> convertLotProcurementQuestionTemplateToDataTemplates(
       final Collection<LotProcurementQuestionTemplate> lotProcurementQuestionTemplates,
       final String eventType) {
     return lotProcurementQuestionTemplates.stream()
         .filter(t -> t.getProcurementQuestionTemplate().getTemplatePayload() != null
             && eventType.equalsIgnoreCase(t.getProcurementEventType().getName()))
-        .map(t -> t.getProcurementQuestionTemplate().getTemplatePayload())
+        .map(t -> getDataTemplate(t.getProcurementQuestionTemplate()))
         .collect(Collectors.toSet());
+  }
+
+  public ProcurementDataTemplate getDataTemplate(ProcurementQuestionTemplate questionTemplate){
+    ProcurementDataTemplate template = new ProcurementDataTemplate();
+    template.setId(questionTemplate.getId());
+    template.setTemplateName(questionTemplate.getTemplateName());
+    template.setMandatory(questionTemplate.getMandatory());
+    template.setParent(questionTemplate.getParent());
+    template.setCriteria(questionTemplate.getTemplatePayload());
+    return template;
   }
 
   public Collection<Document> convertLotProcurementQuestionTemplateToDocumentTemplates(

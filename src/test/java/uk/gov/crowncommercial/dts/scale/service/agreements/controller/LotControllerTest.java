@@ -191,17 +191,19 @@ class LotControllerTest {
 
   @Test
   void testGetDataTemplates() throws Exception {
-    final var templatePayload = "[[{\"id\\\": \\\"Criterion 1\\\"}]]";
+    final var expectedTemplatePayload = "[{\"id\\\": \\\"Criterion 1\\\"}]";
+    ProcurementDataTemplate dataTemplate = new ProcurementDataTemplate();
+    dataTemplate.setCriteria("[{\"id\\\": \\\"Criterion 1\\\"}]");
     when(mockLot.getProcurementQuestionTemplates()).thenReturn(lotProcurementQuestionTemplates);
     when(service.findLotByAgreementNumberAndLotNumber(AGREEMENT_NUMBER, LOT1_NUMBER))
         .thenReturn(mockLot);
     when(converter.convertLotProcurementQuestionTemplateToDataTemplates(
         lotProcurementQuestionTemplates, EVENT_TYPE_RFI))
-            .thenReturn(Collections.singleton(templatePayload));
+            .thenReturn(Collections.singleton(dataTemplate));
     mockMvc.perform(get(GET_LOT_DATA_TEMPLATES_PATH, AGREEMENT_NUMBER, LOT1_NUMBER, EVENT_TYPE_RFI))
         .andExpect(content().contentType(MediaType.APPLICATION_JSON))
         .andExpect(status().is2xxSuccessful()).andExpect(jsonPath("$.size()", is(1)))
-        .andExpect(jsonPath("$.[0]", is(templatePayload)));
+        .andExpect(jsonPath("$.[0].criteria", is(expectedTemplatePayload)));
   }
 
   @Test
