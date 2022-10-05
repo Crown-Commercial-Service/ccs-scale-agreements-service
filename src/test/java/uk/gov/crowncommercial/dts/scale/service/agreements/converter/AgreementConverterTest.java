@@ -269,12 +269,12 @@ class AgreementConverterTest {
     LotProcurementQuestionTemplate lotTemplate3 =
         createLotProcurementQuestionTemplate(TEMPLATE_PAYLOAD, null, "Non-matching event type");
 
-    Collection<Object> templatePayloads =
+    Collection<ProcurementDataTemplate> templatePayloads =
         converter.convertLotProcurementQuestionTemplateToDataTemplates(
             Arrays.asList(lotTemplate1, lotTemplate2, lotTemplate3), EVENT_TYPE);
 
     assertEquals(1, templatePayloads.size());
-    assertEquals(TEMPLATE_PAYLOAD, templatePayloads.stream().findFirst().get());
+    assertEquals(TEMPLATE_PAYLOAD, templatePayloads.stream().findFirst().get().getCriteria());
   }
 
   @Test
