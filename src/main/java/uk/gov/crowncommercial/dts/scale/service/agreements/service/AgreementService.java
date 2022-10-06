@@ -3,6 +3,8 @@ package uk.gov.crowncommercial.dts.scale.service.agreements.service;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -30,6 +32,7 @@ public class AgreementService {
    *
    * @return list of agreements
    */
+  @Cacheable(value = "getAgreements")
   public List<CommercialAgreement> getAgreements() {
     log.debug("getAgreements");
     return commercialAgreementRepo.findAll();
@@ -41,6 +44,7 @@ public class AgreementService {
    * @param caNumber Commercial Agreement number
    * @return CommercialAgreement
    */
+  @Cacheable(value = "findAgreementByNumber", key = "#caNumber")
   public CommercialAgreement findAgreementByNumber(final String caNumber) {
     log.debug("findAgreementByNumber: {}", caNumber);
     return commercialAgreementRepo.findByNumber(caNumber);
@@ -49,10 +53,11 @@ public class AgreementService {
   /**
    * Find a specific Lot using Agreement Number and Lot Number.
    *
-   * @param caNumber Commercial Agreement number
+   * @param agreementNumber Commercial Agreement number
    * @param lotNumber Lot number
    * @return Lot
    */
+  @Cacheable(value = "findLotByAgreementNumberAndLotNumber", key = "{#agreementNumber,#lotNumber}")
   public Lot findLotByAgreementNumberAndLotNumber(final String agreementNumber,
       final String lotNumber) {
     log.debug("findLotByAgreementNumberAndLotNumber: agreementNumber={},lotNumber={}",
@@ -66,6 +71,7 @@ public class AgreementService {
    * @param lotId Lot id
    * @return Lot
    */
+  @Cacheable(value = "getLot", key = "#lotId")
   public Lot getLot(final Integer lotId) {
     log.debug("getLot: {}", lotId);
     return lotRepo.getOne(lotId);
@@ -79,6 +85,7 @@ public class AgreementService {
    * @return collection of lot supplier org roles
    * @throws LotNotFoundException if CA or lot not found
    */
+  @Cacheable(value = "findLotSupplierOrgRolesByAgreementNumberAndLotNumber", key = "{#agreementNumber,#lotNumber}")
   public Collection<LotOrganisationRole> findLotSupplierOrgRolesByAgreementNumberAndLotNumber(
       final String agreementNumber, final String lotNumber) {
 
