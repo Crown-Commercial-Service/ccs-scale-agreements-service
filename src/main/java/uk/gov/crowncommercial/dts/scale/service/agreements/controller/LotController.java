@@ -15,6 +15,7 @@ import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.LotOrgan
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.ProcurementQuestionTemplate;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.TemplateGroup;
 import uk.gov.crowncommercial.dts.scale.service.agreements.service.AgreementService;
+import uk.gov.crowncommercial.dts.scale.service.agreements.service.QuestionTemplateService;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -33,6 +34,8 @@ public class LotController {
 
   private final AgreementService service;
   private final AgreementConverter converter;
+
+  private final QuestionTemplateService questionTemplateService;
   private TemplateGroupConverter templateGroupConverter = new TemplateGroupConverter();
 
   @GetMapping
@@ -90,20 +93,7 @@ public class LotController {
       throw new LotNotFoundException(lotNumber, agreementNumber);
     }
 
-    Set<TemplateGroup> groups = lot.getTemplateGroups();
-    Set<ProcurementQuestionTemplate> templates = new HashSet<>();
-    if(groups.size() > 0){
-      for(TemplateGroup tg : groups){
-        templates.addAll(tg.getQuestionTemplates());
-      }
-    }
-
-    if(templates.size() > 0){
-      return templates.stream().map(t->converter.getDataTemplate(t)).collect(Collectors.toSet());
-    }else{
-      return converter.convertLotProcurementQuestionTemplateToDataTemplates(
-              lot.getProcurementQuestionTemplates(), eventType);
-    }
+    return questionTemplateService.getDataTemplates(lot, eventType);
   }
 
   @GetMapping("/event-types/{event-type}/document-templates")
