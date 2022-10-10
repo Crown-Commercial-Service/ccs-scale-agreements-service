@@ -8,14 +8,14 @@ import org.springframework.stereotype.Component;
 
 import java.util.Objects;
 
-@Component
+//@Component
 @Slf4j
 public class CachingService {
 
     @Autowired
     CacheManager cacheManager;
 
-    @Scheduled(fixedDelayString = "PT1M")
+    @Scheduled(fixedDelayString = "PT7M")
     public void clearAllCaches() {
         evictAllCaches();
     }
