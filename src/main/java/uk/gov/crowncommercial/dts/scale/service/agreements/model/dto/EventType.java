@@ -2,6 +2,8 @@ package uk.gov.crowncommercial.dts.scale.service.agreements.model.dto;
 
 import lombok.Data;
 
+import java.util.Collection;
+
 /**
  * EventType
  */
@@ -16,4 +18,7 @@ public class EventType {
 
   private String assessmentToolId;
 
+  private Boolean mandatoryEventInd;
+
+  private Collection<QuestionTemplate> templateGroups;
 }
