@@ -21,6 +21,7 @@ import uk.gov.crowncommercial.dts.scale.service.agreements.exception.LotNotFound
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.*;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.*;
 import uk.gov.crowncommercial.dts.scale.service.agreements.service.AgreementService;
+import uk.gov.crowncommercial.dts.scale.service.agreements.service.QuestionTemplateService;
 
 @WebMvcTest(LotController.class)
 @Import(GlobalErrorHandler.class)
@@ -45,6 +46,9 @@ class LotControllerTest {
 
   @MockBean
   private AgreementService service;
+
+  @MockBean
+  private QuestionTemplateService templateService;
 
   @MockBean
   private AgreementConverter converter;
@@ -191,17 +195,21 @@ class LotControllerTest {
 
   @Test
   void testGetDataTemplates() throws Exception {
-    final var templatePayload = "[[{\"id\\\": \\\"Criterion 1\\\"}]]";
+    final var expectedTemplatePayload = "[{\"id\\\": \\\"Criterion 1\\\"}]";
+    ProcurementDataTemplate dataTemplate = new ProcurementDataTemplate();
+    dataTemplate.setCriteria("[{\"id\\\": \\\"Criterion 1\\\"}]");
     when(mockLot.getProcurementQuestionTemplates()).thenReturn(lotProcurementQuestionTemplates);
     when(service.findLotByAgreementNumberAndLotNumber(AGREEMENT_NUMBER, LOT1_NUMBER))
         .thenReturn(mockLot);
     when(converter.convertLotProcurementQuestionTemplateToDataTemplates(
         lotProcurementQuestionTemplates, EVENT_TYPE_RFI))
-            .thenReturn(Collections.singleton(templatePayload));
+            .thenReturn(Collections.singleton(dataTemplate));
+    when(templateService.getDataTemplates(mockLot, EVENT_TYPE_RFI))
+            .thenReturn(Collections.singleton(dataTemplate));
     mockMvc.perform(get(GET_LOT_DATA_TEMPLATES_PATH, AGREEMENT_NUMBER, LOT1_NUMBER, EVENT_TYPE_RFI))
         .andExpect(content().contentType(MediaType.APPLICATION_JSON))
         .andExpect(status().is2xxSuccessful()).andExpect(jsonPath("$.size()", is(1)))
-        .andExpect(jsonPath("$.[0]", is(templatePayload)));
+        .andExpect(jsonPath("$.[0].criteria", is(expectedTemplatePayload)));
   }
 
   @Test
