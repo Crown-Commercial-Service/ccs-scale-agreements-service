@@ -1,37 +1,37 @@
 package uk.gov.crowncommercial.dts.scale.service.agreements.cache;
 
 import lombok.extern.slf4j.Slf4j;
+import org.hibernate.Cache;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.CacheManager;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
-import java.util.Objects;
+import javax.persistence.EntityManager;
 
-//@Component
+@Component
 @Slf4j
 public class CachingService {
 
     @Autowired
-    CacheManager cacheManager;
+    EntityManager entityManager;
 
     @Scheduled(fixedDelayString = "PT7M")
-    public void clearAllCaches() {
-        evictAllCaches();
-    }
-    private void evictAllCaches() {
+    public void evictAllEntities() {
+        try {
 
-        log.info("Clearing cache : Started");
-        cacheManager.getCacheNames()
-                .parallelStream()
-                .forEach(cacheName -> {
+            Session session = entityManager.unwrap(Session.class);
+            SessionFactory sessionFactory = session.getSessionFactory();
+            Cache cache=sessionFactory.getCache();
+            log.info("Evicting entities from Cache:  Started" );
+            cache.evictAll();
+            log.info("Evicting entities from Cache:  Completed" );
 
-                    if( Objects.nonNull(cacheManager.getCache(cacheName))){
-
-                        cacheManager.getCache(cacheName).clear();
-                    }
-                });
-        log.info("Clearing cache : Completed");
-
+        } catch (Exception e) {
+            log.error("SessionController",
+                    "evictAllEntities",
+                    "Error evicting hibernate cache entities: ", e);
+        }
     }
 }
