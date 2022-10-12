@@ -8,6 +8,8 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.Immutable;
 import lombok.AccessLevel;
 import lombok.Data;
@@ -21,6 +23,7 @@ import lombok.experimental.FieldDefaults;
 @Table(name = "lot_rules")
 @Data
 @FieldDefaults(level = AccessLevel.PRIVATE)
+@org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE,region = "lotRules")
 public class LotRule implements Serializable {
 
   private static final long serialVersionUID = 1L;
@@ -43,10 +46,12 @@ public class LotRule implements Serializable {
 
   @OneToMany
   @JoinColumn(name = "lot_rule_id")
+  @org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE,region = "lotRuleTransactionData")
   private Set<LotRuleTransactionObject> transactionData;
 
   @OneToMany
   @JoinColumn(name = "lot_rule_id")
+  @org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE,region = "lotRuleAttributes")
   private Set<LotRuleAttribute> lotAttributes;
 
 }
