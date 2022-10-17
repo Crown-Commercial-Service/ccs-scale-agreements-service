@@ -3,6 +3,8 @@ package uk.gov.crowncommercial.dts.scale.service.agreements.service;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -30,6 +32,7 @@ public class AgreementService {
    *
    * @return list of agreements
    */
+  @Cacheable(value = "getAgreements")
   public List<CommercialAgreement> getAgreements() {
     log.debug("getAgreements");
     return commercialAgreementRepo.findAll();
@@ -49,7 +52,7 @@ public class AgreementService {
   /**
    * Find a specific Lot using Agreement Number and Lot Number.
    *
-   * @param caNumber Commercial Agreement number
+   * @param agreementNumber Commercial Agreement number
    * @param lotNumber Lot number
    * @return Lot
    */
@@ -74,7 +77,7 @@ public class AgreementService {
   /**
    * Find all lot supplier organisation roles
    *
-   * @param caNumber Commercial Agreement number
+   * @param agreementNumber Commercial Agreement number
    * @param lotNumber Lot number
    * @return collection of lot supplier org roles
    * @throws LotNotFoundException if CA or lot not found

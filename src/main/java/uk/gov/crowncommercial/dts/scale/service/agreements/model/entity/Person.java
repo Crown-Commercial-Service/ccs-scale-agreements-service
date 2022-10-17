@@ -1,6 +1,8 @@
 package uk.gov.crowncommercial.dts.scale.service.agreements.model.entity;
 
 import javax.persistence.*;
+
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.Immutable;
 import lombok.AccessLevel;
 import lombok.Data;
@@ -14,6 +16,7 @@ import lombok.experimental.FieldDefaults;
 @Table(name = "people")
 @Data
 @FieldDefaults(level = AccessLevel.PRIVATE)
+@org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE,region = "people")
 public class Person {
 
   @Id
