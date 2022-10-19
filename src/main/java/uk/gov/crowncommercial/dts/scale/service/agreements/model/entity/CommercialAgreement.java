@@ -2,12 +2,9 @@ package uk.gov.crowncommercial.dts.scale.service.agreements.model.entity;
 
 import java.time.LocalDate;
 import java.util.Set;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
+import javax.persistence.*;
+
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.Immutable;
 import lombok.AccessLevel;
 import lombok.Data;
@@ -21,6 +18,8 @@ import lombok.experimental.FieldDefaults;
 @Table(name = "commercial_agreements")
 @Data
 @FieldDefaults(level = AccessLevel.PRIVATE)
+@javax.persistence.Cacheable
+@org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE,region = "commercial_agreements") //Provide cache strategy.
 public class CommercialAgreement {
 
   @Id
@@ -45,21 +44,26 @@ public class CommercialAgreement {
   @Column(name = "agreement_url")
   String detailUrl;
 
+  @org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE,region = "lots")
   @OneToMany(mappedBy = "agreement")
   Set<Lot> lots;
 
+  @org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE,region = "documents")
   @OneToMany
   @JoinColumn(name = "commercial_agreement_id")
   Set<CommercialAgreementDocument> documents;
 
+  @org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE,region = "updates")
   @OneToMany
   @JoinColumn(name = "commercial_agreement_id")
   Set<CommercialAgreementUpdate> updates;
 
+  @org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE,region = "organisationRoles")
   @OneToMany
   @JoinColumn(name = "commercial_agreement_id")
   Set<CommercialAgreementOrgRole> organisationRoles;
 
+  @org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE,region = "benefits")
   @OneToMany
   @JoinColumn(name = "commercial_agreement_id")
   Set<CommercialAgreementBenefit> benefits;
