@@ -67,4 +67,10 @@ public class CommercialAgreement {
   @OneToMany
   @JoinColumn(name = "commercial_agreement_id")
   Set<CommercialAgreementBenefit> benefits;
+
+  @Column(name = "lot_required")
+  Boolean preDefinedLotRequired;
+
+  @Column(name = "lot_assessment_tool_id")
+  Integer lotAssessmentTool;
 }
