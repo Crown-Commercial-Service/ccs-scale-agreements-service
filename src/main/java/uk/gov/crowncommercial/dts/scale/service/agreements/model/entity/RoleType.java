@@ -4,6 +4,8 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
+
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.Immutable;
 import lombok.AccessLevel;
 import lombok.Data;
@@ -17,6 +19,7 @@ import lombok.experimental.FieldDefaults;
 @Table(name = "role_types")
 @Data
 @FieldDefaults(level = AccessLevel.PRIVATE)
+@org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE,region = "roleType")
 public class RoleType {
 
   @Id
