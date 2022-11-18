@@ -49,4 +49,6 @@ public class OrganizationDetail {
    */
   private Boolean active;
 
+  private String tradingName;
+
 }
