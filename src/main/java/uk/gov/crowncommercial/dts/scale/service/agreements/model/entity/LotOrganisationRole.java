@@ -40,6 +40,11 @@ public class LotOrganisationRole {
   @org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE,region = "contactPointLotOrgRoles")
   Set<ContactPointLotOrgRole> contactPointLotOrgRoles;
 
+  @ManyToOne
+  @JoinColumn(name = "trading_organisation_id")
+  @org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE,region = "trading_organisation")
+  TradingOrganisation tradingOrganisation;
+
   @Column(name = "start_date")
   LocalDate startDate;
 
