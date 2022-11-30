@@ -50,4 +50,10 @@ public class LotOrganisationRole {
 
   @Column(name = "end_date")
   LocalDate endDate;
+
+  @Column(name="organisation_status")
+  char status;
+
+  @Column(name = "role_type_id", insertable = false, updatable=false)
+  Integer roleTypeId;
 }
