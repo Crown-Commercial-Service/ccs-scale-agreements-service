@@ -90,10 +90,7 @@ public class AgreementService {
       throw new LotNotFoundException(lotNumber, agreementNumber);
     }
 
-    // Filter the lot organisation roles for role-type 'supplier'
-    return lot.getOrganisationRoles().stream()
-        .filter(lor -> "supplier".equalsIgnoreCase(lor.getRoleType().getName()))
-        .collect(Collectors.toSet());
+    return lot.getActiveOrganisationRoles();
   }
 
 }
