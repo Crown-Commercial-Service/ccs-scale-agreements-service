@@ -39,6 +39,8 @@ public class LotSupplierOrgConverter extends AbstractConverter<LotOrganisationRo
         });
 
     lotSupplier.setDetails(converterUtils.convertOrgToOrgDetail(org));
+    if(null != source.getTradingOrganisation() && null != lotSupplier.getDetails())
+      lotSupplier.getDetails().setTradingName(source.getTradingOrganisation().getTradingOrganisationName());
     return lotSupplier;
   }
 
