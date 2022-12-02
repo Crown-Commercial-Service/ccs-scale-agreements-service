@@ -2,14 +2,15 @@ package uk.gov.crowncommercial.dts.scale.service.agreements.model.entity;
 
 import lombok.*;
 import lombok.experimental.FieldDefaults;
-import org.hibernate.annotations.Immutable;
+import org.hibernate.annotations.*;
 
 import javax.persistence.*;
 import java.time.LocalDate;
 import java.util.Set;
 import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.Table;
 
-import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.Immutable;
 import lombok.AccessLevel;
 import lombok.Data;
@@ -87,6 +88,13 @@ public class Lot {
   @OneToMany(fetch = FetchType.LAZY)
   @JoinColumn(name = "lot_id")
   Set<LotOrganisationRole> organisationRoles;
+
+  @ToString.Exclude
+  @org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE,region = "lotOrganisationRoles")
+  @OneToMany(fetch = FetchType.LAZY)
+  @JoinColumn(name = "lot_id", insertable = false, updatable = false)
+  @Where(clause="role_type_id = '2' and organisation_status = 'A'")
+  Set<LotOrganisationRole> activeOrganisationRoles;
 
   @ToString.Exclude
   @org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE,region = "lotProcurementEventTypes")
