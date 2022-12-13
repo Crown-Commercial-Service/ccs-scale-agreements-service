@@ -17,7 +17,7 @@ public class CachingService {
     @Autowired
     EntityManager entityManager;
 
-    @Scheduled(fixedDelayString = "PT7M")
+    @Scheduled(fixedDelayString = "PT15M")
     public void evictAllEntities() {
         try {
 
