@@ -35,6 +35,7 @@ public class GlobalErrorHandler implements ErrorController {
   @ExceptionHandler({ValidationException.class, HttpMessageNotReadableException.class})
   public ApiErrors handleValidationException(final Exception exception) {
 
+    // TODO: Need to add Rollbar logging here
     log.trace("Request validation exception", exception);
 
     ApiError apiError =
@@ -46,6 +47,7 @@ public class GlobalErrorHandler implements ErrorController {
   @ExceptionHandler(ResourceNotFoundException.class)
   public ApiErrors handleResourceNotFoundException(final Exception exception) {
 
+    // TODO: Need to add Rollbar logging here
     log.trace("Resource not found exception", exception);
 
     ApiError apiError =
@@ -57,6 +59,7 @@ public class GlobalErrorHandler implements ErrorController {
   @ExceptionHandler(MethodNotImplementedException.class)
   public ApiErrors handleMethodNotImplementedException(final Exception exception) {
 
+    // TODO: Need to add Rollbar logging here
     log.trace("Method not implemented", exception);
 
     ApiError apiError = new ApiError(HttpStatus.METHOD_NOT_ALLOWED.toString(), ERR_MSG_NOT_FOUND,
@@ -68,6 +71,7 @@ public class GlobalErrorHandler implements ErrorController {
   @ExceptionHandler(Exception.class)
   public ApiErrors handleUnknownException(final Exception exception) {
 
+    // TODO: Need to add Rollbar logging here
     log.error("Unknown application exception", exception);
 
     ApiError apiError =
@@ -81,6 +85,7 @@ public class GlobalErrorHandler implements ErrorController {
 
     Object exception = request.getAttribute("javax.servlet.error.exception");
 
+    // TODO: Need to add Rollbar logging here
     log.error("Unknown container/filter exception", exception);
 
     return ResponseEntity.badRequest().body(new ApiErrors(Arrays
