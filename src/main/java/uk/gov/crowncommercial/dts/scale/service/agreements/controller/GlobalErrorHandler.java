@@ -87,7 +87,7 @@ public class GlobalErrorHandler implements ErrorController {
         .asList(new ApiError(HttpStatus.INTERNAL_SERVER_ERROR.toString(), ERR_MSG_DEFAULT, ""))));
   }
 
-  @Override
+  //@Override
   public String getErrorPath() {
     return "/error";
   }
