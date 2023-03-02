@@ -15,7 +15,7 @@ public class RollbarConfig {
   @Value("${rollbar.access.token:1111111111}") 
   private String rollbarAccessToken;
 
-  @Value("${environment:test}")
+  @Value("${environment:local}")
   private String environment;
 
   /**
