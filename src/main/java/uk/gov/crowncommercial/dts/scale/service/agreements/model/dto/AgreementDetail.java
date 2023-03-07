@@ -41,9 +41,14 @@ public class AgreementDetail {
   private String detailUrl;
 
   /**
-   * Contact details.
+   * A party (organization).
    */
-  private Collection<ContactDetail> contactDetails;
+  private Organization owner;
+
+  /**
+   * Contacts.
+   */
+  private Collection<Contact> contacts;
 
   /**
    * Short description of the benefit.
@@ -55,4 +60,13 @@ public class AgreementDetail {
    */
   private Collection<LotSummary> lots;
 
+  /**
+   * Assessment ID provided when a new assessment is created.
+   */
+  private Integer lotAssessmentTool;
+
+  /**
+   * Defines if a project can be set up without defining a lot. The lot is defined as an assessment provided by the agreement.
+   */
+  private Boolean preDefinedLotRequired;
 }
