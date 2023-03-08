@@ -8,6 +8,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import java.util.Collections;
 import java.util.Set;
+
+import com.rollbar.notifier.Rollbar;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -73,6 +75,9 @@ class LotControllerTest {
 
   @MockBean
   private Set<LotProcurementQuestionTemplate> lotProcurementQuestionTemplates;
+
+  @MockBean
+  private Rollbar rollbar;
 
   @Test
   void testGetLotSuccess() throws Exception {
