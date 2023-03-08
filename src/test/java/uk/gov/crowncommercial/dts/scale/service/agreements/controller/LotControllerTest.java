@@ -20,6 +20,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import uk.gov.crowncommercial.dts.scale.service.agreements.converter.AgreementConverter;
 import uk.gov.crowncommercial.dts.scale.service.agreements.exception.LotNotFoundException;
+import uk.gov.crowncommercial.dts.scale.service.agreements.helpers.WordpressHelpers;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.*;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.*;
 import uk.gov.crowncommercial.dts.scale.service.agreements.service.AgreementService;
@@ -78,6 +79,9 @@ class LotControllerTest {
 
   @MockBean
   private Rollbar rollbar;
+
+  @MockBean
+  private WordpressHelpers wordpressHelpers;
 
   @Test
   void testGetLotSuccess() throws Exception {

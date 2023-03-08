@@ -2,7 +2,6 @@ package uk.gov.crowncommercial.dts.scale.service.agreements.service;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
