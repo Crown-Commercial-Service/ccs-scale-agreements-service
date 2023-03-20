@@ -188,7 +188,7 @@
 		<dependency>
 			<groupId>com.rollbar</groupId>
 			<artifactId>rollbar-spring-boot-webmvc</artifactId>
-			<version>1.7.10</version>
+			<version>1.10.0</version>
 			<exclusions>
 				<exclusion>
 					<artifactId>spring-core</artifactId>
