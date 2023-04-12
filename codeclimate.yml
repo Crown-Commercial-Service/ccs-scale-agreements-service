@@ -36,15 +36,4 @@ checks:
   similar-code:
     enabled: true
     config:
-  threshold: // Remove the name of the programming language and the hashtag to adopt a custom threshold. Only one number can be present in this field at a time.
-  // #Ruby 27
-  // # Python 48
-  // # JavaScript 68
-  // # PHP 42
-  // # TypeScript 68
-  // # Go 150
-  60
-  // # Swift 60
-  // # Kotlin 90
-  // # Scala 90
-  // # C# 90
+  threshold: 60
