@@ -34,7 +34,7 @@ spring:
   profiles: local
   datasource:
     # Credentials via environment variables ONLY.
-    url: jdbc:postgresql://localhost:5432/agreements  
+    url: jdbc:postgresql://localhost:5432/agreements?currentSchema=ccs_agreements
   jpa:
     show-sql: false
     
