@@ -4,29 +4,32 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
+
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.Immutable;
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.experimental.FieldDefaults;
 
+/**
+ * CA / Lot organisational role type
+ */
 @Entity
 @Immutable
-@Table(name = "commercial_agreement_contacts")
+@Table(name = "role_types")
 @Data
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class CommercialAgreementContact {
+@org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE,region = "roleType")
+public class RoleType {
 
   @Id
-  @Column(name = "commercial_agreement_contact_id")
+  @Column(name = "role_type_id")
   Integer id;
 
-  @Column(name = "commercial_agreement_id")
-  Integer commercialAgreementId;
+  @Column(name = "role_type_name")
+  String name;
 
-  @Column(name = "contact_type")
-  String type;
-
-  @Column(name = "email_address")
-  String email;
+  @Column(name = "role_domain")
+  String roleDomain;
 
 }

@@ -2,11 +2,12 @@ package uk.gov.crowncommercial.dts.scale.service.agreements.model.entity;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
-import java.time.LocalDate;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
+
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.Immutable;
 import lombok.AccessLevel;
 import lombok.Data;
@@ -20,6 +21,7 @@ import lombok.experimental.FieldDefaults;
 @Table(name = "lot_rule_attributes")
 @Data
 @FieldDefaults(level = AccessLevel.PRIVATE)
+@org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE,region = "lotRuleAttributes")
 public class LotRuleAttribute implements Serializable {
 
   private static final long serialVersionUID = 1L;
@@ -40,8 +42,5 @@ public class LotRuleAttribute implements Serializable {
 
   @Column(name = "value_text")
   String valueText;
-
-  @Column(name = "value_date")
-  LocalDate valueDate;
 
 }

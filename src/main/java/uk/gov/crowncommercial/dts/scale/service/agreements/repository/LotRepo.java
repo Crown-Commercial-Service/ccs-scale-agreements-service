@@ -11,4 +11,5 @@ import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.Lot;
 public interface LotRepo extends JpaRepository<Lot, Integer> {
 
   Lot findByAgreementNumberAndNumber(String caNumber, String lotNumber);
+
 }
