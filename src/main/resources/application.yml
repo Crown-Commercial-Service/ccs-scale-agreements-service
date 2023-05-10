@@ -31,7 +31,9 @@ spring:
     
 ---
 spring:
-  profiles: local
+  config:
+    activate:
+      on-profile: local
   datasource:
     # Credentials via environment variables ONLY.
     url: jdbc:postgresql://localhost:5432/agreements?currentSchema=ccs_agreements

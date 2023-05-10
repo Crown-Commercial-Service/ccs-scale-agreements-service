@@ -16,6 +16,5 @@ public class PostgreSQL10JsonDialect extends PostgreSQL10Dialect {
 
   public PostgreSQL10JsonDialect() {
     super();
-    this.registerHibernateType(Types.OTHER, JsonBinaryType.class.getName());
   }
 }

@@ -1,6 +1,6 @@
 package uk.gov.crowncommercial.dts.scale.service.agreements.model.entity;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.Immutable;

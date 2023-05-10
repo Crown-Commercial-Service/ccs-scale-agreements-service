@@ -2,7 +2,7 @@ package uk.gov.crowncommercial.dts.scale.service.agreements.converter;
 
 import java.util.Collection;
 import java.util.stream.Collectors;
-import javax.annotation.PostConstruct;
+import jakarta.annotation.PostConstruct;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;

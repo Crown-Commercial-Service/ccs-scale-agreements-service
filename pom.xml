@@ -6,7 +6,7 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>2.7.9</version>
+		<version>3.0.6</version>
 		<relativePath />
 	</parent>
 	<groupId>uk.gov.crowncommercial.dts</groupId>
@@ -19,8 +19,8 @@
 		<java.version>11</java.version>
 		<modelmapper.version>3.1.1</modelmapper.version>
 		<hibernate-types.version>2.21.1</hibernate-types.version>
-		<spring-framework.version>6.0.0</spring-framework.version>
-		<spring-boot.version>2.7.11</spring-boot.version>
+		<spring-framework.version>6.0.8</spring-framework.version>
+		<spring-boot.version>3.0.6</spring-boot.version>
 	</properties>
 
 	<dependencies>
@@ -93,9 +93,9 @@
 			<version>2.13.5</version>
 		</dependency>
 		<dependency>
-			<groupId>org.hibernate</groupId>
+			<groupId>org.hibernate.orm</groupId>
 			<artifactId>hibernate-core</artifactId>
-			<version>5.6.15.Final</version>
+			<version>6.2.2.Final</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.tomcat.embed</groupId>
@@ -241,6 +241,10 @@
 					<artifactId>spring-context</artifactId>
 					<groupId>org.springframework</groupId>
 				</exclusion>
+				<exclusion>
+					<artifactId>hibernate-core</artifactId>
+					<groupId>org.hibernate.orm</groupId>
+				</exclusion>
 			</exclusions>
 		</dependency>
 		<dependency>
@@ -263,12 +267,17 @@
 			</exclusions>
 		</dependency>
 		<dependency>
-			<groupId>org.hibernate</groupId>
+			<groupId>org.hibernate.orm</groupId>
 			<artifactId>hibernate-jcache</artifactId>
+			<version>6.2.2.Final</version>
 			<exclusions>
 				<exclusion>
 					<artifactId>hibernate-core</artifactId>
 					<groupId>org.hibernate</groupId>
+				</exclusion>
+				<exclusion>
+					<artifactId>hibernate-core</artifactId>
+					<groupId>org.hibernate.orm</groupId>
 				</exclusion>
 			</exclusions>
 		</dependency>
@@ -330,19 +339,8 @@
 			<version>${modelmapper.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>com.vladmihalcea</groupId>
-			<artifactId>hibernate-types-52</artifactId>
-			<version>${hibernate-types.version}</version>
-			<exclusions>
-				<exclusion>
-					<artifactId>jackson-databind</artifactId>
-					<groupId>com.fasterxml.jackson.core</groupId>
-				</exclusion>
-			</exclusions>
-		</dependency>
-		<dependency>
 		    <groupId>com.vladmihalcea</groupId>
-		    <artifactId>hibernate-types-52</artifactId>
+		    <artifactId>hibernate-types-60</artifactId>
 		    <version>${hibernate-types.version}</version>
 			<exclusions>
 				<exclusion>
