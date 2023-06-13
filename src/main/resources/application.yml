@@ -2,6 +2,8 @@ server:
   port: 9010
   error:
     path: "/error"
+  servlet:
+    context-path: /agreements-service
 
 logging:
   level:
@@ -39,7 +41,3 @@ spring:
     url: jdbc:postgresql://localhost:5432/agreements?currentSchema=ccs_agreements
   jpa:
     show-sql: false
-    
-server:
-  servlet:
-    context-path: /agreements-service
