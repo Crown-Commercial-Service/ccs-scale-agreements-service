@@ -2,7 +2,7 @@ package uk.gov.crowncommercial.dts.scale.service.agreements.model.entity;
 
 import java.time.LocalDate;
 import java.util.Set;
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.Immutable;
@@ -18,7 +18,7 @@ import lombok.experimental.FieldDefaults;
 @Table(name = "commercial_agreements")
 @Data
 @FieldDefaults(level = AccessLevel.PRIVATE)
-@javax.persistence.Cacheable
+@jakarta.persistence.Cacheable
 @org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE,region = "commercial_agreements") //Provide cache strategy.
 public class CommercialAgreement {
 
