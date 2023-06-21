@@ -6,7 +6,7 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>3.1.0</version>
+		<version>2.7.12</version>
 		<relativePath />
 	</parent>
 	<groupId>uk.gov.crowncommercial.dts</groupId>
@@ -16,15 +16,11 @@
 	<description>SCALE Agreements service</description>
 
 	<properties>
-		<java.version>17</java.version>
+		<java.version>11</java.version>
 		<modelmapper.version>3.1.1</modelmapper.version>
 		<hibernate-types.version>2.21.1</hibernate-types.version>
-		<spring-framework.version>6.0.10</spring-framework.version>
-		<spring-boot.version>3.1.0</spring-boot.version>
-		<tomcat.version>10.1.9</tomcat.version>
-		<jackson.version>2.15.2</jackson.version>
-		<lombok.version>1.18.28</lombok.version>
-		<hibernate.version>6.2.5.Final</hibernate.version>
+		<spring-framework.version>5.3.27</spring-framework.version>
+		<spring-boot.version>2.7.12</spring-boot.version>
 	</properties>
 
 	<dependencies>
@@ -94,17 +90,17 @@
 		<dependency>
 			<groupId>com.fasterxml.jackson.core</groupId>
 			<artifactId>jackson-databind</artifactId>
-			<version>${jackson.version}</version>
+			<version>2.15.1</version>
 		</dependency>
 		<dependency>
-			<groupId>org.hibernate.orm</groupId>
+			<groupId>org.hibernate</groupId>
 			<artifactId>hibernate-core</artifactId>
-			<version>${hibernate.version}</version>
+			<version>5.6.15.Final</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.tomcat.embed</groupId>
 			<artifactId>tomcat-embed-core</artifactId>
-			<version>${tomcat.version}</version>
+			<version>9.0.75</version>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework</groupId>
@@ -239,7 +235,7 @@
 				</exclusion>
 				<exclusion>
 					<artifactId>hibernate-core</artifactId>
-					<groupId>org.hibernate.orm</groupId>
+					<groupId>org.hibernate</groupId>
 				</exclusion>
 				<exclusion>
 					<artifactId>spring-context</artifactId>
@@ -267,13 +263,12 @@
 			</exclusions>
 		</dependency>
 		<dependency>
-			<groupId>org.hibernate.orm</groupId>
+			<groupId>org.hibernate</groupId>
 			<artifactId>hibernate-jcache</artifactId>
-			<version>${hibernate.version}</version>
 			<exclusions>
 				<exclusion>
 					<artifactId>hibernate-core</artifactId>
-					<groupId>org.hibernate.orm</groupId>
+					<groupId>org.hibernate</groupId>
 				</exclusion>
 			</exclusions>
 		</dependency>
@@ -291,7 +286,7 @@
 		<dependency>
 			<groupId>com.fasterxml.jackson.datatype</groupId>
 			<artifactId>jackson-datatype-jdk8</artifactId>
-			<version>${jackson.version}</version>
+			<version>2.15.1</version>
 			<exclusions>
 				<exclusion>
 					<artifactId>jackson-databind</artifactId>
@@ -302,7 +297,7 @@
 		<dependency>
 			<groupId>com.fasterxml.jackson.datatype</groupId>
 			<artifactId>jackson-datatype-jsr310</artifactId>
-			<version>${jackson.version}</version>
+			<version>2.15.1</version>
 			<exclusions>
 				<exclusion>
 					<artifactId>jackson-databind</artifactId>
@@ -313,7 +308,7 @@
 		<dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
-			<version>${lombok.version}</version>
+			<version>1.18.26</version>
 			<optional>true</optional>
 		</dependency>
 		<dependency>
@@ -336,8 +331,19 @@
 		</dependency>
 		<dependency>
 			<groupId>com.vladmihalcea</groupId>
-			<artifactId>hibernate-types-60</artifactId>
+			<artifactId>hibernate-types-52</artifactId>
 			<version>${hibernate-types.version}</version>
+			<exclusions>
+				<exclusion>
+					<artifactId>jackson-databind</artifactId>
+					<groupId>com.fasterxml.jackson.core</groupId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<dependency>
+		    <groupId>com.vladmihalcea</groupId>
+		    <artifactId>hibernate-types-52</artifactId>
+		    <version>${hibernate-types.version}</version>
 			<exclusions>
 				<exclusion>
 					<artifactId>jackson-databind</artifactId>

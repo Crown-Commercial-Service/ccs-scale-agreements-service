@@ -2,8 +2,6 @@ server:
   port: 9010
   error:
     path: "/error"
-  servlet:
-    context-path: /agreements-service
 
 logging:
   level:
@@ -33,11 +31,13 @@ spring:
     
 ---
 spring:
-  config:
-    activate:
-      on-profile: local
+  profiles: local
   datasource:
     # Credentials via environment variables ONLY.
     url: jdbc:postgresql://localhost:5432/agreements?currentSchema=ccs_agreements
   jpa:
     show-sql: false
+    
+server:
+  servlet:
+    context-path: /agreements-service
