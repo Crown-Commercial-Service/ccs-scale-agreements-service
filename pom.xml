@@ -16,7 +16,7 @@
 	<description>SCALE Agreements service</description>
 
 	<properties>
-		<java.version>17</java.version>
+		<java.version>11</java.version>
 		<modelmapper.version>3.1.1</modelmapper.version>
 		<hibernate-types.version>2.21.1</hibernate-types.version>
 		<spring-framework.version>6.0.9</spring-framework.version>
