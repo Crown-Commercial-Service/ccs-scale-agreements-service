@@ -5,9 +5,7 @@ import lombok.experimental.FieldDefaults;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.Immutable;
 
-import javax.persistence.*;
-import java.time.LocalDate;
-import java.util.Set;
+import jakarta.persistence.*;
 
 /**
  * Lot.
