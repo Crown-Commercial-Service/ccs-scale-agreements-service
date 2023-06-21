@@ -4,7 +4,7 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 import org.hibernate.annotations.Immutable;
 
-import jakarta.persistence.*;
+import javax.persistence.*;
 
 /**
  * Procurement Event Type.
@@ -30,6 +30,11 @@ public class TemplateGroupMapping {
   @ManyToOne
   @JoinColumn(name = "template_id")
   ProcurementQuestionTemplate template;
+
+//  @ToString.Exclude
+//  @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+//  @JoinColumn(name = "template_group_id")
+
 
   @ToString.Exclude
   @Embedded

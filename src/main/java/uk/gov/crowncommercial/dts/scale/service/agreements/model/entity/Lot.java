@@ -4,15 +4,18 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 import org.hibernate.annotations.*;
 
-import jakarta.persistence.*;
+import javax.persistence.*;
 import java.time.LocalDate;
 import java.util.Set;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
+import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.Table;
 
 import org.hibernate.annotations.Immutable;
 import lombok.AccessLevel;
+import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.experimental.FieldDefaults;
 
 /**
  * Lot.
@@ -24,7 +27,7 @@ import lombok.EqualsAndHashCode;
 @Getter
 @Setter
 @FieldDefaults(level = AccessLevel.PRIVATE)
-@jakarta.persistence.Cacheable
+@javax.persistence.Cacheable
 @org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE,region = "lots") //Provide cache strategy.
 public class Lot {
 

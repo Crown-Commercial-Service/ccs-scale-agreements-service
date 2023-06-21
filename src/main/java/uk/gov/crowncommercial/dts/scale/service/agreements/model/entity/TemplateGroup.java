@@ -4,7 +4,7 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 import org.hibernate.annotations.Immutable;
 
-import jakarta.persistence.*;
+import javax.persistence.*;
 import java.util.Set;
 
 /**
