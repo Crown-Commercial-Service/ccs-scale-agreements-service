@@ -1,8 +1,6 @@
 ---
 spring:
-  config:
-    activate:
-      on-profile: test
+  profiles: test
   jpa:
     database: h2
     show-sql: true
