@@ -36,7 +36,7 @@ public class AgreementController {
     private final AgreementConverter converter;
     private final WordpressHelpers wordpressHelpers;
 
-    @GetMapping(value={"", "/"})
+    @GetMapping("/")
     public Collection<AgreementSummary> getAgreements() {
         log.debug("getAgreements");
         final List<CommercialAgreement> agreements = service.getAgreements();
