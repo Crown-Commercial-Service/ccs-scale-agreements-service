@@ -1,22 +1,16 @@
 package uk.gov.crowncommercial.dts.scale.service.agreements.model.entity;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 import lombok.Getter;
 import lombok.Setter;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
 
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.Immutable;
-import org.hibernate.annotations.Type;
-import org.hibernate.annotations.TypeDef;
-import com.vladmihalcea.hibernate.type.json.JsonBinaryType;
+import org.hibernate.annotations.JdbcTypeCode;
 import lombok.AccessLevel;
-import lombok.Data;
 import lombok.experimental.FieldDefaults;
+import org.hibernate.type.SqlTypes;
 
 /**
  * Procurement Question Template.
@@ -27,7 +21,6 @@ import lombok.experimental.FieldDefaults;
 @Getter
 @Setter
 @FieldDefaults(level = AccessLevel.PRIVATE)
-@TypeDef(name = "jsonb", typeClass = JsonBinaryType.class)
 @org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE,region = "procurementQuestionTemplate")
 public class ProcurementQuestionTemplate {
 
@@ -50,10 +43,7 @@ public class ProcurementQuestionTemplate {
   @Column(name = "template_url")
   String templateUrl;
 
-  @Type(type = "jsonb")
+  @JdbcTypeCode(SqlTypes.JSON)
   @Column(name = "template_payload")
   Object templatePayload;
-
-//  @Embedded
-//  Timestamps timestamps;
 }
