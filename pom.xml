@@ -97,7 +97,7 @@
 			<version>${jackson.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>org.hibernate.orm</groupId>
+			<groupId>org.hibernate</groupId>
 			<artifactId>hibernate-core</artifactId>
 			<version>${hibernate.version}</version>
 		</dependency>
@@ -239,7 +239,7 @@
 				</exclusion>
 				<exclusion>
 					<artifactId>hibernate-core</artifactId>
-					<groupId>org.hibernate.orm</groupId>
+					<groupId>org.hibernate</groupId>
 				</exclusion>
 				<exclusion>
 					<artifactId>spring-context</artifactId>
@@ -273,7 +273,7 @@
 			<exclusions>
 				<exclusion>
 					<artifactId>hibernate-core</artifactId>
-					<groupId>org.hibernate.orm</groupId>
+					<groupId>org.hibernate</groupId>
 				</exclusion>
 			</exclusions>
 		</dependency>
