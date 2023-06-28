@@ -15,6 +15,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 
+// TODO: Remove this class
 @Component
 @Slf4j
 public class WordpressHelpers {

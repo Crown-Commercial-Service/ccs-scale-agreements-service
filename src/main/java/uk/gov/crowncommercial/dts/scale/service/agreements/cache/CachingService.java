@@ -17,7 +17,7 @@ public class CachingService {
     @Autowired
     EntityManager entityManager;
 
-    @Scheduled(fixedDelayString = "PT15M")
+    @Scheduled(fixedDelayString = "PT15M") // TODO: Adjust cache length
     public void evictAllEntities() {
         try {
 

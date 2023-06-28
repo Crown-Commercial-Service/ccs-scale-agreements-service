@@ -6,6 +6,7 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import uk.gov.crowncommercial.dts.scale.service.agreements.exception.AgreementNotFoundException;
 import uk.gov.crowncommercial.dts.scale.service.agreements.exception.LotNotFoundException;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.CommercialAgreement;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.Lot;
@@ -43,7 +44,14 @@ public class AgreementService {
    */
   public CommercialAgreement findAgreementByNumber(final String caNumber) {
     log.debug("findAgreementByNumber: {}", caNumber);
-    return commercialAgreementRepo.findByNumber(caNumber);
+
+    final CommercialAgreement agreementModel = commercialAgreementRepo.findByNumber(caNumber);
+
+    if (agreementModel == null) {
+      throw new AgreementNotFoundException(caNumber);
+    }
+
+    return agreementModel;
   }
 
   /**
