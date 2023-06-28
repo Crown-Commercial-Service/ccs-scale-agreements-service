@@ -1,11 +1,13 @@
 package uk.gov.crowncommercial.dts.scale.service.agreements.controller;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import org.json.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -13,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import uk.gov.crowncommercial.dts.scale.service.agreements.BLL.BusinessLogicClient;
 import uk.gov.crowncommercial.dts.scale.service.agreements.converter.AgreementConverter;
 import uk.gov.crowncommercial.dts.scale.service.agreements.exception.AgreementNotFoundException;
 import uk.gov.crowncommercial.dts.scale.service.agreements.helpers.WordpressHelpers;
@@ -32,16 +35,20 @@ public class AgreementController {
     @Value("${wordpressURL:https://webdev-cms.crowncommercial.gov.uk/}")
     private String wordpressURL;
 
+    @Autowired
+    private BusinessLogicClient businessLogicClient;
+
     private final AgreementService service;
     private final AgreementConverter converter;
     private final WordpressHelpers wordpressHelpers;
 
     @GetMapping
     public Collection<AgreementSummary> getAgreements() {
-        log.debug("getAgreements");
-        final List<CommercialAgreement> agreements = service.getAgreements();
-        return agreements.stream().map(converter::convertAgreementToSummaryDTO)
-            .collect(Collectors.toList());
+        log.debug("getAgreements called");
+
+        Collection<AgreementSummary> model = businessLogicClient.getAgreementsList();
+
+        return model;
     }
 
     @GetMapping("/{agreement-id}")

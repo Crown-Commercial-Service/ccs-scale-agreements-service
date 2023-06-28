@@ -3,7 +3,6 @@ package uk.gov.crowncommercial.dts.scale.service.agreements.service;
 import java.util.Collection;
 import java.util.List;
 
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -31,7 +30,6 @@ public class AgreementService {
    *
    * @return list of agreements
    */
-  @Cacheable(value = "getAgreements")
   public List<CommercialAgreement> getAgreements() {
     log.debug("getAgreements");
     return commercialAgreementRepo.findAll();

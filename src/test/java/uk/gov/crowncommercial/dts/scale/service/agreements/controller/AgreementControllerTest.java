@@ -19,6 +19,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import com.rollbar.notifier.Rollbar;
 
+import uk.gov.crowncommercial.dts.scale.service.agreements.BLL.BusinessLogicClient;
 import uk.gov.crowncommercial.dts.scale.service.agreements.converter.AgreementConverter;
 import uk.gov.crowncommercial.dts.scale.service.agreements.exception.AgreementNotFoundException;
 import uk.gov.crowncommercial.dts.scale.service.agreements.helpers.WordpressHelpers;
@@ -53,6 +54,9 @@ class AgreementControllerTest {
 
   @Autowired
   private MockMvc mockMvc;
+
+  @MockBean
+  private BusinessLogicClient businessLogicClient;
 
   @MockBean
   private AgreementService service;
@@ -90,7 +94,7 @@ class AgreementControllerTest {
     agreement.setNumber(AGREEMENT_NUMBER);
 
     when(converter.convertAgreementToSummaryDTO(mockCommercialAgreement)).thenReturn(agreement);
-    when(service.getAgreements()).thenReturn(Arrays.asList(mockCommercialAgreement));
+    when(businessLogicClient.getAgreementsList()).thenReturn(Arrays.asList(agreement));
     mockMvc.perform(get("/agreements")).andExpect(status().isOk())
         .andExpect(jsonPath("$[0].number", is(AGREEMENT_NUMBER)));
   }
