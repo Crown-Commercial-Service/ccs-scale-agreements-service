@@ -1,13 +1,11 @@
 package uk.gov.crowncommercial.dts.scale.service.agreements.BLL;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;
 import uk.gov.crowncommercial.dts.scale.service.agreements.converter.AgreementConverter;
-import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.AgreementDetail;
-import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.AgreementSummary;
-import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.BuyingMethod;
-import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.LotDetail;
+import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.*;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.CommercialAgreement;
 import uk.gov.crowncommercial.dts.scale.service.agreements.service.AgreementService;
 import uk.gov.crowncommercial.dts.scale.service.agreements.service.WordpressService;
@@ -22,6 +20,7 @@ import java.util.stream.Collectors;
  * Everything in here should be cached
  */
 @Component
+@Slf4j
 public class BusinessLogicClient {
     @Autowired
     private AgreementService agreementService;
@@ -37,6 +36,7 @@ public class BusinessLogicClient {
      */
     @Cacheable(value = "getAgreements")
     public List<AgreementSummary> getAgreementsList() {
+        log.info("Need to generate Agreement List" );
         // Fetch the list of agreements from the service
         final List<CommercialAgreement> agreements = agreementService.getAgreements();
 
@@ -49,6 +49,7 @@ public class BusinessLogicClient {
      */
     @Cacheable
     public AgreementDetail getAgreementDetail(String agreementId) {
+        log.info("Need to generate AgreementDetail" );
         AgreementDetail model = new AgreementDetail();
 
         // Fetch the Commercial Agreement from the service
@@ -69,7 +70,7 @@ public class BusinessLogicClient {
      * Returns a list of LotDetail objects which relate to a specified agreement
      */
     @Cacheable
-    public Collection<LotDetail> getLotsForAgreement(String agreementId, Optional<BuyingMethod> buyingMethod) {
+    public Collection<LotDetail> getLotsForAgreement(String agreementId, BuyingMethod buyingMethod) {
         Collection<LotDetail> model = null;
 
         // Fetch the commercial agreement from the service
@@ -80,12 +81,48 @@ public class BusinessLogicClient {
             model = agreementConverter.convertLotsToDTOs(agreementModel.getLots());
 
             // Finally, if we're given a buying method we need to filter our results to just those matching the method specified
-            if (buyingMethod.isPresent()) {
+            if (buyingMethod != null) {
                 model = model.stream()
                         .filter(lot -> lot.getRoutesToMarket().stream()
-                                .filter(route -> buyingMethod.get() == route.getBuyingMethod()).count() > 0)
+                                .filter(route -> buyingMethod == route.getBuyingMethod()).count() > 0)
                         .collect(Collectors.toSet());
             }
+        }
+
+        return model;
+    }
+
+    /**
+     * Returns a list of Document objects which relate to a specified agreement
+     */
+    @Cacheable
+    public Collection<Document> getDocumentsForAgreement(String agreementId) {
+        Collection<Document> model = null;
+
+        // Fetch the commercial agreement from the service
+        CommercialAgreement agreementModel = agreementService.findAgreementByNumber(agreementId);
+
+        if (agreementModel != null) {
+            // Now convert the documents specified in the agreement into the format we want to return
+            model = agreementConverter.convertAgreementDocumentsToDTOs(agreementModel.getDocuments());
+        }
+
+        return model;
+    }
+
+    /**
+     * Returns a list of AgreementUpdate objects which relate to a specified agreement
+     */
+    @Cacheable
+    public Collection<AgreementUpdate> getUpdatesForAgreement(String agreementId) {
+        Collection<AgreementUpdate> model = null;
+
+        // Fetch the commercial agreement from the service
+        CommercialAgreement agreementModel = agreementService.findAgreementByNumber(agreementId);
+
+        if (agreementModel != null) {
+            // Now convert the updates specified in the agreement into the format we want to return
+            model = agreementConverter.convertAgreementUpdatesToDTOs(agreementModel.getUpdates());
         }
 
         return model;

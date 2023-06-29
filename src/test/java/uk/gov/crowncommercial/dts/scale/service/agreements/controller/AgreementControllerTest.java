@@ -106,6 +106,7 @@ class AgreementControllerTest {
 
     when(service.findAgreementByNumber(AGREEMENT_NUMBER)).thenReturn(mockCommercialAgreement);
     when(converter.convertAgreementToDTO(mockCommercialAgreement)).thenReturn(agreement);
+    when(businessLogicClient.getAgreementDetail(AGREEMENT_NUMBER)).thenReturn(agreement);
     mockMvc.perform(get("/agreements/" + AGREEMENT_NUMBER)).andExpect(status().isOk())
         .andExpect(jsonPath("$.number", is(AGREEMENT_NUMBER)));
   }
@@ -139,6 +140,7 @@ class AgreementControllerTest {
     when(service.findAgreementByNumber(AGREEMENT_NUMBER)).thenReturn(mockCommercialAgreement);
     when(mockCommercialAgreement.getLots()).thenReturn(mockLots);
     when(converter.convertLotsToDTOs(mockLots)).thenReturn(Arrays.asList(lot));
+    when(businessLogicClient.getLotsForAgreement(AGREEMENT_NUMBER, null)).thenReturn(Arrays.asList(lot));
     mockMvc.perform(get(String.format(GET_AGREEMENT_LOTS_PATH, AGREEMENT_NUMBER)))
         .andExpect(status().isOk()).andExpect(jsonPath("$[0].number", is(LOT1_NUMBER)));
   }
@@ -162,6 +164,7 @@ class AgreementControllerTest {
     when(service.findAgreementByNumber(AGREEMENT_NUMBER)).thenReturn(mockCommercialAgreement);
     when(mockCommercialAgreement.getLots()).thenReturn(mockLots);
     when(converter.convertLotsToDTOs(mockLots)).thenReturn(Arrays.asList(lot1, lot2));
+    when(businessLogicClient.getLotsForAgreement(AGREEMENT_NUMBER, BuyingMethod.E_AUCTION)).thenReturn(Arrays.asList(lot2));
     mockMvc
         .perform(get(String.format(GET_AGREEMENT_LOTS_PATH, AGREEMENT_NUMBER))
             .queryParam(BUYING_METHOD_PARAM, BUYING_METHOD_VALUE))
@@ -221,6 +224,7 @@ class AgreementControllerTest {
     when(service.findAgreementByNumber(AGREEMENT_NUMBER)).thenReturn(mockCommercialAgreement);
     when(mockCommercialAgreement.getDocuments()).thenReturn(mockDocs);
     when(converter.convertAgreementDocumentsToDTOs(mockDocs)).thenReturn(Arrays.asList(document));
+    when(businessLogicClient.getDocumentsForAgreement(AGREEMENT_NUMBER)).thenReturn(Arrays.asList(document));
     mockMvc.perform(get(String.format(GET_AGREEMENT_DOCUMENTS_PATH, AGREEMENT_NUMBER)))
         .andExpect(status().isOk()).andExpect(status().isOk())
         .andExpect(jsonPath("$[0].title", is(DOCUMENT_NAME)))
@@ -263,6 +267,7 @@ class AgreementControllerTest {
     when(service.findAgreementByNumber(AGREEMENT_NUMBER)).thenReturn(mockCommercialAgreement);
     when(mockCommercialAgreement.getUpdates()).thenReturn(mockUpdates);
     when(converter.convertAgreementUpdatesToDTOs(mockUpdates)).thenReturn(Arrays.asList(update));
+    when(businessLogicClient.getUpdatesForAgreement(AGREEMENT_NUMBER)).thenReturn(Arrays.asList(update));
     mockMvc.perform(get(String.format(GET_AGREEMENT_UPDATES_PATH, AGREEMENT_NUMBER)))
         .andExpect(status().isOk()).andExpect(jsonPath("$[0].text", is(AGREEMENT_UPDATE_TEXT)));
   }
