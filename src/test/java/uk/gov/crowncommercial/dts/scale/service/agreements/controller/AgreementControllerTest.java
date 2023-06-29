@@ -274,7 +274,7 @@ class AgreementControllerTest {
 
   @Test
   void testGetAgreementUpdatesNotFound() throws Exception {
-    when(service.findAgreementByNumber(AGREEMENT_NUMBER)).thenReturn(null);
+    when(businessLogicClient.getUpdatesForAgreement(AGREEMENT_NUMBER)).thenThrow(new AgreementNotFoundException(AGREEMENT_NUMBER));
     mockMvc.perform(get(String.format(GET_AGREEMENT_UPDATES_PATH, AGREEMENT_NUMBER)))
         .andExpect(status().is4xxClientError())
         .andExpect(jsonPath("$.errors[0].status", is(HttpStatus.NOT_FOUND.toString())))
