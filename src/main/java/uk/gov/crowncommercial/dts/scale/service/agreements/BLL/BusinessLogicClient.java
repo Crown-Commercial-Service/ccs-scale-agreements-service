@@ -34,7 +34,7 @@ public class BusinessLogicClient {
     /**
      * Returns a list of all Commercial Agreements
      */
-    @Cacheable(value = "getAgreements")
+    @Cacheable(value = "getAgreementsList", key = "#root.methodName")
     public List<AgreementSummary> getAgreementsList() {
         log.info("Need to generate Agreement List" );
         // Fetch the list of agreements from the service
@@ -47,7 +47,7 @@ public class BusinessLogicClient {
     /**
      * Returns a specific AgreementDetail object based on a requested ID
      */
-    @Cacheable
+    @Cacheable(value = "getAgreementDetail") // TODO: Sort cache config
     public AgreementDetail getAgreementDetail(String agreementId) {
         log.info("Need to generate AgreementDetail" );
         AgreementDetail model = new AgreementDetail();
@@ -69,7 +69,7 @@ public class BusinessLogicClient {
     /**
      * Returns a list of LotDetail objects which relate to a specified agreement
      */
-    @Cacheable
+    @Cacheable(value = "getLotsForAgreement") // TODO: Fix caching
     public Collection<LotDetail> getLotsForAgreement(String agreementId, BuyingMethod buyingMethod) {
         Collection<LotDetail> model = null;
 
@@ -95,7 +95,7 @@ public class BusinessLogicClient {
     /**
      * Returns a list of Document objects which relate to a specified agreement
      */
-    @Cacheable
+    @Cacheable(value = "getDocumentsForAgreement")
     public Collection<Document> getDocumentsForAgreement(String agreementId) {
         Collection<Document> model = null;
 
@@ -113,7 +113,7 @@ public class BusinessLogicClient {
     /**
      * Returns a list of AgreementUpdate objects which relate to a specified agreement
      */
-    @Cacheable
+    @Cacheable(value = "getUpdatesForAgreement")
     public Collection<AgreementUpdate> getUpdatesForAgreement(String agreementId) {
         Collection<AgreementUpdate> model = null;
 

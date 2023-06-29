@@ -1,5 +1,6 @@
 package uk.gov.crowncommercial.dts.scale.service.agreements.model.dto;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 import lombok.Data;
 
@@ -7,7 +8,7 @@ import lombok.Data;
  * Agreement Update.
  */
 @Data
-public class AgreementUpdate {
+public class AgreementUpdate implements Serializable {
 
   /**
    * Date that the update was added.
