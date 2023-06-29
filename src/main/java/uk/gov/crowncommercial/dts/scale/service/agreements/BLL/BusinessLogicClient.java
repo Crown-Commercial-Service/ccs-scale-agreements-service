@@ -6,11 +6,15 @@ import org.springframework.stereotype.Component;
 import uk.gov.crowncommercial.dts.scale.service.agreements.converter.AgreementConverter;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.AgreementDetail;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.AgreementSummary;
+import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.BuyingMethod;
+import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.LotDetail;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.CommercialAgreement;
 import uk.gov.crowncommercial.dts.scale.service.agreements.service.AgreementService;
 import uk.gov.crowncommercial.dts.scale.service.agreements.service.WordpressService;
 
+import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -56,6 +60,32 @@ public class BusinessLogicClient {
 
             // Now we should have a complete agreement model - convert it to the format we desire, and then return it
             model = agreementConverter.convertAgreementToDTO(agreementModel);
+        }
+
+        return model;
+    }
+
+    /**
+     * Returns a list of LotDetail objects which relate to a specified agreement
+     */
+    @Cacheable
+    public Collection<LotDetail> getLotsForAgreement(String agreementId, Optional<BuyingMethod> buyingMethod) {
+        Collection<LotDetail> model = null;
+
+        // Fetch the commercial agreement from the service
+        CommercialAgreement agreementModel = agreementService.findAgreementByNumber(agreementId);
+
+        if (agreementModel != null) {
+            // Now convert the lots specified in the agreement into the format we want to return
+            model = agreementConverter.convertLotsToDTOs(agreementModel.getLots());
+
+            // Finally, if we're given a buying method we need to filter our results to just those matching the method specified
+            if (buyingMethod.isPresent()) {
+                model = model.stream()
+                        .filter(lot -> lot.getRoutesToMarket().stream()
+                                .filter(route -> buyingMethod.get() == route.getBuyingMethod()).count() > 0)
+                        .collect(Collectors.toSet());
+            }
         }
 
         return model;

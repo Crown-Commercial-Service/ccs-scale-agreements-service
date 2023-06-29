@@ -51,19 +51,16 @@ public class AgreementController {
 
     @GetMapping("/{agreement-id}/lots")
     public Collection<LotDetail> getAgreementLots(@PathVariable(value = "agreement-id") final String agreementNumber, @RequestParam Optional<BuyingMethod> buyingMethod) {
-        log.debug("getAgreementLots: agreementNumber={}, buyingMethod={}", agreementNumber, buyingMethod);
-        final CommercialAgreement ca = getAgreement(agreementNumber);
-        Collection<LotDetail> lots = converter.convertLotsToDTOs(ca.getLots());
-        if (buyingMethod.isPresent()) {
-            return filterLotsByBuyingMethod(lots, buyingMethod.get());
-        } else {
-            return lots;
-        }
+        log.debug("getAgreementLots called: agreementNumber={}, buyingMethod={}", agreementNumber, buyingMethod);
+
+        Collection<LotDetail> model = businessLogicClient.getLotsForAgreement(agreementNumber, buyingMethod);
+
+        return model;
     }
 
     @GetMapping("/{agreement-id}/documents")
     public Collection<Document> getAgreementDocuments(@PathVariable(value = "agreement-id") final String agreementNumber) {
-        log.debug("getAgreementDocuments: {}", agreementNumber);
+        log.debug("getAgreementDocuments called with ID: {}", agreementNumber);
         final CommercialAgreement ca = getAgreement(agreementNumber);
         return converter.convertAgreementDocumentsToDTOs(ca.getDocuments());
     }
@@ -73,12 +70,5 @@ public class AgreementController {
         log.debug("getAgreementUpdates: {}", agreementNumber);
         final CommercialAgreement ca = getAgreement(agreementNumber);
         return converter.convertAgreementUpdatesToDTOs(ca.getUpdates());
-    }
-
-    private Collection<LotDetail> filterLotsByBuyingMethod(Collection<LotDetail> lots, BuyingMethod buyingMethod) {
-        return lots.stream()
-            .filter(ld -> ld.getRoutesToMarket().stream()
-            .filter(rtm -> buyingMethod == rtm.getBuyingMethod()).count() > 0)
-            .collect(Collectors.toSet());
     }
 }
