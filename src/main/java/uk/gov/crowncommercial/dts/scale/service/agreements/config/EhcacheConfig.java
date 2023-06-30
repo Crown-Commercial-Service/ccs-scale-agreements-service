@@ -13,7 +13,6 @@ import javax.cache.CacheManager;
 import javax.cache.Caching;
 import javax.cache.spi.CachingProvider;
 import java.time.Duration;
-import java.util.ArrayList;
 
 /**
  * Ehcache cache setup and configuration for the application
