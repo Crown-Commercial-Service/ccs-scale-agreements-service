@@ -1,5 +1,6 @@
 package uk.gov.crowncommercial.dts.scale.service.agreements.model.dto;
 
+import java.io.Serializable;
 import java.util.Set;
 import lombok.Data;
 
@@ -8,7 +9,7 @@ import lombok.Data;
  * https://raw.githubusercontent.com/Crown-Commercial-Service/ccs-scale-api-definitions/master/common/OCDS_Schema.yaml#/components/schemas/Organization)
  */
 @Data
-public class Organization {
+public class Organization implements Serializable {
 
   /**
    * Conclave Organization Id.

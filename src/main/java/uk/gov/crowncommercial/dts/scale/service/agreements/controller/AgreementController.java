@@ -13,8 +13,7 @@ import uk.gov.crowncommercial.dts.scale.service.agreements.BLL.BusinessLogicClie
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.*;
 
 /**
- * Agreement Controller.
- *
+ * Agreement Controller
  */
 @RestController
 @RequestMapping("/agreements")
@@ -50,7 +49,7 @@ public class AgreementController {
         if (buyingMethod.isPresent()) {
             model = businessLogicClient.getLotsForAgreement(agreementNumber, buyingMethod.get());
         } else {
-            model = businessLogicClient.getLotsForAgreement(agreementNumber, null);
+            model = businessLogicClient.getLotsForAgreement(agreementNumber, BuyingMethod.NONE);
         }
 
         return model;

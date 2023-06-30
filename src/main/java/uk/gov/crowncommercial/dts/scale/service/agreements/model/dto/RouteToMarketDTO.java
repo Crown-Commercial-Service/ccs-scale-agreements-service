@@ -1,5 +1,6 @@
 package uk.gov.crowncommercial.dts.scale.service.agreements.model.dto;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 import lombok.Data;
 
@@ -7,7 +8,7 @@ import lombok.Data;
  * Route to Market.
  */
 @Data
-public class RouteToMarketDTO {
+public class RouteToMarketDTO implements Serializable {
 
   /**
    * Buying method.

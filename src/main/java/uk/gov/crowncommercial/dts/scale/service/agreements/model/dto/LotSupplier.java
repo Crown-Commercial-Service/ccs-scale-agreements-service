@@ -1,5 +1,6 @@
 package uk.gov.crowncommercial.dts.scale.service.agreements.model.dto;
 
+import java.io.Serializable;
 import java.util.Set;
 import lombok.Data;
 
@@ -7,7 +8,7 @@ import lombok.Data;
  * LotSupplier
  */
 @Data
-public class LotSupplier {
+public class LotSupplier implements Serializable {
 
   private Organization organization;
 

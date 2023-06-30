@@ -18,7 +18,9 @@ public enum BuyingMethod {
 
   MARKETPLACE("Marketplace"),
 
-  E_AUCTION("EAuction");
+  E_AUCTION("EAuction"),
+
+  NONE("NotSpecified");
 
   private final String name;
 

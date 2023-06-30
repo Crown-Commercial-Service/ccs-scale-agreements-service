@@ -1,6 +1,5 @@
 package uk.gov.crowncommercial.dts.scale.service.agreements.BLL;
 
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;
@@ -12,7 +11,6 @@ import uk.gov.crowncommercial.dts.scale.service.agreements.service.WordpressServ
 
 import java.util.Collection;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -20,7 +18,6 @@ import java.util.stream.Collectors;
  * Everything in here should be cached
  */
 @Component
-@Slf4j
 public class BusinessLogicClient {
     @Autowired
     private AgreementService agreementService;
@@ -36,7 +33,6 @@ public class BusinessLogicClient {
      */
     @Cacheable(value = "getAgreementsList", key = "#root.methodName")
     public List<AgreementSummary> getAgreementsList() {
-        log.info("Need to generate Agreement List" );
         // Fetch the list of agreements from the service
         final List<CommercialAgreement> agreements = agreementService.getAgreements();
 
@@ -47,9 +43,8 @@ public class BusinessLogicClient {
     /**
      * Returns a specific AgreementDetail object based on a requested ID
      */
-    @Cacheable(value = "getAgreementDetail") // TODO: Sort cache config
+    @Cacheable(value = "getAgreementDetail")
     public AgreementDetail getAgreementDetail(String agreementId) {
-        log.info("Need to generate AgreementDetail" );
         AgreementDetail model = new AgreementDetail();
 
         // Fetch the Commercial Agreement from the service
@@ -69,7 +64,7 @@ public class BusinessLogicClient {
     /**
      * Returns a list of LotDetail objects which relate to a specified agreement
      */
-    @Cacheable(value = "getLotsForAgreement") // TODO: Fix caching
+    @Cacheable(value = "getLotsForAgreement", key="#agreementId + #buyingMethod.toString()")
     public Collection<LotDetail> getLotsForAgreement(String agreementId, BuyingMethod buyingMethod) {
         Collection<LotDetail> model = null;
 
@@ -81,7 +76,7 @@ public class BusinessLogicClient {
             model = agreementConverter.convertLotsToDTOs(agreementModel.getLots());
 
             // Finally, if we're given a buying method we need to filter our results to just those matching the method specified
-            if (buyingMethod != null) {
+            if (buyingMethod != null && buyingMethod != BuyingMethod.NONE) {
                 model = model.stream()
                         .filter(lot -> lot.getRoutesToMarket().stream()
                                 .filter(route -> buyingMethod == route.getBuyingMethod()).count() > 0)

@@ -2,11 +2,13 @@ package uk.gov.crowncommercial.dts.scale.service.agreements.model.dto;
 
 import lombok.Data;
 
+import java.io.Serializable;
+
 /**
  * Data required from the relevant transaction to be able to evaluate a rule.
  */
 @Data
-public class TransactionData {
+public class TransactionData implements Serializable {
 
   /**
    * Name of the variable.

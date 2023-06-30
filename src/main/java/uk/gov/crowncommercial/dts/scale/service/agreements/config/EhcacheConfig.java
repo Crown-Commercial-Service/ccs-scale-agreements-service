@@ -34,23 +34,22 @@ public class EhcacheConfig {
         CachingProvider provider = Caching.getCachingProvider();
         CacheManager cacheManager = provider.getCacheManager();
 
-        CacheConfigurationBuilder<String, ArrayList> primaryCacheConfigBuilder =
+        CacheConfigurationBuilder<String, Object> primaryCacheConfigBuilder =
                 CacheConfigurationBuilder.newCacheConfigurationBuilder(
                                 String.class,
-                                ArrayList.class,
+                                Object.class,
                                 ResourcePoolsBuilder
-                                        .newResourcePoolsBuilder().offheap(10, MemoryUnit.MB))
+                                        .newResourcePoolsBuilder().offheap(100, MemoryUnit.MB))
                         .withExpiry(ExpiryPolicyBuilder.timeToLiveExpiration(Duration.ofSeconds(Integer.parseInt(primaryCacheLength))));
 
-        javax.cache.configuration.Configuration<String, ArrayList> primaryCacheConfig = Eh107Configuration.fromEhcacheCacheConfiguration(primaryCacheConfigBuilder);
+        javax.cache.configuration.Configuration<String, Object> primaryCacheConfig = Eh107Configuration.fromEhcacheCacheConfiguration(primaryCacheConfigBuilder);
 
         // Establish primary caches
         cacheManager.createCache("getAgreementsList", primaryCacheConfig);
+        cacheManager.createCache("getAgreementDetail", primaryCacheConfig);
         cacheManager.createCache("getLotsForAgreement", primaryCacheConfig);
         cacheManager.createCache("getDocumentsForAgreement", primaryCacheConfig);
         cacheManager.createCache("getUpdatesForAgreement", primaryCacheConfig);
-
-        // TODO: AgreementDetail caching
 
         // Establish secondary caches
 
