@@ -55,7 +55,7 @@ public class BusinessLogicClient {
      */
     @Cacheable(value = "getAgreementDetail")
     public AgreementDetail getAgreementDetail(String agreementId) {
-        AgreementDetail model = new AgreementDetail();
+        AgreementDetail model = null;
 
         // Fetch the Commercial Agreement from the service
         CommercialAgreement agreementModel = agreementService.findAgreementByNumber(agreementId);
