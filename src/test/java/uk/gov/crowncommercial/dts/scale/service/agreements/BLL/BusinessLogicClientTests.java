@@ -1,11 +1,15 @@
 package uk.gov.crowncommercial.dts.scale.service.agreements.BLL;
 
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
 
 @SpringBootTest
 @ActiveProfiles("test")
 public class BusinessLogicClientTests {
+    @MockBean
+    private BusinessLogicClient businessLogicClient;
+
     // getAgreementsList returns list
 
     // getAgreementDetail with valid ID returns model
