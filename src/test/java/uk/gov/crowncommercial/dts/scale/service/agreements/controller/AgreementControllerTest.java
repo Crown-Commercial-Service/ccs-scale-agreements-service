@@ -22,6 +22,7 @@ import com.rollbar.notifier.Rollbar;
 import uk.gov.crowncommercial.dts.scale.service.agreements.BLL.BusinessLogicClient;
 import uk.gov.crowncommercial.dts.scale.service.agreements.converter.AgreementConverter;
 import uk.gov.crowncommercial.dts.scale.service.agreements.exception.AgreementNotFoundException;
+import uk.gov.crowncommercial.dts.scale.service.agreements.exception.LotNotFoundException;
 import uk.gov.crowncommercial.dts.scale.service.agreements.helpers.WordpressHelpers;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.*;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.*;
@@ -114,6 +115,9 @@ class AgreementControllerTest {
   @Test
   void testGetAgreementNotFound() throws Exception {
     when(service.findAgreementByNumber(AGREEMENT_NUMBER)).thenReturn(null);
+
+    when(businessLogicClient.getAgreementDetail(AGREEMENT_NUMBER)).thenThrow(new AgreementNotFoundException(AGREEMENT_NUMBER));
+
     mockMvc.perform(get(String.format(GET_AGREEMENT_PATH, AGREEMENT_NUMBER)))
         .andExpect(status().is4xxClientError())
         .andExpect(jsonPath("$.errors[0].status", is(HttpStatus.NOT_FOUND.toString())))
@@ -189,6 +193,9 @@ class AgreementControllerTest {
   @Test
   void testGetAgreementLotsNotFound() throws Exception {
     when(service.findAgreementByNumber(AGREEMENT_NUMBER)).thenReturn(null);
+
+    when(businessLogicClient.getLotsForAgreement(AGREEMENT_NUMBER, BuyingMethod.NONE)).thenThrow(new AgreementNotFoundException(AGREEMENT_NUMBER));
+
     mockMvc.perform(get(String.format(GET_AGREEMENT_LOTS_PATH, AGREEMENT_NUMBER)))
         .andExpect(status().is4xxClientError())
         .andExpect(jsonPath("$.errors[0].status", is(HttpStatus.NOT_FOUND.toString())))
@@ -240,6 +247,9 @@ class AgreementControllerTest {
   @Test
   void testGetAgreementDocumentsNotFound() throws Exception {
     when(service.findAgreementByNumber(AGREEMENT_NUMBER)).thenReturn(null);
+
+    when(businessLogicClient.getDocumentsForAgreement(AGREEMENT_NUMBER)).thenThrow(new AgreementNotFoundException(AGREEMENT_NUMBER));
+
     mockMvc.perform(get(String.format(GET_AGREEMENT_DOCUMENTS_PATH, AGREEMENT_NUMBER)))
         .andExpect(status().is4xxClientError())
         .andExpect(jsonPath("$.errors[0].status", is(HttpStatus.NOT_FOUND.toString())))

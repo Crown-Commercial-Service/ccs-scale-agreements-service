@@ -106,6 +106,9 @@ class LotControllerTest {
   void testGetLotNotFound() throws Exception {
     when(service.findLotByAgreementNumberAndLotNumber(AGREEMENT_NUMBER, LOT1_NUMBER))
         .thenReturn(null);
+
+    when(businessLogicClient.getLotDetail(AGREEMENT_NUMBER, LOT1_NUMBER)).thenThrow(new LotNotFoundException(LOT1_NUMBER, AGREEMENT_NUMBER));
+
     mockMvc.perform(get(GET_LOT_PATH, AGREEMENT_NUMBER, LOT1_NUMBER))
         .andExpect(status().is4xxClientError())
         .andExpect(jsonPath("$.errors[0].status", is(HttpStatus.NOT_FOUND.toString())))
@@ -165,6 +168,8 @@ class LotControllerTest {
         service.findLotSupplierOrgRolesByAgreementNumberAndLotNumber(AGREEMENT_NUMBER, LOT1_NUMBER))
             .thenThrow(new LotNotFoundException(LOT1_NUMBER, AGREEMENT_NUMBER));
 
+    when(businessLogicClient.getLotSuppliers(AGREEMENT_NUMBER, LOT1_NUMBER)).thenThrow(new LotNotFoundException(LOT1_NUMBER, AGREEMENT_NUMBER));
+
     mockMvc.perform(get(GET_LOT_SUPPLIERS_PATH, AGREEMENT_NUMBER, LOT1_NUMBER))
         .andExpect(status().is4xxClientError())
         .andExpect(jsonPath("$.errors[0].status", is(HttpStatus.NOT_FOUND.toString())))
@@ -203,6 +208,9 @@ class LotControllerTest {
   void testGetLotEventTypesNotFound() throws Exception {
     when(service.findLotByAgreementNumberAndLotNumber(AGREEMENT_NUMBER, LOT1_NUMBER))
         .thenReturn(null);
+
+    when(businessLogicClient.getLotEventTypes(AGREEMENT_NUMBER, LOT1_NUMBER)).thenThrow(new LotNotFoundException(LOT1_NUMBER, AGREEMENT_NUMBER));
+
     mockMvc.perform(get(GET_LOT_EVENT_TYPES_PATH, AGREEMENT_NUMBER, LOT1_NUMBER))
         .andExpect(status().is4xxClientError())
         .andExpect(jsonPath("$.errors[0].status", is(HttpStatus.NOT_FOUND.toString())))
@@ -239,6 +247,9 @@ class LotControllerTest {
   void testGetDataTemplatesNotFound() throws Exception {
     when(service.findLotByAgreementNumberAndLotNumber(AGREEMENT_NUMBER, LOT1_NUMBER))
         .thenReturn(null);
+
+    when(businessLogicClient.getEventDataTemplates(AGREEMENT_NUMBER, LOT1_NUMBER, EVENT_TYPE_RFI)).thenThrow(new LotNotFoundException(LOT1_NUMBER, AGREEMENT_NUMBER));
+
     mockMvc.perform(get(GET_LOT_DATA_TEMPLATES_PATH, AGREEMENT_NUMBER, LOT1_NUMBER, EVENT_TYPE_RFI))
         .andExpect(status().is4xxClientError())
         .andExpect(jsonPath("$.errors[0].status", is(HttpStatus.NOT_FOUND.toString())))
@@ -274,6 +285,9 @@ class LotControllerTest {
   void testGetDocumentTemplatesNotFound() throws Exception {
     when(service.findLotByAgreementNumberAndLotNumber(AGREEMENT_NUMBER, LOT1_NUMBER))
         .thenReturn(null);
+
+    when(businessLogicClient.getEventDocumentTemplates(AGREEMENT_NUMBER, LOT1_NUMBER, EVENT_TYPE_RFI)).thenThrow(new LotNotFoundException(LOT1_NUMBER, AGREEMENT_NUMBER));
+
     mockMvc
         .perform(
             get(GET_LOT_DOCUMENT_TEMPLATES_PATH, AGREEMENT_NUMBER, LOT1_NUMBER, EVENT_TYPE_RFI))
