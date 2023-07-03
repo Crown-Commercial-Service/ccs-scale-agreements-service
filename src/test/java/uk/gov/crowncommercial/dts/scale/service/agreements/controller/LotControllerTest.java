@@ -18,6 +18,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import uk.gov.crowncommercial.dts.scale.service.agreements.BLL.BusinessLogicClient;
 import uk.gov.crowncommercial.dts.scale.service.agreements.converter.AgreementConverter;
 import uk.gov.crowncommercial.dts.scale.service.agreements.exception.LotNotFoundException;
 import uk.gov.crowncommercial.dts.scale.service.agreements.helpers.WordpressHelpers;
@@ -49,6 +50,9 @@ class LotControllerTest {
 
   @MockBean
   private AgreementService service;
+
+  @MockBean
+  private BusinessLogicClient businessLogicClient;
 
   @MockBean
   private QuestionTemplateService templateService;
@@ -91,6 +95,9 @@ class LotControllerTest {
     when(service.findLotByAgreementNumberAndLotNumber(AGREEMENT_NUMBER, LOT1_NUMBER))
         .thenReturn(mockLot);
     when(converter.convertLotToDTO(mockLot)).thenReturn(lot);
+
+    when(businessLogicClient.getLotDetail(AGREEMENT_NUMBER, LOT1_NUMBER)).thenReturn(lot);
+
     mockMvc.perform(get(GET_LOT_PATH, AGREEMENT_NUMBER, LOT1_NUMBER)).andExpect(status().isOk())
         .andExpect(jsonPath("$.number", is(LOT1_NUMBER)));
   }
@@ -140,6 +147,8 @@ class LotControllerTest {
     when(converter.convertLotOrgRolesToLotSupplierDTOs(lotOrgRoles))
         .thenReturn(Collections.singleton(lotSupplier));
 
+    when(businessLogicClient.getLotSuppliers(AGREEMENT_NUMBER, LOT1_NUMBER)).thenReturn(Collections.singleton(lotSupplier));
+
     mockMvc.perform(get(GET_LOT_SUPPLIERS_PATH, AGREEMENT_NUMBER, LOT1_NUMBER))
         .andExpect(content().contentType(MediaType.APPLICATION_JSON))
         .andExpect(status().is2xxSuccessful()).andExpect(jsonPath("$.size()", is(1)))
@@ -181,6 +190,8 @@ class LotControllerTest {
     when(converter.convertLotProcurementEventTypesToDTOs(lotProcurementEventTypes))
         .thenReturn(Collections.singleton(eventType));
 
+    when(businessLogicClient.getLotEventTypes(AGREEMENT_NUMBER, LOT1_NUMBER)).thenReturn(Collections.singleton(eventType));
+
     mockMvc.perform(get(GET_LOT_EVENT_TYPES_PATH, AGREEMENT_NUMBER, LOT1_NUMBER))
         .andExpect(content().contentType(MediaType.APPLICATION_JSON))
         .andExpect(status().is2xxSuccessful()).andExpect(jsonPath("$.size()", is(1)))
@@ -215,6 +226,9 @@ class LotControllerTest {
             .thenReturn(Collections.singleton(dataTemplate));
     when(templateService.getDataTemplates(mockLot, EVENT_TYPE_RFI))
             .thenReturn(Collections.singleton(dataTemplate));
+
+    when(businessLogicClient.getEventDataTemplates(AGREEMENT_NUMBER, LOT1_NUMBER, EVENT_TYPE_RFI)).thenReturn(Collections.singleton(dataTemplate));
+
     mockMvc.perform(get(GET_LOT_DATA_TEMPLATES_PATH, AGREEMENT_NUMBER, LOT1_NUMBER, EVENT_TYPE_RFI))
         .andExpect(content().contentType(MediaType.APPLICATION_JSON))
         .andExpect(status().is2xxSuccessful()).andExpect(jsonPath("$.size()", is(1)))
@@ -245,6 +259,9 @@ class LotControllerTest {
     when(mockLot.getProcurementQuestionTemplates()).thenReturn(lotProcurementQuestionTemplates);
     when(converter.convertLotProcurementQuestionTemplateToDocumentTemplates(
         lotProcurementQuestionTemplates, EVENT_TYPE_RFI)).thenReturn(Collections.singleton(doc));
+
+    when(businessLogicClient.getEventDocumentTemplates(AGREEMENT_NUMBER, LOT1_NUMBER, EVENT_TYPE_RFI)).thenReturn(Collections.singleton(doc));
+
     mockMvc
         .perform(
             get(GET_LOT_DOCUMENT_TEMPLATES_PATH, AGREEMENT_NUMBER, LOT1_NUMBER, EVENT_TYPE_RFI))
