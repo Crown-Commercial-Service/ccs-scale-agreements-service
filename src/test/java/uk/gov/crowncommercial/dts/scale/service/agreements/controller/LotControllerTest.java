@@ -44,6 +44,7 @@ class LotControllerTest {
   private static final String AGREEMENT_NUMBER = "RM3733";
   private static final String LOT1_NUMBER = "Lot 1";
   private static final String EVENT_TYPE_RFI = "RFI";
+  private static final String RUNTIME_EXCEPTION_TEXT = "Something is amiss";
 
   @Autowired
   private MockMvc mockMvc;
@@ -121,8 +122,8 @@ class LotControllerTest {
 
   @Test
   void testGetLotUnexpectedError() throws Exception {
-    when(service.findLotByAgreementNumberAndLotNumber(AGREEMENT_NUMBER, LOT1_NUMBER))
-        .thenThrow(new RuntimeException("Something is amiss"));
+    when(businessLogicClient.getLotDetail(AGREEMENT_NUMBER, LOT1_NUMBER)).thenThrow(new RuntimeException(RUNTIME_EXCEPTION_TEXT));
+
     mockMvc.perform(get(GET_LOT_PATH, AGREEMENT_NUMBER, LOT1_NUMBER))
         .andExpect(status().is5xxServerError())
         .andExpect(jsonPath("$.description", is(GlobalErrorHandler.ERR_MSG_DEFAULT_DESCRIPTION)));

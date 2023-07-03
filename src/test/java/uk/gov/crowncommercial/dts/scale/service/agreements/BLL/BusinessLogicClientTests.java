@@ -6,9 +6,11 @@ import org.springframework.test.context.ActiveProfiles;
 @SpringBootTest
 @ActiveProfiles("test")
 public class BusinessLogicClientTests {
+    // getAgreementsList returns list
+
     // getAgreementDetail with valid ID returns model
 
-    // getAgreementDetail with invalid ID returns null
+    // getAgreementDetail with invalid ID returns exception
 
     // getLotsForAgreement with valid ID and no buying method returns model
 
@@ -25,4 +27,24 @@ public class BusinessLogicClientTests {
     // getUpdatesForAgreement with valid ID returns model
 
     // getUpdatesForAgreement with invalid ID returns null
+
+    // getLotDetail with valid IDs returns model
+
+    // getLotDetail with invalid IDs returns null
+
+    // getLotSuppliers valid
+
+    // getLotSuppliers invalid
+
+    // getLotEventTypes valid
+
+    // getLotEventTypes invalid
+
+    // getEventDataTemplates valid
+
+    // getEventDataTemplates invalid
+
+    // getEventDocumentTemplates valid
+
+    // getEventDocumentTemplates invalid
 }
