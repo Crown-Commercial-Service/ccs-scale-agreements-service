@@ -44,6 +44,8 @@ public class EhcacheConfig {
         cacheManager.createCache("getUpdatesForAgreement", primaryCacheConfig);
         cacheManager.createCache("getLotDetail", primaryCacheConfig);
         cacheManager.createCache("getLotEventTypes", primaryCacheConfig);
+        cacheManager.createCache("getEventDataTemplates", primaryCacheConfig);
+        cacheManager.createCache("getEventDocumentTemplates", primaryCacheConfig);
 
         // Establish secondary caches
         cacheManager.createCache("getLotSuppliers", secondaryCacheConfig);
@@ -60,7 +62,7 @@ public class EhcacheConfig {
                                 String.class,
                                 Object.class,
                                 ResourcePoolsBuilder
-                                        .newResourcePoolsBuilder().offheap(100, MemoryUnit.MB))
+                                        .newResourcePoolsBuilder().offheap(50, MemoryUnit.MB))
                         .withExpiry(ExpiryPolicyBuilder.timeToLiveExpiration(Duration.ofSeconds(Integer.parseInt(cacheLength))));
 
         javax.cache.configuration.Configuration<String, Object> cacheConfig = Eh107Configuration.fromEhcacheCacheConfiguration(cacheConfigBuilder);

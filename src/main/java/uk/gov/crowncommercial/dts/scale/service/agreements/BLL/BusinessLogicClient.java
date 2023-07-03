@@ -1,17 +1,16 @@
 package uk.gov.crowncommercial.dts.scale.service.agreements.BLL;
 
-import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;
 import uk.gov.crowncommercial.dts.scale.service.agreements.converter.AgreementConverter;
 import uk.gov.crowncommercial.dts.scale.service.agreements.converter.TemplateGroupConverter;
-import uk.gov.crowncommercial.dts.scale.service.agreements.exception.LotNotFoundException;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.*;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.CommercialAgreement;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.Lot;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.LotOrganisationRole;
 import uk.gov.crowncommercial.dts.scale.service.agreements.service.AgreementService;
+import uk.gov.crowncommercial.dts.scale.service.agreements.service.QuestionTemplateService;
 import uk.gov.crowncommercial.dts.scale.service.agreements.service.WordpressService;
 
 import java.util.Collection;
@@ -35,6 +34,9 @@ public class BusinessLogicClient {
 
     @Autowired
     private TemplateGroupConverter templateGroupConverter;
+
+    @Autowired
+    private QuestionTemplateService questionTemplateService;
 
     /**
      * Returns a list of all Commercial Agreements
@@ -186,6 +188,42 @@ public class BusinessLogicClient {
 
             // Finally we need to use a further converter to assign templates to our output
             templateGroupConverter.assignTemplates(lotModel, model);
+        }
+
+        return model;
+    }
+
+    /**
+     * Returns a list of ProcurementDataTemplate objects which relate to a specified event
+     */
+    @Cacheable(value = "getEventDataTemplates")
+    public Collection<ProcurementDataTemplate> getEventDataTemplates(String agreementId, String lotId, String eventType) {
+        Collection<ProcurementDataTemplate> model = null;
+
+        // Fetch the lot from the service
+        Lot lotModel = agreementService.findLotByAgreementNumberAndLotNumber(agreementId, lotId);
+
+        if (lotModel != null) {
+            // Now use the let to fetch the data templates from the template service
+            model = questionTemplateService.getDataTemplates(lotModel, eventType);
+        }
+
+        return model;
+    }
+
+    /**
+     * Returns a list of Document objects which relate to a specified event
+     */
+    @Cacheable(value = "getEventDocumentTemplates")
+    public Collection<Document> getEventDocumentTemplates(String agreementId, String lotId, String eventType) {
+        Collection<Document> model = null;
+
+        // Fetch the lot from the service
+        Lot lotModel = agreementService.findLotByAgreementNumberAndLotNumber(agreementId, lotId);
+
+        if (lotModel != null && lotModel.getProcurementQuestionTemplates() != null) {
+            // Now use the lot to convert the procurement question templates to documents
+            model = agreementConverter.convertLotProcurementQuestionTemplateToDocumentTemplates(lotModel.getProcurementQuestionTemplates(), eventType);
         }
 
         return model;
