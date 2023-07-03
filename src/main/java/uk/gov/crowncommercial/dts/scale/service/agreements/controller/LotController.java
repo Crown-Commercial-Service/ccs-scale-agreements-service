@@ -3,11 +3,13 @@ package uk.gov.crowncommercial.dts.scale.service.agreements.controller;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.json.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import uk.gov.crowncommercial.dts.scale.service.agreements.BLL.BusinessLogicClient;
 import uk.gov.crowncommercial.dts.scale.service.agreements.converter.AgreementConverter;
 import uk.gov.crowncommercial.dts.scale.service.agreements.converter.TemplateGroupConverter;
 import uk.gov.crowncommercial.dts.scale.service.agreements.exception.LotNotFoundException;
@@ -32,58 +34,40 @@ public class LotController {
   @Value("${wordpressURL:https://webdev-cms.crowncommercial.gov.uk/}")
   private String wordpressURL;
 
+  @Autowired
+  private BusinessLogicClient businessLogicClient;
+
   private final AgreementService service;
   private final AgreementConverter converter;
-  private final WordpressHelpers wordpressHelpers;
 
   private final QuestionTemplateService questionTemplateService;
   private TemplateGroupConverter templateGroupConverter = new TemplateGroupConverter();
 
   @GetMapping
   public LotDetail getLot(@PathVariable(value = "agreement-id") final String agreementNumber, @PathVariable(value = "lot-id") final String lotNumber) {
-    log.debug("getLot: agreementNumber={}, lotNumber={}", agreementNumber, lotNumber);
-    final Lot lot = service.findLotByAgreementNumberAndLotNumber(agreementNumber, lotNumber);
-    if (lot == null) {
-      throw new LotNotFoundException(lotNumber, agreementNumber);
-    }
+    log.debug("getLot called with values: agreementNumber={}, lotNumber={}", agreementNumber, lotNumber);
 
-    JSONObject jsonData = wordpressHelpers.connectWordpress(wordpressURL + "wp-json/ccs/v1/frameworks/" + agreementNumber + "/lot/" + lotNumber.substring(lotNumber.indexOf(" ") + 1));
+    LotDetail model = businessLogicClient.getLotDetail(agreementNumber, lotNumber);
 
-    if(jsonData != null) {
-      String lotDescriptionFromWordpress = wordpressHelpers.validateAndLog("description", jsonData, agreementNumber);
-
-      lot.setDescription(lotDescriptionFromWordpress != null ? lotDescriptionFromWordpress : " ");
-    }
-
-    return converter.convertLotToDTO(lot);
+    return model;
   }
 
   @GetMapping("/suppliers")
   public Collection<LotSupplier> getLotSuppliers(@PathVariable(value = "agreement-id") final String agreementNumber, @PathVariable(value = "lot-id") final String lotNumber) {
+    log.debug("getLotSuppliers called with values: agreementNumber={}, lotNumber={}", agreementNumber, lotNumber);
 
-    log.debug("getLotSuppliers: agreementNumber={}, lotNumber={}", agreementNumber, lotNumber);
+    Collection<LotSupplier> model = businessLogicClient.getLotSuppliers(agreementNumber, lotNumber);
 
-    final Collection<LotOrganisationRole> lotOrgRoles =
-        service.findLotSupplierOrgRolesByAgreementNumberAndLotNumber(agreementNumber, lotNumber);
-
-    return converter.convertLotOrgRolesToLotSupplierDTOs(lotOrgRoles);
+    return model;
   }
 
   @GetMapping("/event-types")
-  public Collection<EventType> getLotEventTypes(
-      @PathVariable(value = "agreement-id") final String agreementNumber,
-      @PathVariable(value = "lot-id") final String lotNumber) {
+  public Collection<EventType> getLotEventTypes(@PathVariable(value = "agreement-id") final String agreementNumber, @PathVariable(value = "lot-id") final String lotNumber) {
+    log.debug("getLotEventTypes called with values: agreementNumber={}, lotNumber={}", agreementNumber, lotNumber);
 
-    log.debug("getLotEventTypes: agreementNumber={}, lotNumber={}", agreementNumber, lotNumber);
+    Collection<EventType> model = businessLogicClient.getLotEventTypes(agreementNumber, lotNumber);
 
-    final Lot lot = service.findLotByAgreementNumberAndLotNumber(agreementNumber, lotNumber);
-    if (lot == null) {
-      throw new LotNotFoundException(lotNumber, agreementNumber);
-    }
-
-    Collection<EventType> result = converter.convertLotProcurementEventTypesToDTOs(lot.getProcurementEventTypes());
-    templateGroupConverter.assignTemplates(lot, result);
-    return result;
+    return model;
   }
 
   @GetMapping("/event-types/{event-type}/data-templates")

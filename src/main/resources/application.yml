@@ -4,13 +4,12 @@ server:
     path: "/error"
 
 caching:
-  spring:
-    primary:
-      # 1 hour
-      cacheLength: 3600
-    secondary:
-      # 15 mins
-      cacheLength: 900
+  primary:
+    # 1 hour
+    cacheLength: 3600
+  secondary:
+    # 15 mins
+    cacheLength: 900
 
 logging:
   level:

@@ -61,11 +61,16 @@ public class AgreementService {
    * @param lotNumber Lot number
    * @return Lot
    */
-  public Lot findLotByAgreementNumberAndLotNumber(final String agreementNumber,
-      final String lotNumber) {
-    log.debug("findLotByAgreementNumberAndLotNumber: agreementNumber={},lotNumber={}",
-        agreementNumber, lotNumber);
-    return lotRepo.findByAgreementNumberAndNumber(agreementNumber, lotNumber);
+  public Lot findLotByAgreementNumberAndLotNumber(final String agreementNumber, final String lotNumber) {
+    log.debug("findLotByAgreementNumberAndLotNumber: agreementNumber={},lotNumber={}", agreementNumber, lotNumber);
+
+    final Lot lotModel = lotRepo.findByAgreementNumberAndNumber(agreementNumber, lotNumber);
+
+    if (lotModel == null) {
+      throw new LotNotFoundException(lotNumber, agreementNumber);
+    }
+
+    return lotModel;
   }
 
   /**

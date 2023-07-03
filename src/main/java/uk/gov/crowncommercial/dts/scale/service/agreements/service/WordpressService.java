@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.CommercialAgreement;
+import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.Lot;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -87,6 +88,23 @@ public class WordpressService {
 
             if(agreementDesc != null) model.setDescription(agreementDesc);
             if(agreementEndDate != null) model.setEndDate(LocalDate.parse(agreementEndDate));
+        }
+
+        return model;
+    }
+
+    /**
+     * Expands a supplied Lot model with Wordpress data
+     */
+    public Lot getExpandedLot(Lot model, String agreementId, String lotId) {
+        // Start by requesting the data we need from the Wordpress API
+        JSONObject jsonData = performWordpressRequest(wordpressBaseURL + "wp-json/ccs/v1/frameworks/" + agreementId + "/lot/" + lotId.substring(lotId.indexOf(" ") + 1));
+
+        if(jsonData != null) {
+            // We have the data response, so now use it to populate our expansion data
+            String lotDesc = validateWordpressData("description", jsonData, agreementId);
+
+            if(lotDesc != null) model.setDescription(lotDesc);
         }
 
         return model;

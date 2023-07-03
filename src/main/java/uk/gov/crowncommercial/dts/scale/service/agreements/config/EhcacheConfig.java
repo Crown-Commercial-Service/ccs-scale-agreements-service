@@ -19,10 +19,10 @@ import java.time.Duration;
  */
 @Configuration
 public class EhcacheConfig {
-    @Value("${caching.spring.primary.cacheLength}")
+    @Value("${caching.primary.cacheLength}")
     String primaryCacheLength;
 
-    @Value("${caching.spring.secondary.cacheLength}")
+    @Value("${caching.secondary.cacheLength}")
     String secondaryCacheLength;
 
     /**
@@ -33,15 +33,8 @@ public class EhcacheConfig {
         CachingProvider provider = Caching.getCachingProvider();
         CacheManager cacheManager = provider.getCacheManager();
 
-        CacheConfigurationBuilder<String, Object> primaryCacheConfigBuilder =
-                CacheConfigurationBuilder.newCacheConfigurationBuilder(
-                                String.class,
-                                Object.class,
-                                ResourcePoolsBuilder
-                                        .newResourcePoolsBuilder().offheap(100, MemoryUnit.MB))
-                        .withExpiry(ExpiryPolicyBuilder.timeToLiveExpiration(Duration.ofSeconds(Integer.parseInt(primaryCacheLength))));
-
-        javax.cache.configuration.Configuration<String, Object> primaryCacheConfig = Eh107Configuration.fromEhcacheCacheConfiguration(primaryCacheConfigBuilder);
+        javax.cache.configuration.Configuration<String, Object> primaryCacheConfig = getCacheConfigForSpecifiedLifespan(primaryCacheLength);
+        javax.cache.configuration.Configuration<String, Object> secondaryCacheConfig = getCacheConfigForSpecifiedLifespan(secondaryCacheLength);
 
         // Establish primary caches
         cacheManager.createCache("getAgreementsList", primaryCacheConfig);
@@ -49,11 +42,29 @@ public class EhcacheConfig {
         cacheManager.createCache("getLotsForAgreement", primaryCacheConfig);
         cacheManager.createCache("getDocumentsForAgreement", primaryCacheConfig);
         cacheManager.createCache("getUpdatesForAgreement", primaryCacheConfig);
+        cacheManager.createCache("getLotDetail", primaryCacheConfig);
+        cacheManager.createCache("getLotEventTypes", primaryCacheConfig);
 
         // Establish secondary caches
+        cacheManager.createCache("getLotSuppliers", secondaryCacheConfig);
 
         return cacheManager;
-
     }
 
+    /**
+     * Builds a cache configuration object based on the specified life in seconds passed to it
+     */
+    private javax.cache.configuration.Configuration<String, Object> getCacheConfigForSpecifiedLifespan(String cacheLength) {
+        CacheConfigurationBuilder<String, Object> cacheConfigBuilder =
+                CacheConfigurationBuilder.newCacheConfigurationBuilder(
+                                String.class,
+                                Object.class,
+                                ResourcePoolsBuilder
+                                        .newResourcePoolsBuilder().offheap(100, MemoryUnit.MB))
+                        .withExpiry(ExpiryPolicyBuilder.timeToLiveExpiration(Duration.ofSeconds(Integer.parseInt(cacheLength))));
+
+        javax.cache.configuration.Configuration<String, Object> cacheConfig = Eh107Configuration.fromEhcacheCacheConfiguration(cacheConfigBuilder);
+
+        return cacheConfig;
+    }
 }
