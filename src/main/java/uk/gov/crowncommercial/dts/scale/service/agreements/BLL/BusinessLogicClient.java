@@ -136,7 +136,7 @@ public class BusinessLogicClient {
     /**
      * Returns a specific LotDetail object based on requested agreement and lot IDs
      */
-    @Cacheable(value = "getLotDetail")
+    @Cacheable(value = "getLotDetail", key="#agreementId + #lotId")
     public LotDetail getLotDetail(String agreementId, String lotId) {
         LotDetail model = new LotDetail();
 
@@ -157,7 +157,7 @@ public class BusinessLogicClient {
     /**
      * Returns a list of LotSupplier objects which relate to a specified lot / agreement
      */
-    @Cacheable(value = "getLotSuppliers")
+    @Cacheable(value = "getLotSuppliers", key="#agreementId + #lotId")
     public Collection<LotSupplier> getLotSuppliers(String agreementId, String lotId) {
         Collection<LotSupplier> model = null;
 
@@ -175,7 +175,7 @@ public class BusinessLogicClient {
     /**
      * Returns a list of EventType objects which relate to a specified lot / agreement
      */
-    @Cacheable(value = "getLotEventTypes")
+    @Cacheable(value = "getLotEventTypes", key="#agreementId + #lotId")
     public Collection<EventType> getLotEventTypes(String agreementId, String lotId) {
         Collection<EventType> model = null;
 
@@ -196,7 +196,7 @@ public class BusinessLogicClient {
     /**
      * Returns a list of ProcurementDataTemplate objects which relate to a specified event
      */
-    @Cacheable(value = "getEventDataTemplates")
+    @Cacheable(value = "getEventDataTemplates", key="#agreementId + #lotId + #eventType")
     public Collection<ProcurementDataTemplate> getEventDataTemplates(String agreementId, String lotId, String eventType) {
         Collection<ProcurementDataTemplate> model = null;
 
@@ -214,7 +214,7 @@ public class BusinessLogicClient {
     /**
      * Returns a list of Document objects which relate to a specified event
      */
-    @Cacheable(value = "getEventDocumentTemplates")
+    @Cacheable(value = "getEventDocumentTemplates", key="#agreementId + #lotId + #eventType")
     public Collection<Document> getEventDocumentTemplates(String agreementId, String lotId, String eventType) {
         Collection<Document> model = null;
 
