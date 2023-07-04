@@ -62,7 +62,7 @@ public class EhcacheConfig {
                                 String.class,
                                 Object.class,
                                 ResourcePoolsBuilder
-                                        .newResourcePoolsBuilder().offheap(100, MemoryUnit.MB))
+                                        .newResourcePoolsBuilder().offheap(50, MemoryUnit.MB))
                         .withExpiry(ExpiryPolicyBuilder.timeToLiveExpiration(Duration.ofSeconds(Integer.parseInt(cacheLength))));
 
         javax.cache.configuration.Configuration<String, Object> cacheConfig = Eh107Configuration.fromEhcacheCacheConfiguration(cacheConfigBuilder);

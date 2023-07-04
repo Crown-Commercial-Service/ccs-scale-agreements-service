@@ -24,7 +24,6 @@ import com.rollbar.notifier.Rollbar;
 import uk.gov.crowncommercial.dts.scale.service.agreements.BLL.BusinessLogicClient;
 import uk.gov.crowncommercial.dts.scale.service.agreements.converter.AgreementConverter;
 import uk.gov.crowncommercial.dts.scale.service.agreements.exception.AgreementNotFoundException;
-import uk.gov.crowncommercial.dts.scale.service.agreements.helpers.WordpressHelpers;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.*;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.*;
 import uk.gov.crowncommercial.dts.scale.service.agreements.service.AgreementService;
@@ -69,9 +68,6 @@ class AgreementControllerTest {
   
   @Autowired
   private AgreementController controller;
-
-  @MockBean
-  private WordpressHelpers wordpressHelpers;
 
   @MockBean
   private CommercialAgreement mockCommercialAgreement;
