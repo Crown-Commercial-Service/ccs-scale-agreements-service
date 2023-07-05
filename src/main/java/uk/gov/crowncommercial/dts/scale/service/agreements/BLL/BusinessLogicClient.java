@@ -10,6 +10,7 @@ import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.Commerci
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.Lot;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.LotOrganisationRole;
 import uk.gov.crowncommercial.dts.scale.service.agreements.service.AgreementService;
+import uk.gov.crowncommercial.dts.scale.service.agreements.service.MappingService;
 import uk.gov.crowncommercial.dts.scale.service.agreements.service.QuestionTemplateService;
 import uk.gov.crowncommercial.dts.scale.service.agreements.service.WordpressService;
 
@@ -38,6 +39,9 @@ public class BusinessLogicClient {
     @Autowired
     private QuestionTemplateService questionTemplateService;
 
+    @Autowired
+    protected MappingService mappingService;
+
     /**
      * Returns a list of all Commercial Agreements
      */
@@ -47,7 +51,7 @@ public class BusinessLogicClient {
         final List<CommercialAgreement> agreements = agreementService.getAgreements();
 
         // Now convert the list to the objects we want to return
-        return agreements.stream().map(agreementConverter::convertAgreementToSummaryDTO).collect(Collectors.toList());
+        return agreements.stream().map(mappingService::mapCommercialAgreementToAgreementSummary).collect(Collectors.toList());
     }
 
     /**
