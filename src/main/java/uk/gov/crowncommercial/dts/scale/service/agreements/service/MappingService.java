@@ -4,9 +4,12 @@ import org.mapstruct.factory.Mappers;
 import org.springframework.stereotype.Service;
 import uk.gov.crowncommercial.dts.scale.service.agreements.mapping.AgreementDetailMapper;
 import uk.gov.crowncommercial.dts.scale.service.agreements.mapping.AgreementSummaryMapper;
+import uk.gov.crowncommercial.dts.scale.service.agreements.mapping.LotDetailMapper;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.AgreementDetail;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.AgreementSummary;
+import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.LotDetail;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.CommercialAgreement;
+import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.Lot;
 
 /**
  * Mapping Service - leverages MapStruct to map DB entities to output models
@@ -15,6 +18,7 @@ import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.Commerci
 public class MappingService {
     public AgreementSummaryMapper agreementSummaryMapper = Mappers.getMapper(AgreementSummaryMapper.class);
     public AgreementDetailMapper agreementDetailMapper = Mappers.getMapper(AgreementDetailMapper.class);
+    public LotDetailMapper lotDetailMapper = Mappers.getMapper(LotDetailMapper.class);
 
     /**
      * Map a CommercialAgreement to an AgreementSummary
@@ -30,6 +34,15 @@ public class MappingService {
      */
     public AgreementDetail mapCommercialAgreementToAgreementDetail(CommercialAgreement caModel) {
         AgreementDetail model = agreementDetailMapper.commercialAgreementToAgreementDetail(caModel);
+
+        return model;
+    }
+
+    /**
+     * Map a Lot to a LotDetail
+     */
+    public LotDetail mapLotToLotDetail(Lot lotModel) {
+        LotDetail model = lotDetailMapper.lotToLotDetail(lotModel);
 
         return model;
     }

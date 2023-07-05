@@ -87,7 +87,7 @@ public class BusinessLogicClient {
 
         if (agreementModel != null) {
             // Now convert the lots specified in the agreement into the format we want to return
-            model = agreementConverter.convertLotsToDTOs(agreementModel.getLots());
+            model = agreementModel.getLots().stream().map(mappingService::mapLotToLotDetail).collect(Collectors.toList());
 
             // Finally, if we're given a buying method we need to filter our results to just those matching the method specified
             if (buyingMethod != null && buyingMethod != BuyingMethod.NONE) {
