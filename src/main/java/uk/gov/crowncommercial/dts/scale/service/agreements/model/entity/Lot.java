@@ -83,12 +83,14 @@ public class Lot {
   @JoinColumn(name = "lot_id")
   Set<LotRelatedLot> relatedAgreementLots;
 
+  // TODO: Refactor implementation
   @ToString.Exclude
   @org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE,region = "lotOrganisationRoles")
   @OneToMany(fetch = FetchType.LAZY)
   @JoinColumn(name = "lot_id")
   Set<LotOrganisationRole> organisationRoles;
 
+  // TODO: Refactor implementation
   @ToString.Exclude
   @org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE,region = "lotOrganisationRoles")
   @OneToMany(fetch = FetchType.LAZY)

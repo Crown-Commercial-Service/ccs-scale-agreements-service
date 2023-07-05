@@ -10,5 +10,4 @@ import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.Commerci
 @Mapper(componentModel = "spring")
 public interface AgreementSummaryMapper {
     AgreementSummary commercialAgreementToAgreementSummary(CommercialAgreement dbModel);
-    CommercialAgreement agreementSummaryToCommercialAgreement(AgreementSummary outputModel);
 }

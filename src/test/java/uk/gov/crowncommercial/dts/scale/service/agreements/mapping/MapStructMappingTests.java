@@ -19,25 +19,12 @@ public class MapStructMappingTests {
     private static final String AGREEMENT_NUMBER = "RM1234";
 
     @Test
-    public void testCommercialAgreementMapsToAgreementSummary() {
+    public void testCommercialAgreementMapsToAgreementSummary() throws Exception {
         CommercialAgreement sourceModel = new CommercialAgreement();
         sourceModel.setName(AGREEMENT_NAME);
         sourceModel.setNumber(AGREEMENT_NUMBER);
 
         AgreementSummary outputModel = agreementSummaryMapper.commercialAgreementToAgreementSummary(sourceModel);
-
-        assertNotNull(outputModel);
-        assertEquals(sourceModel.getName(), outputModel.getName());
-        assertEquals(sourceModel.getNumber(), outputModel.getNumber());
-    }
-
-    @Test
-    public void testAgreementSummaryMapsToCommercialAgreement() {
-        AgreementSummary sourceModel = new AgreementSummary();
-        sourceModel.setName(AGREEMENT_NAME);
-        sourceModel.setNumber(AGREEMENT_NUMBER);
-
-        CommercialAgreement outputModel = agreementSummaryMapper.agreementSummaryToCommercialAgreement(sourceModel);
 
         assertNotNull(outputModel);
         assertEquals(sourceModel.getName(), outputModel.getName());

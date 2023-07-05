@@ -69,7 +69,7 @@ public class BusinessLogicClient {
             agreementModel = wordpressService.getExpandedCommercialAgreement(agreementModel, agreementId);
 
             // Now we should have a complete agreement model - convert it to the format we desire, and then return it
-            model = agreementConverter.convertAgreementToDTO(agreementModel);
+            model = mappingService.mapCommercialAgreementToAgreementDetail(agreementModel);
         }
 
         return model;
