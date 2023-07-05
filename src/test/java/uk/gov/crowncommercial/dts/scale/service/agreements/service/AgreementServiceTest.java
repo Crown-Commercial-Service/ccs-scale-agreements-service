@@ -9,9 +9,11 @@ import java.util.List;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.core.AutoConfigureCache;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
+import uk.gov.crowncommercial.dts.scale.service.agreements.config.EhcacheConfig;
 import uk.gov.crowncommercial.dts.scale.service.agreements.exception.AgreementNotFoundException;
 import uk.gov.crowncommercial.dts.scale.service.agreements.exception.LotNotFoundException;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.CommercialAgreement;
@@ -22,11 +24,13 @@ import uk.gov.crowncommercial.dts.scale.service.agreements.repository.LotRepo;
 
 @SpringBootTest
 @ActiveProfiles("test")
+@AutoConfigureCache
 class AgreementServiceTest {
+  @MockBean
+  private EhcacheConfig cacheConfig;
 
   private static final String AGREEMENT_NUMBER = "RM1000";
   private static final String LOT_NUMBER = "Lot 1";
-  private static final String EVENT_TYPE = "RFI";
 
   @MockBean
   private CommercialAgreementRepo mockCommercialAgreementRepo;
