@@ -47,14 +47,18 @@ public interface AgreementDetailMapper {
     @Named("orgRolesToContacts")
     public static Collection<Contact> orgRolesToContacts(Set<CommercialAgreementOrgRole> orgRoles) {
         // This is a complex mapping - we need to map each CommercialAgreementOrgRole to sub-objects which we then combine into a Contact
-        return orgRoles.stream()
-                .flatMap(caor -> caor.getContactPointCommercialAgreementOrgRoles().stream()).map(cpcaor -> {
-                    final ContactDetail contactDetail = cpcaor.getContactDetail();
+        if (orgRoles != null) {
+            return orgRoles.stream()
+                    .flatMap(caor -> caor.getContactPointCommercialAgreementOrgRoles().stream()).map(cpcaor -> {
+                        final ContactDetail contactDetail = cpcaor.getContactDetail();
 
-                    ContactPoint contactPoint = INSTANCE.sourcesToContactPoint(cpcaor, contactDetail);
+                        ContactPoint contactPoint = INSTANCE.sourcesToContactPoint(cpcaor, contactDetail);
 
-                    return INSTANCE.sourcesToContact(contactPoint, cpcaor.getContactPointReason());
-                }).collect(Collectors.toSet());
+                        return INSTANCE.sourcesToContact(contactPoint, cpcaor.getContactPointReason());
+                    }).collect(Collectors.toSet());
+        }
+
+        return null;
     }
 
 
@@ -100,32 +104,34 @@ public interface AgreementDetailMapper {
 
     @Named("orgRolesToOrganization")
     public static Organization orgRolesToOrganization(Set<CommercialAgreementOrgRole> orgRoles) {
-        Optional<CommercialAgreementOrgRole> optionalOrgRole = orgRoles.stream()
-                                                        .filter(c -> c.getRoleType() != null
-                                                            && Objects.equals(OCDS_ROLE_FRAMEWORK_OWNER, c.getRoleType().getName()))
-                                                        .findFirst();
+        if (orgRoles != null) {
+            Optional<CommercialAgreementOrgRole> optionalOrgRole = orgRoles.stream()
+                    .filter(c -> c.getRoleType() != null
+                            && Objects.equals(OCDS_ROLE_FRAMEWORK_OWNER, c.getRoleType().getName()))
+                    .findFirst();
 
-        if (optionalOrgRole.isPresent()) {
-            CommercialAgreementOrgRole orgRole = optionalOrgRole.get();
-            Organisation dbOrgModel = orgRole.getOrganisation();
-            Organization model = new Organization();
+            if (optionalOrgRole.isPresent()) {
+                CommercialAgreementOrgRole orgRole = optionalOrgRole.get();
+                Organisation dbOrgModel = orgRole.getOrganisation();
+                Organization model = new Organization();
 
-            final Optional<ContactPointCommercialAgreementOrgRole> optionalContactPoint = orgRole.getContactPointCommercialAgreementOrgRoles().stream().findFirst();
+                final Optional<ContactPointCommercialAgreementOrgRole> optionalContactPoint = orgRole.getContactPointCommercialAgreementOrgRoles().stream().findFirst();
 
-            if (optionalContactPoint.isPresent()) {
-                ContactPointCommercialAgreementOrgRole cpOrgRole = optionalContactPoint.get();
-                model.setContactPoint(INSTANCE.sourcesToContactPoint(cpOrgRole, cpOrgRole.getContactDetail()));
-                model.setAddress(INSTANCE.contactDetailToAddress(cpOrgRole.getContactDetail()));
+                if (optionalContactPoint.isPresent()) {
+                    ContactPointCommercialAgreementOrgRole cpOrgRole = optionalContactPoint.get();
+                    model.setContactPoint(INSTANCE.sourcesToContactPoint(cpOrgRole, cpOrgRole.getContactDetail()));
+                    model.setAddress(INSTANCE.contactDetailToAddress(cpOrgRole.getContactDetail()));
+                }
+
+                model.setName(dbOrgModel.getLegalName());
+                model.setId((dbOrgModel.getRegistryCode() == null ? "SCHEME-UNKNOWN" : dbOrgModel.getRegistryCode()) + "-"
+                        + (dbOrgModel.getEntityId() == null ? "ID-UNKNOWN" : dbOrgModel.getEntityId()));
+                model.setIdentifier(INSTANCE.orgToOrganizationIdentifier(dbOrgModel));
+                model.setDetails(INSTANCE.orgToOrgDetail(dbOrgModel));
+                model.setRoles(Collections.singleton(PartyRole.FRAMEWORK_OWNER));
+
+                return model;
             }
-
-            model.setName(dbOrgModel.getLegalName());
-            model.setId((dbOrgModel.getRegistryCode() == null ? "SCHEME-UNKNOWN" : dbOrgModel.getRegistryCode()) + "-"
-                    + (dbOrgModel.getEntityId() == null ? "ID-UNKNOWN" : dbOrgModel.getEntityId()));
-            model.setIdentifier(INSTANCE.orgToOrganizationIdentifier(dbOrgModel));
-            model.setDetails(INSTANCE.orgToOrgDetail(dbOrgModel));
-            model.setRoles(Collections.singleton(PartyRole.FRAMEWORK_OWNER));
-
-            return model;
         }
 
         return null;
