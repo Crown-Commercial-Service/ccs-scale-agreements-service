@@ -11,8 +11,10 @@ import uk.gov.crowncommercial.dts.scale.service.agreements.exception.LotNotFound
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.CommercialAgreement;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.Lot;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.LotOrganisationRole;
+import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.SimpleLot;
 import uk.gov.crowncommercial.dts.scale.service.agreements.repository.CommercialAgreementRepo;
 import uk.gov.crowncommercial.dts.scale.service.agreements.repository.LotRepo;
+import uk.gov.crowncommercial.dts.scale.service.agreements.repository.SimpleLotRepo;
 
 /**
  * Agreement Service.
@@ -25,6 +27,7 @@ public class AgreementService {
 
   private final CommercialAgreementRepo commercialAgreementRepo;
   private final LotRepo lotRepo;
+  private final SimpleLotRepo simpleLotRepo;
 
   /**
    * Get all agreements.
@@ -95,7 +98,7 @@ public class AgreementService {
   public Collection<LotOrganisationRole> findLotSupplierOrgRolesByAgreementNumberAndLotNumber(
       final String agreementNumber, final String lotNumber) {
 
-    final Lot lot = lotRepo.findByAgreementNumberAndNumber(agreementNumber, lotNumber);
+    final SimpleLot lot = simpleLotRepo.findByAgreementNumberAndNumber(agreementNumber, lotNumber);
     if (lot == null) {
       throw new LotNotFoundException(lotNumber, agreementNumber);
     }
