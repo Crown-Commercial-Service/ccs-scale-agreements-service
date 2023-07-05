@@ -22,8 +22,14 @@ public class EhcacheConfig {
     @Value("${caching.primary.cacheLength}")
     String primaryCacheLength;
 
+    @Value("${caching.primary.heapSize}")
+    String primaryCacheSize;
+
     @Value("${caching.secondary.cacheLength}")
     String secondaryCacheLength;
+
+    @Value("${caching.secondary.heapSize}")
+    String secondaryCacheSize;
 
     /**
      * Initialise the caches we want to use based on life configuration settings
@@ -33,8 +39,8 @@ public class EhcacheConfig {
         CachingProvider provider = Caching.getCachingProvider();
         CacheManager cacheManager = provider.getCacheManager();
 
-        javax.cache.configuration.Configuration<String, Object> primaryCacheConfig = getCacheConfigForSpecifiedLifespan(primaryCacheLength);
-        javax.cache.configuration.Configuration<String, Object> secondaryCacheConfig = getCacheConfigForSpecifiedLifespan(secondaryCacheLength);
+        javax.cache.configuration.Configuration<String, Object> primaryCacheConfig = getCacheConfigForSpecifiedLifespan(primaryCacheLength, primaryCacheSize);
+        javax.cache.configuration.Configuration<String, Object> secondaryCacheConfig = getCacheConfigForSpecifiedLifespan(secondaryCacheLength, secondaryCacheSize);
 
         // Establish primary caches
         cacheManager.createCache("getAgreementsList", primaryCacheConfig);
@@ -56,13 +62,13 @@ public class EhcacheConfig {
     /**
      * Builds a cache configuration object based on the specified life in seconds passed to it
      */
-    private javax.cache.configuration.Configuration<String, Object> getCacheConfigForSpecifiedLifespan(String cacheLength) {
+    private javax.cache.configuration.Configuration<String, Object> getCacheConfigForSpecifiedLifespan(String cacheLength, String cacheSize) {
         CacheConfigurationBuilder<String, Object> cacheConfigBuilder =
                 CacheConfigurationBuilder.newCacheConfigurationBuilder(
                                 String.class,
                                 Object.class,
                                 ResourcePoolsBuilder
-                                        .newResourcePoolsBuilder().offheap(50, MemoryUnit.MB))
+                                        .newResourcePoolsBuilder().offheap(Integer.parseInt(cacheSize), MemoryUnit.MB))
                         .withExpiry(ExpiryPolicyBuilder.timeToLiveExpiration(Duration.ofSeconds(Integer.parseInt(cacheLength))));
 
         javax.cache.configuration.Configuration<String, Object> cacheConfig = Eh107Configuration.fromEhcacheCacheConfiguration(cacheConfigBuilder);

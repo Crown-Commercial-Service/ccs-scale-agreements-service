@@ -7,9 +7,11 @@ caching:
   primary:
     # 1 hour
     cacheLength: 3600
+    heapSize: 50
   secondary:
     # 15 mins
     cacheLength: 900
+    heapSize: 100
 
 logging:
   level:
