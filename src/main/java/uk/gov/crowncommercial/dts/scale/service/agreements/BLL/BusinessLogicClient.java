@@ -111,9 +111,9 @@ public class BusinessLogicClient {
         // Fetch the commercial agreement from the service
         CommercialAgreement agreementModel = agreementService.findAgreementByNumber(agreementId);
 
-        if (agreementModel != null) {
+        if (agreementModel != null && agreementModel.getDocuments() != null) {
             // Now convert the documents specified in the agreement into the format we want to return
-            model = agreementConverter.convertAgreementDocumentsToDTOs(agreementModel.getDocuments());
+            model = agreementModel.getDocuments().stream().map(mappingService::mapCommercialAgreementDocumentToDocument).collect(Collectors.toList());
         }
 
         return model;

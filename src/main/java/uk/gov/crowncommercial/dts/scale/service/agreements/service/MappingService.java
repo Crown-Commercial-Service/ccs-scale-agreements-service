@@ -4,11 +4,14 @@ import org.mapstruct.factory.Mappers;
 import org.springframework.stereotype.Service;
 import uk.gov.crowncommercial.dts.scale.service.agreements.mapping.AgreementDetailMapper;
 import uk.gov.crowncommercial.dts.scale.service.agreements.mapping.AgreementSummaryMapper;
+import uk.gov.crowncommercial.dts.scale.service.agreements.mapping.DocumentMapper;
 import uk.gov.crowncommercial.dts.scale.service.agreements.mapping.LotDetailMapper;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.AgreementDetail;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.AgreementSummary;
+import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.Document;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.LotDetail;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.CommercialAgreement;
+import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.CommercialAgreementDocument;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.Lot;
 
 /**
@@ -19,6 +22,7 @@ public class MappingService {
     public AgreementSummaryMapper agreementSummaryMapper = Mappers.getMapper(AgreementSummaryMapper.class);
     public AgreementDetailMapper agreementDetailMapper = Mappers.getMapper(AgreementDetailMapper.class);
     public LotDetailMapper lotDetailMapper = Mappers.getMapper(LotDetailMapper.class);
+    public DocumentMapper documentMapper = Mappers.getMapper(DocumentMapper.class);
 
     /**
      * Map a CommercialAgreement to an AgreementSummary
@@ -43,6 +47,15 @@ public class MappingService {
      */
     public LotDetail mapLotToLotDetail(Lot lotModel) {
         LotDetail model = lotDetailMapper.lotToLotDetail(lotModel);
+
+        return model;
+    }
+
+    /**
+     * Map a CommercialAgreementDocument to a Document
+     */
+    public Document mapCommercialAgreementDocumentToDocument(CommercialAgreementDocument documentModel) {
+        Document model = documentMapper.commercialAgreementDocumentToDocument(documentModel);
 
         return model;
     }
