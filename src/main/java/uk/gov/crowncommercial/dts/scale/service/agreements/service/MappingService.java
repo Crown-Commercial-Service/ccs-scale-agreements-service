@@ -2,16 +2,11 @@ package uk.gov.crowncommercial.dts.scale.service.agreements.service;
 
 import org.mapstruct.factory.Mappers;
 import org.springframework.stereotype.Service;
-import uk.gov.crowncommercial.dts.scale.service.agreements.mapping.AgreementDetailMapper;
-import uk.gov.crowncommercial.dts.scale.service.agreements.mapping.AgreementSummaryMapper;
-import uk.gov.crowncommercial.dts.scale.service.agreements.mapping.DocumentMapper;
-import uk.gov.crowncommercial.dts.scale.service.agreements.mapping.LotDetailMapper;
-import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.AgreementDetail;
-import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.AgreementSummary;
-import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.Document;
-import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.LotDetail;
+import uk.gov.crowncommercial.dts.scale.service.agreements.mapping.*;
+import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.*;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.CommercialAgreement;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.CommercialAgreementDocument;
+import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.CommercialAgreementUpdate;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.Lot;
 
 /**
@@ -23,6 +18,7 @@ public class MappingService {
     public AgreementDetailMapper agreementDetailMapper = Mappers.getMapper(AgreementDetailMapper.class);
     public LotDetailMapper lotDetailMapper = Mappers.getMapper(LotDetailMapper.class);
     public DocumentMapper documentMapper = Mappers.getMapper(DocumentMapper.class);
+    public AgreementUpdateMapper updateMapper = Mappers.getMapper(AgreementUpdateMapper.class);
 
     /**
      * Map a CommercialAgreement to an AgreementSummary
@@ -56,6 +52,15 @@ public class MappingService {
      */
     public Document mapCommercialAgreementDocumentToDocument(CommercialAgreementDocument documentModel) {
         Document model = documentMapper.commercialAgreementDocumentToDocument(documentModel);
+
+        return model;
+    }
+
+    /**
+     * Map a CommercialAgreementUpdate to an AgreementUpdate
+     */
+    public AgreementUpdate mapCommercialAgreementUpdateToAgreementUpdate(CommercialAgreementUpdate updateModel) {
+        AgreementUpdate model = updateMapper.commercialAgreementUpdateToAgreementUpdate(updateModel);
 
         return model;
     }

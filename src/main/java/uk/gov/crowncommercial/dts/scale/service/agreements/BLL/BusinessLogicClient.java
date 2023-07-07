@@ -131,7 +131,7 @@ public class BusinessLogicClient {
 
         if (agreementModel != null) {
             // Now convert the updates specified in the agreement into the format we want to return
-            model = agreementConverter.convertAgreementUpdatesToDTOs(agreementModel.getUpdates());
+            model = agreementModel.getUpdates().stream().map(mappingService::mapCommercialAgreementUpdateToAgreementUpdate).collect(Collectors.toList());
         }
 
         return model;

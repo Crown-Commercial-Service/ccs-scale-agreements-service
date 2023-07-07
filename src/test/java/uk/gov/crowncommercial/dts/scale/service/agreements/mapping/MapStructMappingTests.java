@@ -4,15 +4,16 @@ import org.junit.jupiter.api.Test;
 import org.mapstruct.factory.Mappers;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
-import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.AgreementDetail;
-import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.AgreementSummary;
-import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.Document;
-import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.LotDetail;
+import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.*;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.CommercialAgreement;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.CommercialAgreementDocument;
+import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.CommercialAgreementUpdate;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.Lot;
 
 import java.sql.Timestamp;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.ZoneId;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -27,6 +28,7 @@ public class MapStructMappingTests {
     private AgreementDetailMapper agreementDetailMapper = Mappers.getMapper(AgreementDetailMapper.class);
     private LotDetailMapper lotDetailMapper = Mappers.getMapper(LotDetailMapper.class);
     private DocumentMapper documentMapper = Mappers.getMapper(DocumentMapper.class);
+    private AgreementUpdateMapper updateMapper = Mappers.getMapper(AgreementUpdateMapper.class);
 
     private static final String AGREEMENT_NAME = "Agreement Name";
     private static final String AGREEMENT_NUMBER = "RM1234";
@@ -41,6 +43,10 @@ public class MapStructMappingTests {
     private static final Integer DOCUMENT_VERSION = 1;
     private static final Timestamp DOCUMENT_PUBLISHED_DATE = new Timestamp(System.currentTimeMillis());
     private static final Timestamp DOCUMENT_MODIFIED_DATE = new Timestamp(System.currentTimeMillis());
+    private static final String UPDATE_DESCRIPTION = "Update Description";
+    private static final LocalDate UPDATE_PUBLISHED_DATE = LocalDate.now();
+    private static final Timestamp UPDATE_PUBLISHED_DATE_TS = Timestamp.from(Instant.from(UPDATE_PUBLISHED_DATE.atStartOfDay(ZoneId.systemDefault()).toInstant()));
+    private static final String UPDATE_URL = "http://update";
 
     @Test
     public void testCommercialAgreementMapsToAgreementSummary() throws Exception {
@@ -103,5 +109,21 @@ public class MapStructMappingTests {
         assertEquals(document.getFormat(), outputModel.getFormat());
         assertEquals(document.getLanguage(), outputModel.getLanguage());
         assertEquals(document.getDescription(), outputModel.getDescription());
+    }
+
+    @Test
+    public void testCommercialAgreementUpdateMapsToAgreementUpdate() throws Exception {
+        CommercialAgreementUpdate update = new CommercialAgreementUpdate();
+        update.setDescription(UPDATE_DESCRIPTION);
+        update.setPublishedDate(UPDATE_PUBLISHED_DATE_TS);
+        update.setUrl(UPDATE_URL);
+
+        AgreementUpdate outputModel = updateMapper.commercialAgreementUpdateToAgreementUpdate(update);
+
+        assertNotNull(outputModel);
+        assertEquals(update.getDescription(), outputModel.getText());
+        assertEquals(update.getDescription(), outputModel.getText());
+        assertEquals(update.getPublishedDate().toLocalDateTime().toLocalDate(), outputModel.getDate());
+        assertEquals(update.getUrl(), outputModel.getLinkUrl());
     }
 }
