@@ -4,10 +4,7 @@ import org.mapstruct.factory.Mappers;
 import org.springframework.stereotype.Service;
 import uk.gov.crowncommercial.dts.scale.service.agreements.mapping.*;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.*;
-import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.CommercialAgreement;
-import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.CommercialAgreementDocument;
-import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.CommercialAgreementUpdate;
-import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.Lot;
+import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.*;
 
 /**
  * Mapping Service - leverages MapStruct to map DB entities to output models
@@ -19,6 +16,7 @@ public class MappingService {
     public LotDetailMapper lotDetailMapper = Mappers.getMapper(LotDetailMapper.class);
     public DocumentMapper documentMapper = Mappers.getMapper(DocumentMapper.class);
     public AgreementUpdateMapper updateMapper = Mappers.getMapper(AgreementUpdateMapper.class);
+    public LotSupplierMapper supplierMapper = Mappers.getMapper(LotSupplierMapper.class);
 
     /**
      * Map a CommercialAgreement to an AgreementSummary
@@ -61,6 +59,15 @@ public class MappingService {
      */
     public AgreementUpdate mapCommercialAgreementUpdateToAgreementUpdate(CommercialAgreementUpdate updateModel) {
         AgreementUpdate model = updateMapper.commercialAgreementUpdateToAgreementUpdate(updateModel);
+
+        return model;
+    }
+
+    /**
+     * Map a LotOrganisationRole to an LotSupplier
+     */
+    public LotSupplier mapLotOrganisationRoleToLotSupplier(LotOrganisationRole orgRoleModel) {
+        LotSupplier model = supplierMapper.lotOrganisationRoleToLotSupplier(orgRoleModel);
 
         return model;
     }

@@ -5,16 +5,16 @@ import org.mapstruct.factory.Mappers;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.*;
-import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.CommercialAgreement;
-import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.CommercialAgreementDocument;
-import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.CommercialAgreementUpdate;
-import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.Lot;
+import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.*;
 
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
+import java.util.HashSet;
+import java.util.Set;
 
+import static java.lang.String.format;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
@@ -29,6 +29,7 @@ public class MapStructMappingTests {
     private LotDetailMapper lotDetailMapper = Mappers.getMapper(LotDetailMapper.class);
     private DocumentMapper documentMapper = Mappers.getMapper(DocumentMapper.class);
     private AgreementUpdateMapper updateMapper = Mappers.getMapper(AgreementUpdateMapper.class);
+    private LotSupplierMapper supplierMapper = Mappers.getMapper(LotSupplierMapper.class);
 
     private static final String AGREEMENT_NAME = "Agreement Name";
     private static final String AGREEMENT_NUMBER = "RM1234";
@@ -47,6 +48,11 @@ public class MapStructMappingTests {
     private static final LocalDate UPDATE_PUBLISHED_DATE = LocalDate.now();
     private static final Timestamp UPDATE_PUBLISHED_DATE_TS = Timestamp.from(Instant.from(UPDATE_PUBLISHED_DATE.atStartOfDay(ZoneId.systemDefault()).toInstant()));
     private static final String UPDATE_URL = "http://update";
+    private static final String ORG_ENTITY_ID = "%d";
+    private static final String ORG_LEGAL_NAME = "ACME Trading Ltd %d";
+    private static final String ORG_URI = "https://www.acmetrading%d.com";
+    private static final String CONTACT_NAME = "Contact %d";
+    private static final String CONTACT_REASON = "Contact reason %d";
 
     @Test
     public void testCommercialAgreementMapsToAgreementSummary() throws Exception {
@@ -125,5 +131,43 @@ public class MapStructMappingTests {
         assertEquals(update.getDescription(), outputModel.getText());
         assertEquals(update.getPublishedDate().toLocalDateTime().toLocalDate(), outputModel.getDate());
         assertEquals(update.getUrl(), outputModel.getLinkUrl());
+    }
+
+    @Test
+    public void testLotOrganisationRoleMapsToLotSupplier() throws Exception {
+        Set<ContactPointLotOrgRole> cpLotOrgRoles = new HashSet<>();
+
+        ContactPointLotOrgRole cpLotOrgRole = new ContactPointLotOrgRole();
+
+        ContactPointReason cpReason = new ContactPointReason();
+        cpReason.setName(format(CONTACT_REASON, 1));
+        cpLotOrgRole.setContactPointName(format(CONTACT_NAME, 1));
+        cpLotOrgRole.setContactPointReason(cpReason);
+        cpLotOrgRole.setPrimary(true);
+        cpLotOrgRoles.add(cpLotOrgRole);
+
+        Organisation org = new Organisation();
+        org.setEntityId(format(ORG_ENTITY_ID, 1));
+        org.setLegalName(format(ORG_LEGAL_NAME, 1));
+        org.setUri(format(ORG_URI, 1));
+        org.setRegistryCode("GB-COH");
+
+        org.setIncorporationDate(LocalDate.of(1, 1, 1));
+        org.setIncorporationCountry("GB");
+        org.setIsSme(true);
+        org.setIsVcse(true);
+        org.setStatus("active");
+        org.setIsActive(true);
+
+        LotOrganisationRole lotOrgRole = new LotOrganisationRole();
+        lotOrgRole.setContactPointLotOrgRoles(cpLotOrgRoles);
+        lotOrgRole.setOrganisation(org);
+
+        LotSupplier outputModel = supplierMapper.lotOrganisationRoleToLotSupplier(lotOrgRole);
+
+        assertNotNull(outputModel);
+        assertNotNull(outputModel.getOrganization());
+        assertNotNull(outputModel.getLotContacts());
+        assertNotNull(outputModel.getSupplierStatus());
     }
 }

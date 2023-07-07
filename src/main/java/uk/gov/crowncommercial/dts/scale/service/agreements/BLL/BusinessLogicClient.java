@@ -170,7 +170,7 @@ public class BusinessLogicClient {
 
         if (lotOrgRoles != null) {
             // Now convert the items we've found into the format we want to return
-            model = agreementConverter.convertLotOrgRolesToLotSupplierDTOs(lotOrgRoles);
+            model = lotOrgRoles.stream().map(mappingService::mapLotOrganisationRoleToLotSupplier).collect(Collectors.toList());
         }
 
         return model;
