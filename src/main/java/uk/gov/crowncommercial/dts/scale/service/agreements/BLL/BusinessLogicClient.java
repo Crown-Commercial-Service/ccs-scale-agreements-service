@@ -152,7 +152,7 @@ public class BusinessLogicClient {
             lotModel = wordpressService.getExpandedLot(lotModel, agreementId, lotId);
 
             // Now we should have a complete lot model - convert it to the format we desire, and then return it
-            model = agreementConverter.convertLotToDTO(lotModel);
+            model = mappingService.mapLotToLotDetail(lotModel);
         }
 
         return model;
