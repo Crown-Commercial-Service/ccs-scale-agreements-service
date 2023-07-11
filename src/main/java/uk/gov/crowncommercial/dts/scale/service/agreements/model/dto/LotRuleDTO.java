@@ -1,5 +1,6 @@
 package uk.gov.crowncommercial.dts.scale.service.agreements.model.dto;
 
+import java.io.Serializable;
 import java.util.Collection;
 import lombok.Data;
 
@@ -18,7 +19,7 @@ import lombok.Data;
  * as here specific logic is required to obtain the number of price rises before evaluating.
  */
 @Data
-public class LotRuleDTO {
+public class LotRuleDTO implements Serializable {
 
   /**
    * Unique identifier of the rule.

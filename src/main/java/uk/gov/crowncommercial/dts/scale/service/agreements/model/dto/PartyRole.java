@@ -3,10 +3,12 @@ package uk.gov.crowncommercial.dts.scale.service.agreements.model.dto;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import uk.gov.crowncommercial.dts.scale.service.agreements.config.Constants;
 
+import java.io.Serializable;
+
 /**
  * Party role
  */
-public enum PartyRole {
+public enum PartyRole implements Serializable {
 
   @JsonProperty("buyer")
   BUYER,

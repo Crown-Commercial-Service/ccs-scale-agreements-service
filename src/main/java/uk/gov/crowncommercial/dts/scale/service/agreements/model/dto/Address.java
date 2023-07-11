@@ -2,11 +2,13 @@ package uk.gov.crowncommercial.dts.scale.service.agreements.model.dto;
 
 import lombok.Data;
 
+import java.io.Serializable;
+
 /**
  * Address (e.g. of an Organization)
  */
 @Data
-public class Address {
+public class Address implements Serializable {
 
   /**
    * The street address. For example, 1600 Amphitheatre Pkwy.

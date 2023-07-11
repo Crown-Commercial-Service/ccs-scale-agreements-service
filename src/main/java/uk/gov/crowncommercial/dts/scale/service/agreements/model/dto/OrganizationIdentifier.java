@@ -2,11 +2,13 @@ package uk.gov.crowncommercial.dts.scale.service.agreements.model.dto;
 
 import lombok.Data;
 
+import java.io.Serializable;
+
 /**
  * A unique identifier for a party (organization).
  */
 @Data
-public class OrganizationIdentifier {
+public class OrganizationIdentifier implements Serializable {
 
   /**
    * Organization identifiers should be taken from an existing organization identifier list. The

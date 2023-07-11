@@ -1,5 +1,6 @@
 package uk.gov.crowncommercial.dts.scale.service.agreements.converter;
 
+import org.springframework.stereotype.Component;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.EventType;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.QuestionTemplate;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.Lot;
@@ -8,6 +9,7 @@ import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.Template
 
 import java.util.*;
 
+@Component
 public class TemplateGroupConverter {
     public void assignTemplates(Lot lot, Collection<EventType> eventTypes) {
         Map<String, EventType> eventTypeMap = new HashMap<>();

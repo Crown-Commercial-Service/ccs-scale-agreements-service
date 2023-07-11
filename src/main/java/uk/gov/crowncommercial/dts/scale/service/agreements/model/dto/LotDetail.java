@@ -1,5 +1,6 @@
 package uk.gov.crowncommercial.dts.scale.service.agreements.model.dto;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.Collection;
 import lombok.Data;
@@ -8,7 +9,7 @@ import lombok.Data;
  * Lot Detail.
  */
 @Data
-public class LotDetail {
+public class LotDetail implements Serializable {
 
   /**
    * Lot number e.g. "1" for Lot 1.

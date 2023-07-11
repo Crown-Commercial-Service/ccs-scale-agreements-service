@@ -1,5 +1,6 @@
 package uk.gov.crowncommercial.dts.scale.service.agreements.model.dto;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.Collection;
 import lombok.Data;
@@ -8,7 +9,7 @@ import lombok.Data;
  * Agreement Detail.
  */
 @Data
-public class AgreementDetail {
+public class AgreementDetail implements Serializable {
 
   /**
    * Commercial Agreement Number e.g. "RM1045".

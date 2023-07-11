@@ -1,5 +1,6 @@
 package uk.gov.crowncommercial.dts.scale.service.agreements.model.dto;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.format.annotation.DateTimeFormat.ISO;
@@ -10,7 +11,7 @@ import lombok.Data;
  * Organization detail
  */
 @Data
-public class OrganizationDetail {
+public class OrganizationDetail implements Serializable {
 
   /**
    * The size or scale of the organization.

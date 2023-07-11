@@ -3,6 +3,14 @@ server:
   error:
     path: "/error"
 
+caching:
+  primary:
+    # 1 hour
+    cacheLength: 3600
+  secondary:
+    # 15 mins
+    cacheLength: 900
+
 logging:
   level:
     uk.gov.crowncommercial.dts.scale: INFO
@@ -28,7 +36,7 @@ spring:
     properties:
       hibernate:
         dialect: uk.gov.crowncommercial.dts.scale.service.agreements.config.PostgreSQL10JsonDialect
-    
+
 ---
 spring:
   profiles: local

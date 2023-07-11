@@ -3,10 +3,10 @@ package uk.gov.crowncommercial.dts.scale.service.agreements.service;
 import java.util.Collection;
 import java.util.List;
 
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import uk.gov.crowncommercial.dts.scale.service.agreements.exception.AgreementNotFoundException;
 import uk.gov.crowncommercial.dts.scale.service.agreements.exception.LotNotFoundException;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.CommercialAgreement;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.Lot;
@@ -31,7 +31,6 @@ public class AgreementService {
    *
    * @return list of agreements
    */
-  @Cacheable(value = "getAgreements")
   public List<CommercialAgreement> getAgreements() {
     log.debug("getAgreements");
     return commercialAgreementRepo.findAll();
@@ -45,7 +44,14 @@ public class AgreementService {
    */
   public CommercialAgreement findAgreementByNumber(final String caNumber) {
     log.debug("findAgreementByNumber: {}", caNumber);
-    return commercialAgreementRepo.findByNumber(caNumber);
+
+    final CommercialAgreement agreementModel = commercialAgreementRepo.findByNumber(caNumber);
+
+    if (agreementModel == null) {
+      throw new AgreementNotFoundException(caNumber);
+    }
+
+    return agreementModel;
   }
 
   /**
@@ -55,11 +61,16 @@ public class AgreementService {
    * @param lotNumber Lot number
    * @return Lot
    */
-  public Lot findLotByAgreementNumberAndLotNumber(final String agreementNumber,
-      final String lotNumber) {
-    log.debug("findLotByAgreementNumberAndLotNumber: agreementNumber={},lotNumber={}",
-        agreementNumber, lotNumber);
-    return lotRepo.findByAgreementNumberAndNumber(agreementNumber, lotNumber);
+  public Lot findLotByAgreementNumberAndLotNumber(final String agreementNumber, final String lotNumber) {
+    log.debug("findLotByAgreementNumberAndLotNumber: agreementNumber={},lotNumber={}", agreementNumber, lotNumber);
+
+    final Lot lotModel = lotRepo.findByAgreementNumberAndNumber(agreementNumber, lotNumber);
+
+    if (lotModel == null) {
+      throw new LotNotFoundException(lotNumber, agreementNumber);
+    }
+
+    return lotModel;
   }
 
   /**

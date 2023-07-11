@@ -10,6 +10,9 @@ import org.springframework.stereotype.Component;
 
 import javax.persistence.EntityManager;
 
+/**
+ * Configuration for JPA caching in the application - basically what Hibernate deals with.  For entity caching see EhcacheConfig
+ */
 @Component
 @Slf4j
 public class CachingService {
@@ -17,6 +20,7 @@ public class CachingService {
     @Autowired
     EntityManager entityManager;
 
+    // Note we use a different cache length here than the entities - this is fine, as these are shorter lived
     @Scheduled(fixedDelayString = "PT15M")
     public void evictAllEntities() {
         try {

@@ -1,6 +1,8 @@
 package uk.gov.crowncommercial.dts.scale.service.agreements.controller;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -19,9 +21,9 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import com.rollbar.notifier.Rollbar;
 
+import uk.gov.crowncommercial.dts.scale.service.agreements.BLL.BusinessLogicClient;
 import uk.gov.crowncommercial.dts.scale.service.agreements.converter.AgreementConverter;
 import uk.gov.crowncommercial.dts.scale.service.agreements.exception.AgreementNotFoundException;
-import uk.gov.crowncommercial.dts.scale.service.agreements.helpers.WordpressHelpers;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.*;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.*;
 import uk.gov.crowncommercial.dts.scale.service.agreements.service.AgreementService;
@@ -50,9 +52,13 @@ class AgreementControllerTest {
   private static final String DOCUMENT_DESCRIPTION = "Document Description";
   private static final Instant DOCUMENT_PUBLISHED_DATE = Instant.now();
   private static final Instant DOCUMENT_MODIFIED_DATE = Instant.now();
+  private static final String RUNTIME_EXCEPTION_TEXT = "Something is amiss";
 
   @Autowired
   private MockMvc mockMvc;
+
+  @MockBean
+  private BusinessLogicClient businessLogicClient;
 
   @MockBean
   private AgreementService service;
@@ -62,9 +68,6 @@ class AgreementControllerTest {
   
   @Autowired
   private AgreementController controller;
-
-  @MockBean
-  private WordpressHelpers wordpressHelpers;
 
   @MockBean
   private CommercialAgreement mockCommercialAgreement;
@@ -90,7 +93,7 @@ class AgreementControllerTest {
     agreement.setNumber(AGREEMENT_NUMBER);
 
     when(converter.convertAgreementToSummaryDTO(mockCommercialAgreement)).thenReturn(agreement);
-    when(service.getAgreements()).thenReturn(Arrays.asList(mockCommercialAgreement));
+    when(businessLogicClient.getAgreementsList()).thenReturn(Arrays.asList(agreement));
     mockMvc.perform(get("/agreements")).andExpect(status().isOk())
         .andExpect(jsonPath("$[0].number", is(AGREEMENT_NUMBER)));
   }
@@ -102,6 +105,7 @@ class AgreementControllerTest {
 
     when(service.findAgreementByNumber(AGREEMENT_NUMBER)).thenReturn(mockCommercialAgreement);
     when(converter.convertAgreementToDTO(mockCommercialAgreement)).thenReturn(agreement);
+    when(businessLogicClient.getAgreementDetail(AGREEMENT_NUMBER)).thenReturn(agreement);
     mockMvc.perform(get("/agreements/" + AGREEMENT_NUMBER)).andExpect(status().isOk())
         .andExpect(jsonPath("$.number", is(AGREEMENT_NUMBER)));
   }
@@ -109,6 +113,9 @@ class AgreementControllerTest {
   @Test
   void testGetAgreementNotFound() throws Exception {
     when(service.findAgreementByNumber(AGREEMENT_NUMBER)).thenReturn(null);
+
+    when(businessLogicClient.getAgreementDetail(AGREEMENT_NUMBER)).thenThrow(new AgreementNotFoundException(AGREEMENT_NUMBER));
+
     mockMvc.perform(get(String.format(GET_AGREEMENT_PATH, AGREEMENT_NUMBER)))
         .andExpect(status().is4xxClientError())
         .andExpect(jsonPath("$.errors[0].status", is(HttpStatus.NOT_FOUND.toString())))
@@ -120,8 +127,8 @@ class AgreementControllerTest {
 
   @Test
   void testGetAgreementUnexpectedError() throws Exception {
-    when(service.findAgreementByNumber(AGREEMENT_NUMBER))
-        .thenThrow(new RuntimeException("Something is amiss"));
+    when(businessLogicClient.getAgreementDetail(AGREEMENT_NUMBER)).thenThrow(new RuntimeException(RUNTIME_EXCEPTION_TEXT));
+
     mockMvc.perform(get(String.format(GET_AGREEMENT_PATH, AGREEMENT_NUMBER)))
         .andExpect(status().is5xxServerError())
         .andExpect(jsonPath("$.description", is(GlobalErrorHandler.ERR_MSG_DEFAULT_DESCRIPTION)));
@@ -135,6 +142,8 @@ class AgreementControllerTest {
     when(service.findAgreementByNumber(AGREEMENT_NUMBER)).thenReturn(mockCommercialAgreement);
     when(mockCommercialAgreement.getLots()).thenReturn(mockLots);
     when(converter.convertLotsToDTOs(mockLots)).thenReturn(Arrays.asList(lot));
+    when(businessLogicClient.getLotsForAgreement(AGREEMENT_NUMBER, BuyingMethod.NONE)).thenReturn(Arrays.asList(lot));
+
     mockMvc.perform(get(String.format(GET_AGREEMENT_LOTS_PATH, AGREEMENT_NUMBER)))
         .andExpect(status().isOk()).andExpect(jsonPath("$[0].number", is(LOT1_NUMBER)));
   }
@@ -158,6 +167,7 @@ class AgreementControllerTest {
     when(service.findAgreementByNumber(AGREEMENT_NUMBER)).thenReturn(mockCommercialAgreement);
     when(mockCommercialAgreement.getLots()).thenReturn(mockLots);
     when(converter.convertLotsToDTOs(mockLots)).thenReturn(Arrays.asList(lot1, lot2));
+    when(businessLogicClient.getLotsForAgreement(AGREEMENT_NUMBER, BuyingMethod.E_AUCTION)).thenReturn(Arrays.asList(lot2));
     mockMvc
         .perform(get(String.format(GET_AGREEMENT_LOTS_PATH, AGREEMENT_NUMBER))
             .queryParam(BUYING_METHOD_PARAM, BUYING_METHOD_VALUE))
@@ -167,6 +177,8 @@ class AgreementControllerTest {
 
   @Test
   void testGetAgreementLotsFilteredByBuyingMethodBadRequest() throws Exception {
+    when(businessLogicClient.getLotsForAgreement(eq(AGREEMENT_NUMBER), any())).thenThrow(new IllegalArgumentException(String.format("Buying method value invalid. Valid values are: %s", BuyingMethod.names())));
+
     mockMvc
         .perform(get(String.format(GET_AGREEMENT_LOTS_PATH, AGREEMENT_NUMBER))
             .queryParam(BUYING_METHOD_PARAM, "InvalidBuyingMethod"))
@@ -174,7 +186,7 @@ class AgreementControllerTest {
         .andExpect(jsonPath("$.errors[0].status", is("400 BAD_REQUEST")))
         .andExpect(jsonPath("$.errors[0].title", is("Validation error processing the request")))
         .andExpect(jsonPath("$.errors[0].detail", is(
-            "Buying method value invalid. Valid values are: [DirectAward, FurtherCompetition, Marketplace, EAuction]")))
+            "Buying method value invalid. Valid values are: [DirectAward, FurtherCompetition, Marketplace, EAuction, NotSpecified]")))
         .andExpect(
             jsonPath("$.description", is(GlobalErrorHandler.ERR_MSG_VALIDATION_DESCRIPTION)));
   }
@@ -182,6 +194,9 @@ class AgreementControllerTest {
   @Test
   void testGetAgreementLotsNotFound() throws Exception {
     when(service.findAgreementByNumber(AGREEMENT_NUMBER)).thenReturn(null);
+
+    when(businessLogicClient.getLotsForAgreement(AGREEMENT_NUMBER, BuyingMethod.NONE)).thenThrow(new AgreementNotFoundException(AGREEMENT_NUMBER));
+
     mockMvc.perform(get(String.format(GET_AGREEMENT_LOTS_PATH, AGREEMENT_NUMBER)))
         .andExpect(status().is4xxClientError())
         .andExpect(jsonPath("$.errors[0].status", is(HttpStatus.NOT_FOUND.toString())))
@@ -193,8 +208,8 @@ class AgreementControllerTest {
 
   @Test
   void testGetAgreementLotsUnexpectedError() throws Exception {
-    when(service.findAgreementByNumber(AGREEMENT_NUMBER))
-        .thenThrow(new RuntimeException("Something is amiss"));
+    when(businessLogicClient.getLotsForAgreement(AGREEMENT_NUMBER, BuyingMethod.NONE)).thenThrow(new RuntimeException(RUNTIME_EXCEPTION_TEXT));
+
     mockMvc.perform(get(String.format(GET_AGREEMENT_LOTS_PATH, AGREEMENT_NUMBER)))
         .andExpect(status().is5xxServerError())
         .andExpect(jsonPath("$.description", is(GlobalErrorHandler.ERR_MSG_DEFAULT_DESCRIPTION)));
@@ -217,6 +232,7 @@ class AgreementControllerTest {
     when(service.findAgreementByNumber(AGREEMENT_NUMBER)).thenReturn(mockCommercialAgreement);
     when(mockCommercialAgreement.getDocuments()).thenReturn(mockDocs);
     when(converter.convertAgreementDocumentsToDTOs(mockDocs)).thenReturn(Arrays.asList(document));
+    when(businessLogicClient.getDocumentsForAgreement(AGREEMENT_NUMBER)).thenReturn(Arrays.asList(document));
     mockMvc.perform(get(String.format(GET_AGREEMENT_DOCUMENTS_PATH, AGREEMENT_NUMBER)))
         .andExpect(status().isOk()).andExpect(status().isOk())
         .andExpect(jsonPath("$[0].title", is(DOCUMENT_NAME)))
@@ -232,6 +248,9 @@ class AgreementControllerTest {
   @Test
   void testGetAgreementDocumentsNotFound() throws Exception {
     when(service.findAgreementByNumber(AGREEMENT_NUMBER)).thenReturn(null);
+
+    when(businessLogicClient.getDocumentsForAgreement(AGREEMENT_NUMBER)).thenThrow(new AgreementNotFoundException(AGREEMENT_NUMBER));
+
     mockMvc.perform(get(String.format(GET_AGREEMENT_DOCUMENTS_PATH, AGREEMENT_NUMBER)))
         .andExpect(status().is4xxClientError())
         .andExpect(jsonPath("$.errors[0].status", is(HttpStatus.NOT_FOUND.toString())))
@@ -243,8 +262,8 @@ class AgreementControllerTest {
 
   @Test
   void testGetAgreementDocumentsUnexpectedError() throws Exception {
-    when(service.findAgreementByNumber(AGREEMENT_NUMBER))
-        .thenThrow(new RuntimeException("Something is amiss"));
+    when(businessLogicClient.getDocumentsForAgreement(AGREEMENT_NUMBER)).thenThrow(new RuntimeException(RUNTIME_EXCEPTION_TEXT));
+
     mockMvc.perform(get(String.format(GET_AGREEMENT_DOCUMENTS_PATH, AGREEMENT_NUMBER)))
         .andExpect(status().is5xxServerError())
         .andExpect(jsonPath("$.description", is(GlobalErrorHandler.ERR_MSG_DEFAULT_DESCRIPTION)));
@@ -259,13 +278,14 @@ class AgreementControllerTest {
     when(service.findAgreementByNumber(AGREEMENT_NUMBER)).thenReturn(mockCommercialAgreement);
     when(mockCommercialAgreement.getUpdates()).thenReturn(mockUpdates);
     when(converter.convertAgreementUpdatesToDTOs(mockUpdates)).thenReturn(Arrays.asList(update));
+    when(businessLogicClient.getUpdatesForAgreement(AGREEMENT_NUMBER)).thenReturn(Arrays.asList(update));
     mockMvc.perform(get(String.format(GET_AGREEMENT_UPDATES_PATH, AGREEMENT_NUMBER)))
         .andExpect(status().isOk()).andExpect(jsonPath("$[0].text", is(AGREEMENT_UPDATE_TEXT)));
   }
 
   @Test
   void testGetAgreementUpdatesNotFound() throws Exception {
-    when(service.findAgreementByNumber(AGREEMENT_NUMBER)).thenReturn(null);
+    when(businessLogicClient.getUpdatesForAgreement(AGREEMENT_NUMBER)).thenThrow(new AgreementNotFoundException(AGREEMENT_NUMBER));
     mockMvc.perform(get(String.format(GET_AGREEMENT_UPDATES_PATH, AGREEMENT_NUMBER)))
         .andExpect(status().is4xxClientError())
         .andExpect(jsonPath("$.errors[0].status", is(HttpStatus.NOT_FOUND.toString())))
@@ -277,8 +297,8 @@ class AgreementControllerTest {
 
   @Test
   void testGetAgreementUpdatesUnexpectedError() throws Exception {
-    when(service.findAgreementByNumber(AGREEMENT_NUMBER))
-        .thenThrow(new RuntimeException("Something is amiss"));
+    when(businessLogicClient.getUpdatesForAgreement(AGREEMENT_NUMBER)).thenThrow(new RuntimeException(RUNTIME_EXCEPTION_TEXT));
+
     mockMvc.perform(get(String.format(GET_AGREEMENT_UPDATES_PATH, AGREEMENT_NUMBER)))
         .andExpect(status().is5xxServerError())
         .andExpect(jsonPath("$.description", is(GlobalErrorHandler.ERR_MSG_DEFAULT_DESCRIPTION)));

@@ -18,9 +18,9 @@ import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import uk.gov.crowncommercial.dts.scale.service.agreements.BLL.BusinessLogicClient;
 import uk.gov.crowncommercial.dts.scale.service.agreements.converter.AgreementConverter;
 import uk.gov.crowncommercial.dts.scale.service.agreements.exception.LotNotFoundException;
-import uk.gov.crowncommercial.dts.scale.service.agreements.helpers.WordpressHelpers;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.*;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.*;
 import uk.gov.crowncommercial.dts.scale.service.agreements.service.AgreementService;
@@ -43,12 +43,16 @@ class LotControllerTest {
   private static final String AGREEMENT_NUMBER = "RM3733";
   private static final String LOT1_NUMBER = "Lot 1";
   private static final String EVENT_TYPE_RFI = "RFI";
+  private static final String RUNTIME_EXCEPTION_TEXT = "Something is amiss";
 
   @Autowired
   private MockMvc mockMvc;
 
   @MockBean
   private AgreementService service;
+
+  @MockBean
+  private BusinessLogicClient businessLogicClient;
 
   @MockBean
   private QuestionTemplateService templateService;
@@ -80,9 +84,6 @@ class LotControllerTest {
   @MockBean
   private Rollbar rollbar;
 
-  @MockBean
-  private WordpressHelpers wordpressHelpers;
-
   @Test
   void testGetLotSuccess() throws Exception {
     final var lot = new LotDetail();
@@ -91,6 +92,9 @@ class LotControllerTest {
     when(service.findLotByAgreementNumberAndLotNumber(AGREEMENT_NUMBER, LOT1_NUMBER))
         .thenReturn(mockLot);
     when(converter.convertLotToDTO(mockLot)).thenReturn(lot);
+
+    when(businessLogicClient.getLotDetail(AGREEMENT_NUMBER, LOT1_NUMBER)).thenReturn(lot);
+
     mockMvc.perform(get(GET_LOT_PATH, AGREEMENT_NUMBER, LOT1_NUMBER)).andExpect(status().isOk())
         .andExpect(jsonPath("$.number", is(LOT1_NUMBER)));
   }
@@ -99,6 +103,9 @@ class LotControllerTest {
   void testGetLotNotFound() throws Exception {
     when(service.findLotByAgreementNumberAndLotNumber(AGREEMENT_NUMBER, LOT1_NUMBER))
         .thenReturn(null);
+
+    when(businessLogicClient.getLotDetail(AGREEMENT_NUMBER, LOT1_NUMBER)).thenThrow(new LotNotFoundException(LOT1_NUMBER, AGREEMENT_NUMBER));
+
     mockMvc.perform(get(GET_LOT_PATH, AGREEMENT_NUMBER, LOT1_NUMBER))
         .andExpect(status().is4xxClientError())
         .andExpect(jsonPath("$.errors[0].status", is(HttpStatus.NOT_FOUND.toString())))
@@ -111,8 +118,8 @@ class LotControllerTest {
 
   @Test
   void testGetLotUnexpectedError() throws Exception {
-    when(service.findLotByAgreementNumberAndLotNumber(AGREEMENT_NUMBER, LOT1_NUMBER))
-        .thenThrow(new RuntimeException("Something is amiss"));
+    when(businessLogicClient.getLotDetail(AGREEMENT_NUMBER, LOT1_NUMBER)).thenThrow(new RuntimeException(RUNTIME_EXCEPTION_TEXT));
+
     mockMvc.perform(get(GET_LOT_PATH, AGREEMENT_NUMBER, LOT1_NUMBER))
         .andExpect(status().is5xxServerError())
         .andExpect(jsonPath("$.description", is(GlobalErrorHandler.ERR_MSG_DEFAULT_DESCRIPTION)));
@@ -140,6 +147,8 @@ class LotControllerTest {
     when(converter.convertLotOrgRolesToLotSupplierDTOs(lotOrgRoles))
         .thenReturn(Collections.singleton(lotSupplier));
 
+    when(businessLogicClient.getLotSuppliers(AGREEMENT_NUMBER, LOT1_NUMBER)).thenReturn(Collections.singleton(lotSupplier));
+
     mockMvc.perform(get(GET_LOT_SUPPLIERS_PATH, AGREEMENT_NUMBER, LOT1_NUMBER))
         .andExpect(content().contentType(MediaType.APPLICATION_JSON))
         .andExpect(status().is2xxSuccessful()).andExpect(jsonPath("$.size()", is(1)))
@@ -155,6 +164,8 @@ class LotControllerTest {
     when(
         service.findLotSupplierOrgRolesByAgreementNumberAndLotNumber(AGREEMENT_NUMBER, LOT1_NUMBER))
             .thenThrow(new LotNotFoundException(LOT1_NUMBER, AGREEMENT_NUMBER));
+
+    when(businessLogicClient.getLotSuppliers(AGREEMENT_NUMBER, LOT1_NUMBER)).thenThrow(new LotNotFoundException(LOT1_NUMBER, AGREEMENT_NUMBER));
 
     mockMvc.perform(get(GET_LOT_SUPPLIERS_PATH, AGREEMENT_NUMBER, LOT1_NUMBER))
         .andExpect(status().is4xxClientError())
@@ -181,6 +192,8 @@ class LotControllerTest {
     when(converter.convertLotProcurementEventTypesToDTOs(lotProcurementEventTypes))
         .thenReturn(Collections.singleton(eventType));
 
+    when(businessLogicClient.getLotEventTypes(AGREEMENT_NUMBER, LOT1_NUMBER)).thenReturn(Collections.singleton(eventType));
+
     mockMvc.perform(get(GET_LOT_EVENT_TYPES_PATH, AGREEMENT_NUMBER, LOT1_NUMBER))
         .andExpect(content().contentType(MediaType.APPLICATION_JSON))
         .andExpect(status().is2xxSuccessful()).andExpect(jsonPath("$.size()", is(1)))
@@ -192,6 +205,9 @@ class LotControllerTest {
   void testGetLotEventTypesNotFound() throws Exception {
     when(service.findLotByAgreementNumberAndLotNumber(AGREEMENT_NUMBER, LOT1_NUMBER))
         .thenReturn(null);
+
+    when(businessLogicClient.getLotEventTypes(AGREEMENT_NUMBER, LOT1_NUMBER)).thenThrow(new LotNotFoundException(LOT1_NUMBER, AGREEMENT_NUMBER));
+
     mockMvc.perform(get(GET_LOT_EVENT_TYPES_PATH, AGREEMENT_NUMBER, LOT1_NUMBER))
         .andExpect(status().is4xxClientError())
         .andExpect(jsonPath("$.errors[0].status", is(HttpStatus.NOT_FOUND.toString())))
@@ -215,6 +231,9 @@ class LotControllerTest {
             .thenReturn(Collections.singleton(dataTemplate));
     when(templateService.getDataTemplates(mockLot, EVENT_TYPE_RFI))
             .thenReturn(Collections.singleton(dataTemplate));
+
+    when(businessLogicClient.getEventDataTemplates(AGREEMENT_NUMBER, LOT1_NUMBER, EVENT_TYPE_RFI)).thenReturn(Collections.singleton(dataTemplate));
+
     mockMvc.perform(get(GET_LOT_DATA_TEMPLATES_PATH, AGREEMENT_NUMBER, LOT1_NUMBER, EVENT_TYPE_RFI))
         .andExpect(content().contentType(MediaType.APPLICATION_JSON))
         .andExpect(status().is2xxSuccessful()).andExpect(jsonPath("$.size()", is(1)))
@@ -225,6 +244,9 @@ class LotControllerTest {
   void testGetDataTemplatesNotFound() throws Exception {
     when(service.findLotByAgreementNumberAndLotNumber(AGREEMENT_NUMBER, LOT1_NUMBER))
         .thenReturn(null);
+
+    when(businessLogicClient.getEventDataTemplates(AGREEMENT_NUMBER, LOT1_NUMBER, EVENT_TYPE_RFI)).thenThrow(new LotNotFoundException(LOT1_NUMBER, AGREEMENT_NUMBER));
+
     mockMvc.perform(get(GET_LOT_DATA_TEMPLATES_PATH, AGREEMENT_NUMBER, LOT1_NUMBER, EVENT_TYPE_RFI))
         .andExpect(status().is4xxClientError())
         .andExpect(jsonPath("$.errors[0].status", is(HttpStatus.NOT_FOUND.toString())))
@@ -245,6 +267,9 @@ class LotControllerTest {
     when(mockLot.getProcurementQuestionTemplates()).thenReturn(lotProcurementQuestionTemplates);
     when(converter.convertLotProcurementQuestionTemplateToDocumentTemplates(
         lotProcurementQuestionTemplates, EVENT_TYPE_RFI)).thenReturn(Collections.singleton(doc));
+
+    when(businessLogicClient.getEventDocumentTemplates(AGREEMENT_NUMBER, LOT1_NUMBER, EVENT_TYPE_RFI)).thenReturn(Collections.singleton(doc));
+
     mockMvc
         .perform(
             get(GET_LOT_DOCUMENT_TEMPLATES_PATH, AGREEMENT_NUMBER, LOT1_NUMBER, EVENT_TYPE_RFI))
@@ -257,6 +282,9 @@ class LotControllerTest {
   void testGetDocumentTemplatesNotFound() throws Exception {
     when(service.findLotByAgreementNumberAndLotNumber(AGREEMENT_NUMBER, LOT1_NUMBER))
         .thenReturn(null);
+
+    when(businessLogicClient.getEventDocumentTemplates(AGREEMENT_NUMBER, LOT1_NUMBER, EVENT_TYPE_RFI)).thenThrow(new LotNotFoundException(LOT1_NUMBER, AGREEMENT_NUMBER));
+
     mockMvc
         .perform(
             get(GET_LOT_DOCUMENT_TEMPLATES_PATH, AGREEMENT_NUMBER, LOT1_NUMBER, EVENT_TYPE_RFI))
