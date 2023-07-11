@@ -201,7 +201,7 @@ public class BusinessLogicClient {
         Lot lotModel = agreementService.findLotByAgreementNumberAndLotNumber(agreementId, lotId);
 
         if (lotModel != null) {
-            // Now use the let to fetch the data templates from the template service
+            // Now use the let to fetch the data templates from the template service.  Mapping is performed within the service for this one
             model = questionTemplateService.getDataTemplates(lotModel, eventType);
         }
 

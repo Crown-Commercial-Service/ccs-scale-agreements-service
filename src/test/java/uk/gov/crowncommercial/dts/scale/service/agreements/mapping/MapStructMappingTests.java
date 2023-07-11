@@ -31,6 +31,7 @@ public class MapStructMappingTests {
     private AgreementUpdateMapper updateMapper = Mappers.getMapper(AgreementUpdateMapper.class);
     private LotSupplierMapper supplierMapper = Mappers.getMapper(LotSupplierMapper.class);
     private EventTypeMapper eventTypeMapper = Mappers.getMapper(EventTypeMapper.class);
+    private ProcurementDataTemplateMapper dataTemplateMapper = Mappers.getMapper(ProcurementDataTemplateMapper.class);
 
     private static final String AGREEMENT_NAME = "Agreement Name";
     private static final String AGREEMENT_NUMBER = "RM1234";
@@ -58,6 +59,9 @@ public class MapStructMappingTests {
     public static final String EOI = "EOI";
     public static final boolean IS_PRE_MARKET_ACTIVITY = false;
     public static final String ASSESSMENT_TOOL_ID = "FCA_TOOL_1";
+    public static final Integer TEMPLATE_ID = 1;
+    public static final String TEMPLATE_NAME = "Template name";
+    public static final Boolean TEMPLATE_MANDATORY = true;
 
     @Test
     public void testCommercialAgreementMapsToAgreementSummary() throws Exception {
@@ -198,5 +202,20 @@ public class MapStructMappingTests {
         assertEquals(EXPRESSION_OF_INTEREST, outputModel.getDescription());
         assertEquals(IS_PRE_MARKET_ACTIVITY, outputModel.getPreMarketActivity());
         assertEquals(ASSESSMENT_TOOL_ID, outputModel.getAssessmentToolId());
+    }
+
+    @Test
+    public void testProcurementQuestionTemplateMapsToProcurementDataTemplate() throws Exception {
+        ProcurementQuestionTemplate sourceModel = new ProcurementQuestionTemplate();
+        sourceModel.setId(TEMPLATE_ID);
+        sourceModel.setTemplateName(TEMPLATE_NAME);
+        sourceModel.setMandatory(TEMPLATE_MANDATORY);
+
+        ProcurementDataTemplate outputModel = dataTemplateMapper.procurementQuestionTemplateToProcurementDataTemplate(sourceModel);
+
+        assertNotNull(outputModel);
+        assertEquals(sourceModel.getId(), outputModel.getId());
+        assertEquals(sourceModel.getTemplateName(), outputModel.getTemplateName());
+        assertEquals(sourceModel.getMandatory(), outputModel.getMandatory());
     }
 }
