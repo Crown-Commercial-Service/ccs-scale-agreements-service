@@ -91,4 +91,13 @@ public class MappingService {
 
         return model;
     }
+
+    /**
+     * Map a ProcurementQuestionTemplate to a Document
+     */
+    public Document mapLotProcurementQuestionTemplateToDocument(ProcurementQuestionTemplate templateModel) {
+        Document model = documentMapper.procurementQuestionTemplateToDocument(templateModel);
+
+        return model;
+    }
 }

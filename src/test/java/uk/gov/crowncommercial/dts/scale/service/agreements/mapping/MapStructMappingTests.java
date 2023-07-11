@@ -62,6 +62,7 @@ public class MapStructMappingTests {
     public static final Integer TEMPLATE_ID = 1;
     public static final String TEMPLATE_NAME = "Template name";
     public static final Boolean TEMPLATE_MANDATORY = true;
+    public static final String TEMPLATE_URL = "http://www.google.com";
 
     @Test
     public void testCommercialAgreementMapsToAgreementSummary() throws Exception {
@@ -217,5 +218,18 @@ public class MapStructMappingTests {
         assertEquals(sourceModel.getId(), outputModel.getId());
         assertEquals(sourceModel.getTemplateName(), outputModel.getTemplateName());
         assertEquals(sourceModel.getMandatory(), outputModel.getMandatory());
+    }
+
+    @Test
+    public void testLotProcurementQuestionTemplateMapsToDocument() throws Exception {
+        ProcurementQuestionTemplate sourceModel = new ProcurementQuestionTemplate();
+        sourceModel.setId(TEMPLATE_ID);
+        sourceModel.setTemplateName(TEMPLATE_NAME);
+        sourceModel.setTemplateUrl(TEMPLATE_URL);
+
+        Document outputModel = documentMapper.procurementQuestionTemplateToDocument(sourceModel);
+
+        assertNotNull(outputModel);
+        assertEquals(sourceModel.getTemplateUrl(), outputModel.getUrl());
     }
 }

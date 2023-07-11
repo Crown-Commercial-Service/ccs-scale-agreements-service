@@ -220,7 +220,9 @@ public class BusinessLogicClient {
 
         if (lotModel != null && lotModel.getProcurementQuestionTemplates() != null) {
             // Now use the lot to convert the procurement question templates to documents
-            model = agreementConverter.convertLotProcurementQuestionTemplateToDocumentTemplates(lotModel.getProcurementQuestionTemplates(), eventType);
+            model = lotModel.getProcurementQuestionTemplates().stream().filter(t -> t.getProcurementQuestionTemplate().getTemplateUrl() != null
+                    && eventType.equalsIgnoreCase(t.getProcurementEventType().getName()))
+                    .map(template -> mappingService.mapLotProcurementQuestionTemplateToDocument(template.getProcurementQuestionTemplate())).collect(Collectors.toList());
         }
 
         return model;
