@@ -4,7 +4,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;
 import uk.gov.crowncommercial.dts.scale.service.agreements.converter.AgreementConverter;
-import uk.gov.crowncommercial.dts.scale.service.agreements.converter.TemplateGroupConverter;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.*;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.CommercialAgreement;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.Lot;
@@ -32,9 +31,6 @@ public class BusinessLogicClient {
 
     @Autowired
     private AgreementConverter agreementConverter;
-
-    @Autowired
-    private TemplateGroupConverter templateGroupConverter;
 
     @Autowired
     private QuestionTemplateService questionTemplateService;
@@ -188,10 +184,7 @@ public class BusinessLogicClient {
 
         if (lotModel != null && lotModel.getProcurementEventTypes() != null) {
             // Now use the lot object to generate our list of EventType
-            model = agreementConverter.convertLotProcurementEventTypesToDTOs(lotModel.getProcurementEventTypes());
-
-            // Finally we need to use a further converter to assign templates to our output
-            templateGroupConverter.assignTemplates(lotModel, model);
+            model = lotModel.getProcurementEventTypes().stream().map(lotEventType -> mappingService.mapLotProcurementEventTypeToEventType(lotEventType, lotModel)).collect(Collectors.toList());
         }
 
         return model;

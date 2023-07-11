@@ -30,6 +30,7 @@ public class MapStructMappingTests {
     private DocumentMapper documentMapper = Mappers.getMapper(DocumentMapper.class);
     private AgreementUpdateMapper updateMapper = Mappers.getMapper(AgreementUpdateMapper.class);
     private LotSupplierMapper supplierMapper = Mappers.getMapper(LotSupplierMapper.class);
+    private EventTypeMapper eventTypeMapper = Mappers.getMapper(EventTypeMapper.class);
 
     private static final String AGREEMENT_NAME = "Agreement Name";
     private static final String AGREEMENT_NUMBER = "RM1234";
@@ -53,6 +54,10 @@ public class MapStructMappingTests {
     private static final String ORG_URI = "https://www.acmetrading%d.com";
     private static final String CONTACT_NAME = "Contact %d";
     private static final String CONTACT_REASON = "Contact reason %d";
+    public static final String EXPRESSION_OF_INTEREST = "Expression Of Interest";
+    public static final String EOI = "EOI";
+    public static final boolean IS_PRE_MARKET_ACTIVITY = false;
+    public static final String ASSESSMENT_TOOL_ID = "FCA_TOOL_1";
 
     @Test
     public void testCommercialAgreementMapsToAgreementSummary() throws Exception {
@@ -169,5 +174,29 @@ public class MapStructMappingTests {
         assertNotNull(outputModel.getOrganization());
         assertNotNull(outputModel.getLotContacts());
         assertNotNull(outputModel.getSupplierStatus());
+    }
+
+    @Test
+    public void testLotProcurementEventTypeMapsToEventType() throws Exception {
+        Lot sourceModel = new Lot();
+        sourceModel.setNumber(LOT_NUMBER);
+        sourceModel.setName(LOT_NAME);
+
+        ProcurementEventType procurementEventType = new ProcurementEventType();
+        procurementEventType.setName(EOI);
+        procurementEventType.setDescription(EXPRESSION_OF_INTEREST);
+        procurementEventType.setPreMarketActivity(IS_PRE_MARKET_ACTIVITY);
+
+        LotProcurementEventType lotEventType = new LotProcurementEventType();
+        lotEventType.setProcurementEventType(procurementEventType);
+        lotEventType.setAssessmentToolId("FCA_TOOL_1");
+
+        EventType outputModel = eventTypeMapper.lotProcurementEventTypeToEventType(lotEventType, sourceModel);
+
+        assertNotNull(outputModel);
+        assertEquals(EOI, outputModel.getType());
+        assertEquals(EXPRESSION_OF_INTEREST, outputModel.getDescription());
+        assertEquals(IS_PRE_MARKET_ACTIVITY, outputModel.getPreMarketActivity());
+        assertEquals(ASSESSMENT_TOOL_ID, outputModel.getAssessmentToolId());
     }
 }
