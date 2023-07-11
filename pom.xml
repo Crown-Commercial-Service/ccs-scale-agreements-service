@@ -25,6 +25,7 @@
 		<compiler.version>3.11.0</compiler.version>
 		<lombok.version>1.18.28</lombok.version>
 		<tomcat.version>9.0.76</tomcat.version>
+		<h2.version>2.2.220</h2.version>
 	</properties>
 
 	<dependencies>
@@ -382,7 +383,7 @@
 		<dependency>
 			<groupId>com.h2database</groupId>
 			<artifactId>h2</artifactId>
-			<version>2.1.214</version>
+			<version>${h2.version}</version>
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
