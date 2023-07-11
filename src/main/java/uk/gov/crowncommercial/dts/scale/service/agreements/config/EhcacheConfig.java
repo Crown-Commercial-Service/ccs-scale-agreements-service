@@ -3,7 +3,6 @@ package uk.gov.crowncommercial.dts.scale.service.agreements.config;
 import org.ehcache.config.builders.CacheConfigurationBuilder;
 import org.ehcache.config.builders.ExpiryPolicyBuilder;
 import org.ehcache.config.builders.ResourcePoolsBuilder;
-import org.ehcache.config.units.MemoryUnit;
 import org.ehcache.jsr107.Eh107Configuration;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -62,7 +61,7 @@ public class EhcacheConfig {
                                 String.class,
                                 Object.class,
                                 ResourcePoolsBuilder
-                                        .newResourcePoolsBuilder().offheap(50, MemoryUnit.MB))
+                                        .newResourcePoolsBuilder().heap(50))
                         .withExpiry(ExpiryPolicyBuilder.timeToLiveExpiration(Duration.ofSeconds(Integer.parseInt(cacheLength))));
 
         javax.cache.configuration.Configuration<String, Object> cacheConfig = Eh107Configuration.fromEhcacheCacheConfiguration(cacheConfigBuilder);
