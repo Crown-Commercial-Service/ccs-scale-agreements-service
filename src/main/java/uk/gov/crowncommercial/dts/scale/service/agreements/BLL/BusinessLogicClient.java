@@ -3,7 +3,6 @@ package uk.gov.crowncommercial.dts.scale.service.agreements.BLL;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;
-import uk.gov.crowncommercial.dts.scale.service.agreements.converter.AgreementConverter;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.*;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.CommercialAgreement;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.Lot;
@@ -28,9 +27,6 @@ public class BusinessLogicClient {
 
     @Autowired
     private WordpressService wordpressService;
-
-    @Autowired
-    private AgreementConverter agreementConverter;
 
     @Autowired
     private QuestionTemplateService questionTemplateService;

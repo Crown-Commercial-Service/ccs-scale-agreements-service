@@ -17,7 +17,6 @@
 
 	<properties>
 		<java.version>11</java.version>
-		<modelmapper.version>3.1.1</modelmapper.version>
 		<hibernate-types.version>2.21.1</hibernate-types.version>
 		<spring-framework.version>5.3.28</spring-framework.version>
 		<spring-boot.version>2.7.13</spring-boot.version>
@@ -332,11 +331,6 @@
 				</exclusion>
 			</exclusions>
 			<optional>true</optional>
-		</dependency>
-		<dependency>
-			<groupId>org.modelmapper</groupId>
-			<artifactId>modelmapper</artifactId>
-			<version>${modelmapper.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>com.vladmihalcea</groupId>

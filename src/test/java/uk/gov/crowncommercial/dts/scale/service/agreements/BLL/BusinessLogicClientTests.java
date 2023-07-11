@@ -8,7 +8,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
 import uk.gov.crowncommercial.dts.scale.service.agreements.config.EhcacheConfig;
-import uk.gov.crowncommercial.dts.scale.service.agreements.converter.AgreementConverter;
 import uk.gov.crowncommercial.dts.scale.service.agreements.exception.AgreementNotFoundException;
 import uk.gov.crowncommercial.dts.scale.service.agreements.exception.LotNotFoundException;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.*;
@@ -51,9 +50,6 @@ public class BusinessLogicClientTests {
 
     @MockBean
     private WordpressService wordpressService;
-
-    @MockBean
-    private AgreementConverter agreementConverter;
 
     @MockBean
     private QuestionTemplateService questionTemplateService;
@@ -103,7 +99,6 @@ public class BusinessLogicClientTests {
 
         when(agreementService.findAgreementByNumber(AGREEMENT_NUMBER)).thenReturn(mockCommercialAgreement);
         when(wordpressService.getExpandedCommercialAgreement(any(), eq(AGREEMENT_NUMBER))).thenReturn(mockCommercialAgreement);
-        when(agreementConverter.convertAgreementToDTO(any())).thenReturn(agreement);
 
         AgreementDetail result = businessLogicClient.getAgreementDetail(AGREEMENT_NUMBER);
 
@@ -225,7 +220,6 @@ public class BusinessLogicClientTests {
         document.setModifiedDate(DOCUMENT_MODIFIED_DATE);
 
         when(agreementService.findAgreementByNumber(AGREEMENT_NUMBER)).thenReturn(mockCommercialAgreement);
-        when(agreementConverter.convertAgreementDocumentsToDTOs(any())).thenReturn(Arrays.asList(document));
 
         Collection<Document> result = businessLogicClient.getDocumentsForAgreement(AGREEMENT_NUMBER);
 
@@ -254,7 +248,6 @@ public class BusinessLogicClientTests {
         update.setText(AGREEMENT_UPDATE_TEXT);
 
         when(agreementService.findAgreementByNumber(AGREEMENT_NUMBER)).thenReturn(mockCommercialAgreement);
-        when(agreementConverter.convertAgreementUpdatesToDTOs(any())).thenReturn(Arrays.asList(update));
 
         Collection<AgreementUpdate> result = businessLogicClient.getUpdatesForAgreement(AGREEMENT_NUMBER);
 
@@ -281,7 +274,6 @@ public class BusinessLogicClientTests {
 
         when(agreementService.findLotByAgreementNumberAndLotNumber(AGREEMENT_NUMBER, LOT_NUMBER)).thenReturn(mockLot);
         when(wordpressService.getExpandedLot(any(), eq(AGREEMENT_NUMBER), eq(LOT_NUMBER))).thenReturn(mockLot);
-        when(agreementConverter.convertLotToDTO(any())).thenReturn(lot);
 
         LotDetail result = businessLogicClient.getLotDetail(AGREEMENT_NUMBER, LOT_NUMBER);
 
@@ -318,7 +310,6 @@ public class BusinessLogicClientTests {
         lotSupplier.setLotContacts(Collections.singleton(contact));
 
         when(agreementService.findLotSupplierOrgRolesByAgreementNumberAndLotNumber(AGREEMENT_NUMBER, LOT_NUMBER)).thenReturn(lotOrgRoles);
-        when(agreementConverter.convertLotOrgRolesToLotSupplierDTOs(any())).thenReturn(Collections.singleton(lotSupplier));
 
         Collection<LotSupplier> result = businessLogicClient.getLotSuppliers(AGREEMENT_NUMBER, LOT_NUMBER);
 
@@ -348,7 +339,6 @@ public class BusinessLogicClientTests {
         eventType.setAssessmentToolId("FCA_TOOL_1");
 
         when(agreementService.findLotByAgreementNumberAndLotNumber(AGREEMENT_NUMBER, LOT_NUMBER)).thenReturn(mockLot);
-        when(agreementConverter.convertLotProcurementEventTypesToDTOs(any())).thenReturn(Collections.singleton(eventType));
 
         Collection<EventType> result = businessLogicClient.getLotEventTypes(AGREEMENT_NUMBER, LOT_NUMBER);
 
@@ -407,7 +397,6 @@ public class BusinessLogicClientTests {
 
         when(agreementService.findLotByAgreementNumberAndLotNumber(AGREEMENT_NUMBER, LOT_NUMBER)).thenReturn(mockLot);
         when(mockLot.getProcurementQuestionTemplates()).thenReturn(lotProcurementQuestionTemplates);
-        when(agreementConverter.convertLotProcurementQuestionTemplateToDocumentTemplates(any(), any())).thenReturn(Collections.singleton(doc));
 
         Collection<Document> result = businessLogicClient.getEventDocumentTemplates(AGREEMENT_NUMBER, LOT_NUMBER, EVENT_TYPE_RFI);
 

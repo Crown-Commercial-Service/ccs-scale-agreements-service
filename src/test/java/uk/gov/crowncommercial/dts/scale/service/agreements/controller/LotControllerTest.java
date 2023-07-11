@@ -19,7 +19,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import uk.gov.crowncommercial.dts.scale.service.agreements.BLL.BusinessLogicClient;
-import uk.gov.crowncommercial.dts.scale.service.agreements.converter.AgreementConverter;
 import uk.gov.crowncommercial.dts.scale.service.agreements.exception.LotNotFoundException;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.*;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.*;
@@ -58,9 +57,6 @@ class LotControllerTest {
   private QuestionTemplateService templateService;
 
   @MockBean
-  private AgreementConverter converter;
-
-  @MockBean
   private CommercialAgreement mockCommercialAgreement;
 
   @MockBean
@@ -91,7 +87,6 @@ class LotControllerTest {
 
     when(service.findLotByAgreementNumberAndLotNumber(AGREEMENT_NUMBER, LOT1_NUMBER))
         .thenReturn(mockLot);
-    when(converter.convertLotToDTO(mockLot)).thenReturn(lot);
 
     when(businessLogicClient.getLotDetail(AGREEMENT_NUMBER, LOT1_NUMBER)).thenReturn(lot);
 
@@ -144,8 +139,6 @@ class LotControllerTest {
     when(
         service.findLotSupplierOrgRolesByAgreementNumberAndLotNumber(AGREEMENT_NUMBER, LOT1_NUMBER))
             .thenReturn(lotOrgRoles);
-    when(converter.convertLotOrgRolesToLotSupplierDTOs(lotOrgRoles))
-        .thenReturn(Collections.singleton(lotSupplier));
 
     when(businessLogicClient.getLotSuppliers(AGREEMENT_NUMBER, LOT1_NUMBER)).thenReturn(Collections.singleton(lotSupplier));
 
@@ -189,8 +182,6 @@ class LotControllerTest {
     when(service.findLotByAgreementNumberAndLotNumber(AGREEMENT_NUMBER, LOT1_NUMBER))
         .thenReturn(mockLot);
     when(mockLot.getProcurementEventTypes()).thenReturn(lotProcurementEventTypes);
-    when(converter.convertLotProcurementEventTypesToDTOs(lotProcurementEventTypes))
-        .thenReturn(Collections.singleton(eventType));
 
     when(businessLogicClient.getLotEventTypes(AGREEMENT_NUMBER, LOT1_NUMBER)).thenReturn(Collections.singleton(eventType));
 
@@ -226,9 +217,6 @@ class LotControllerTest {
     when(mockLot.getProcurementQuestionTemplates()).thenReturn(lotProcurementQuestionTemplates);
     when(service.findLotByAgreementNumberAndLotNumber(AGREEMENT_NUMBER, LOT1_NUMBER))
         .thenReturn(mockLot);
-    when(converter.convertLotProcurementQuestionTemplateToDataTemplates(
-        lotProcurementQuestionTemplates, EVENT_TYPE_RFI))
-            .thenReturn(Collections.singleton(dataTemplate));
     when(templateService.getDataTemplates(mockLot, EVENT_TYPE_RFI))
             .thenReturn(Collections.singleton(dataTemplate));
 
@@ -265,8 +253,6 @@ class LotControllerTest {
     when(service.findLotByAgreementNumberAndLotNumber(AGREEMENT_NUMBER, LOT1_NUMBER))
         .thenReturn(mockLot);
     when(mockLot.getProcurementQuestionTemplates()).thenReturn(lotProcurementQuestionTemplates);
-    when(converter.convertLotProcurementQuestionTemplateToDocumentTemplates(
-        lotProcurementQuestionTemplates, EVENT_TYPE_RFI)).thenReturn(Collections.singleton(doc));
 
     when(businessLogicClient.getEventDocumentTemplates(AGREEMENT_NUMBER, LOT1_NUMBER, EVENT_TYPE_RFI)).thenReturn(Collections.singleton(doc));
 
