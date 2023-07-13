@@ -8,19 +8,17 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
 import uk.gov.crowncommercial.dts.scale.service.agreements.config.EhcacheConfig;
-import uk.gov.crowncommercial.dts.scale.service.agreements.converter.AgreementConverter;
 import uk.gov.crowncommercial.dts.scale.service.agreements.exception.AgreementNotFoundException;
 import uk.gov.crowncommercial.dts.scale.service.agreements.exception.LotNotFoundException;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.*;
-import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.CommercialAgreement;
-import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.Lot;
-import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.LotOrganisationRole;
-import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.LotProcurementQuestionTemplate;
+import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.*;
 import uk.gov.crowncommercial.dts.scale.service.agreements.service.AgreementService;
 import uk.gov.crowncommercial.dts.scale.service.agreements.service.QuestionTemplateService;
 import uk.gov.crowncommercial.dts.scale.service.agreements.service.WordpressService;
 
+import java.math.BigDecimal;
 import java.time.Instant;
+import java.time.LocalDate;
 import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -54,9 +52,6 @@ public class BusinessLogicClientTests {
     private WordpressService wordpressService;
 
     @MockBean
-    private AgreementConverter agreementConverter;
-
-    @MockBean
     private QuestionTemplateService questionTemplateService;
 
     @Autowired
@@ -77,6 +72,16 @@ public class BusinessLogicClientTests {
     private static final String EXCEPTION_CHECK_TEXT = "not found";
     private static final String AGREEMENT_UPDATE_TEXT = "Update Text";
     private static final String EVENT_TYPE_RFI = "RFI";
+    private static final String ROUTE_TO_MARKET_NAME = "Direct Award";
+    private static final String LRTM_BUYING_METHOD_URL = "http://buyingmethod";
+    private static final Short LRTM_CONTRACT_LENGTH_MIN = 1;
+    private static final Short LRTM_CONTRACT_LENGTH_MAX = 2;
+    private static final String LRTM_CONTRACT_LENGHT_OUM = "years";
+    private static final LocalDate LTRM_START_DATE = LocalDate.now();
+    private static final LocalDate LTRM_END_DATE = LocalDate.now();
+    private static final BigDecimal LRTM_MIN_VALUE = new BigDecimal(3);
+    private static final BigDecimal LRTM_MAX_VALUE = new BigDecimal(4);
+    private static final String LOCATION = "Mordor";
 
     @Test
     void testGetAgreementsList() throws Exception {
@@ -94,7 +99,6 @@ public class BusinessLogicClientTests {
 
         when(agreementService.findAgreementByNumber(AGREEMENT_NUMBER)).thenReturn(mockCommercialAgreement);
         when(wordpressService.getExpandedCommercialAgreement(any(), eq(AGREEMENT_NUMBER))).thenReturn(mockCommercialAgreement);
-        when(agreementConverter.convertAgreementToDTO(any())).thenReturn(agreement);
 
         AgreementDetail result = businessLogicClient.getAgreementDetail(AGREEMENT_NUMBER);
 
@@ -119,61 +123,72 @@ public class BusinessLogicClientTests {
         final LotDetail lot = new LotDetail();
         lot.setNumber(LOT_NUMBER);
 
-        when(agreementService.findAgreementByNumber(AGREEMENT_NUMBER)).thenReturn(mockCommercialAgreement);
-        when(agreementConverter.convertLotsToDTOs(any())).thenReturn(Arrays.asList(lot));
+        when(agreementService.findAgreementByNumber(AGREEMENT_NUMBER)).thenReturn(getCommercialAgreementWithLot());
 
         Collection<LotDetail> result = businessLogicClient.getLotsForAgreement(AGREEMENT_NUMBER, BuyingMethod.NONE);
 
         assertNotNull(result);
-        assertEquals(result.size(), 1);
+        assertEquals(1, result.size());
+    }
+
+    public CommercialAgreement getCommercialAgreementWithLot() {
+        Set<LotRouteToMarket> lrtms = new HashSet<>();
+
+        LotRouteToMarketKey key = new LotRouteToMarketKey();
+        key.setLotId(1);
+        key.setRouteToMarketName(ROUTE_TO_MARKET_NAME);
+
+        RouteToMarket rtm = new RouteToMarket();
+        rtm.setName(ROUTE_TO_MARKET_NAME);
+
+        LotRouteToMarket lrtm = new LotRouteToMarket();
+        lrtm.setRouteToMarket(rtm);
+        lrtm.setKey(key);
+        lrtm.setLocation(LOCATION);
+        lrtm.setBuyingMethodUrl(LRTM_BUYING_METHOD_URL);
+        lrtm.setContractLengthMaximumValue(LRTM_CONTRACT_LENGTH_MAX);
+        lrtm.setContractLengthMinimumValue(LRTM_CONTRACT_LENGTH_MIN);
+        lrtm.setContractLengthUnitOfMeasure(LRTM_CONTRACT_LENGHT_OUM);
+        lrtm.setEndDate(LTRM_END_DATE);
+        lrtm.setStartDate(LTRM_START_DATE);
+        lrtm.setMaximumValue(LRTM_MAX_VALUE);
+        lrtm.setMinimumValue(LRTM_MIN_VALUE);
+
+        lrtms.add(lrtm);
+
+        Lot lot = new Lot();
+        lot.setNumber(LOT_NUMBER);
+        lot.setLotType("Products");
+        lot.setRoutesToMarket(lrtms);
+
+        Set<Lot> lots = new HashSet<>();
+        lots.add(lot);
+
+        CommercialAgreement ca = new CommercialAgreement();
+        ca.setNumber(AGREEMENT_NUMBER);
+        ca.setLots(lots);
+
+        return ca;
     }
 
     @Test
-    void testGetLotsForAgreementWithValidIdAndBuyingMethodWithMatches() throws Exception {
-        final RouteToMarketDTO furtherCompetition = new RouteToMarketDTO();
-        furtherCompetition.setBuyingMethod(BuyingMethod.E_AUCTION);
-        final RouteToMarketDTO directAward = new RouteToMarketDTO();
-        directAward.setBuyingMethod(BuyingMethod.DIRECT_AWARD);
-
-        final LotDetail firstLot = new LotDetail();
-        firstLot.setNumber(LOT_NUMBER);
-        firstLot.setRoutesToMarket(Arrays.asList(furtherCompetition));
-
-        final LotDetail secondLot = new LotDetail();
-        secondLot.setNumber(LOT_NUMBER);
-        secondLot.setRoutesToMarket(Arrays.asList(directAward));
-
-        when(agreementService.findAgreementByNumber(AGREEMENT_NUMBER)).thenReturn(mockCommercialAgreement);
-        when(agreementConverter.convertLotsToDTOs(any())).thenReturn(Arrays.asList(firstLot, secondLot));
+    void testGetLotsForAgreementWithValidIdAndBuyingMethodFiltersResultsWithResults() throws Exception {
+        when(agreementService.findAgreementByNumber(AGREEMENT_NUMBER)).thenReturn(getCommercialAgreementWithLot());
 
         Collection<LotDetail> result = businessLogicClient.getLotsForAgreement(AGREEMENT_NUMBER, BuyingMethod.DIRECT_AWARD);
 
         assertNotNull(result);
-        assertEquals(result.size(), 1);
+        assertEquals(1, result.size());
     }
 
     @Test
-    void testGetLotsForAgreementWithValidIdAndBuyingMethodWithoutMatches() throws Exception {
-        final RouteToMarketDTO furtherCompetition = new RouteToMarketDTO();
-        furtherCompetition.setBuyingMethod(BuyingMethod.E_AUCTION);
-        final RouteToMarketDTO directAward = new RouteToMarketDTO();
-        directAward.setBuyingMethod(BuyingMethod.E_AUCTION);
+    void testGetLotsForAgreementWithValidIdAndBuyingMethodFiltersResultsWithNoResults() throws Exception {
+        when(agreementService.findAgreementByNumber(AGREEMENT_NUMBER)).thenReturn(getCommercialAgreementWithLot());
 
-        final LotDetail firstLot = new LotDetail();
-        firstLot.setNumber(LOT_NUMBER);
-        firstLot.setRoutesToMarket(Arrays.asList(furtherCompetition));
-
-        final LotDetail secondLot = new LotDetail();
-        secondLot.setNumber(LOT_NUMBER);
-        secondLot.setRoutesToMarket(Arrays.asList(directAward));
-
-        when(agreementService.findAgreementByNumber(AGREEMENT_NUMBER)).thenReturn(mockCommercialAgreement);
-        when(agreementConverter.convertLotsToDTOs(any())).thenReturn(Arrays.asList(firstLot, secondLot));
-
-        Collection<LotDetail> result = businessLogicClient.getLotsForAgreement(AGREEMENT_NUMBER, BuyingMethod.DIRECT_AWARD);
+        Collection<LotDetail> result = businessLogicClient.getLotsForAgreement(AGREEMENT_NUMBER, BuyingMethod.E_AUCTION);
 
         assertNotNull(result);
-        assertEquals(result.size(), 0);
+        assertEquals(0, result.size());
     }
 
     @Test
@@ -205,7 +220,6 @@ public class BusinessLogicClientTests {
         document.setModifiedDate(DOCUMENT_MODIFIED_DATE);
 
         when(agreementService.findAgreementByNumber(AGREEMENT_NUMBER)).thenReturn(mockCommercialAgreement);
-        when(agreementConverter.convertAgreementDocumentsToDTOs(any())).thenReturn(Arrays.asList(document));
 
         Collection<Document> result = businessLogicClient.getDocumentsForAgreement(AGREEMENT_NUMBER);
 
@@ -234,7 +248,6 @@ public class BusinessLogicClientTests {
         update.setText(AGREEMENT_UPDATE_TEXT);
 
         when(agreementService.findAgreementByNumber(AGREEMENT_NUMBER)).thenReturn(mockCommercialAgreement);
-        when(agreementConverter.convertAgreementUpdatesToDTOs(any())).thenReturn(Arrays.asList(update));
 
         Collection<AgreementUpdate> result = businessLogicClient.getUpdatesForAgreement(AGREEMENT_NUMBER);
 
@@ -261,7 +274,6 @@ public class BusinessLogicClientTests {
 
         when(agreementService.findLotByAgreementNumberAndLotNumber(AGREEMENT_NUMBER, LOT_NUMBER)).thenReturn(mockLot);
         when(wordpressService.getExpandedLot(any(), eq(AGREEMENT_NUMBER), eq(LOT_NUMBER))).thenReturn(mockLot);
-        when(agreementConverter.convertLotToDTO(any())).thenReturn(lot);
 
         LotDetail result = businessLogicClient.getLotDetail(AGREEMENT_NUMBER, LOT_NUMBER);
 
@@ -298,7 +310,6 @@ public class BusinessLogicClientTests {
         lotSupplier.setLotContacts(Collections.singleton(contact));
 
         when(agreementService.findLotSupplierOrgRolesByAgreementNumberAndLotNumber(AGREEMENT_NUMBER, LOT_NUMBER)).thenReturn(lotOrgRoles);
-        when(agreementConverter.convertLotOrgRolesToLotSupplierDTOs(any())).thenReturn(Collections.singleton(lotSupplier));
 
         Collection<LotSupplier> result = businessLogicClient.getLotSuppliers(AGREEMENT_NUMBER, LOT_NUMBER);
 
@@ -328,7 +339,6 @@ public class BusinessLogicClientTests {
         eventType.setAssessmentToolId("FCA_TOOL_1");
 
         when(agreementService.findLotByAgreementNumberAndLotNumber(AGREEMENT_NUMBER, LOT_NUMBER)).thenReturn(mockLot);
-        when(agreementConverter.convertLotProcurementEventTypesToDTOs(any())).thenReturn(Collections.singleton(eventType));
 
         Collection<EventType> result = businessLogicClient.getLotEventTypes(AGREEMENT_NUMBER, LOT_NUMBER);
 
@@ -387,7 +397,6 @@ public class BusinessLogicClientTests {
 
         when(agreementService.findLotByAgreementNumberAndLotNumber(AGREEMENT_NUMBER, LOT_NUMBER)).thenReturn(mockLot);
         when(mockLot.getProcurementQuestionTemplates()).thenReturn(lotProcurementQuestionTemplates);
-        when(agreementConverter.convertLotProcurementQuestionTemplateToDocumentTemplates(any(), any())).thenReturn(Collections.singleton(doc));
 
         Collection<Document> result = businessLogicClient.getEventDocumentTemplates(AGREEMENT_NUMBER, LOT_NUMBER, EVENT_TYPE_RFI);
 

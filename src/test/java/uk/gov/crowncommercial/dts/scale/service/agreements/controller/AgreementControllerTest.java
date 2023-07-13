@@ -22,7 +22,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import com.rollbar.notifier.Rollbar;
 
 import uk.gov.crowncommercial.dts.scale.service.agreements.BLL.BusinessLogicClient;
-import uk.gov.crowncommercial.dts.scale.service.agreements.converter.AgreementConverter;
 import uk.gov.crowncommercial.dts.scale.service.agreements.exception.AgreementNotFoundException;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.*;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.*;
@@ -62,9 +61,6 @@ class AgreementControllerTest {
 
   @MockBean
   private AgreementService service;
-
-  @MockBean
-  private AgreementConverter converter;
   
   @Autowired
   private AgreementController controller;
@@ -92,7 +88,6 @@ class AgreementControllerTest {
     final AgreementSummary agreement = new AgreementSummary();
     agreement.setNumber(AGREEMENT_NUMBER);
 
-    when(converter.convertAgreementToSummaryDTO(mockCommercialAgreement)).thenReturn(agreement);
     when(businessLogicClient.getAgreementsList()).thenReturn(Arrays.asList(agreement));
     mockMvc.perform(get("/agreements")).andExpect(status().isOk())
         .andExpect(jsonPath("$[0].number", is(AGREEMENT_NUMBER)));
@@ -104,7 +99,6 @@ class AgreementControllerTest {
     agreement.setNumber(AGREEMENT_NUMBER);
 
     when(service.findAgreementByNumber(AGREEMENT_NUMBER)).thenReturn(mockCommercialAgreement);
-    when(converter.convertAgreementToDTO(mockCommercialAgreement)).thenReturn(agreement);
     when(businessLogicClient.getAgreementDetail(AGREEMENT_NUMBER)).thenReturn(agreement);
     mockMvc.perform(get("/agreements/" + AGREEMENT_NUMBER)).andExpect(status().isOk())
         .andExpect(jsonPath("$.number", is(AGREEMENT_NUMBER)));
@@ -141,7 +135,6 @@ class AgreementControllerTest {
     final Set<Lot> mockLots = new HashSet<>(Arrays.asList(mockLot));
     when(service.findAgreementByNumber(AGREEMENT_NUMBER)).thenReturn(mockCommercialAgreement);
     when(mockCommercialAgreement.getLots()).thenReturn(mockLots);
-    when(converter.convertLotsToDTOs(mockLots)).thenReturn(Arrays.asList(lot));
     when(businessLogicClient.getLotsForAgreement(AGREEMENT_NUMBER, BuyingMethod.NONE)).thenReturn(Arrays.asList(lot));
 
     mockMvc.perform(get(String.format(GET_AGREEMENT_LOTS_PATH, AGREEMENT_NUMBER)))
@@ -166,7 +159,6 @@ class AgreementControllerTest {
     final Set<Lot> mockLots = new HashSet<>(Arrays.asList(mockLot));
     when(service.findAgreementByNumber(AGREEMENT_NUMBER)).thenReturn(mockCommercialAgreement);
     when(mockCommercialAgreement.getLots()).thenReturn(mockLots);
-    when(converter.convertLotsToDTOs(mockLots)).thenReturn(Arrays.asList(lot1, lot2));
     when(businessLogicClient.getLotsForAgreement(AGREEMENT_NUMBER, BuyingMethod.E_AUCTION)).thenReturn(Arrays.asList(lot2));
     mockMvc
         .perform(get(String.format(GET_AGREEMENT_LOTS_PATH, AGREEMENT_NUMBER))
@@ -231,7 +223,6 @@ class AgreementControllerTest {
         new HashSet<>(Arrays.asList(mockCommercialAgreementDocument));
     when(service.findAgreementByNumber(AGREEMENT_NUMBER)).thenReturn(mockCommercialAgreement);
     when(mockCommercialAgreement.getDocuments()).thenReturn(mockDocs);
-    when(converter.convertAgreementDocumentsToDTOs(mockDocs)).thenReturn(Arrays.asList(document));
     when(businessLogicClient.getDocumentsForAgreement(AGREEMENT_NUMBER)).thenReturn(Arrays.asList(document));
     mockMvc.perform(get(String.format(GET_AGREEMENT_DOCUMENTS_PATH, AGREEMENT_NUMBER)))
         .andExpect(status().isOk()).andExpect(status().isOk())
@@ -277,7 +268,6 @@ class AgreementControllerTest {
         new HashSet<>(Arrays.asList(mockCommercialAgreementUpdate));
     when(service.findAgreementByNumber(AGREEMENT_NUMBER)).thenReturn(mockCommercialAgreement);
     when(mockCommercialAgreement.getUpdates()).thenReturn(mockUpdates);
-    when(converter.convertAgreementUpdatesToDTOs(mockUpdates)).thenReturn(Arrays.asList(update));
     when(businessLogicClient.getUpdatesForAgreement(AGREEMENT_NUMBER)).thenReturn(Arrays.asList(update));
     mockMvc.perform(get(String.format(GET_AGREEMENT_UPDATES_PATH, AGREEMENT_NUMBER)))
         .andExpect(status().isOk()).andExpect(jsonPath("$[0].text", is(AGREEMENT_UPDATE_TEXT)));

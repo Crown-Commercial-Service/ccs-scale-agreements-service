@@ -104,7 +104,12 @@ public class WordpressService {
             // We have the data response, so now use it to populate our expansion data
             String lotDesc = validateWordpressData("description", jsonData, agreementId);
 
-            if(lotDesc != null) model.setDescription(lotDesc);
+            if(lotDesc != null) {
+                model.setDescription(lotDesc);
+            } else {
+                // We don't want it to be an empty string, as that will mean empty HTML is generated in the field
+                model.setDescription(" ");
+            }
         }
 
         return model;

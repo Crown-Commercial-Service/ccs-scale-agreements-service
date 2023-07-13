@@ -3,13 +3,12 @@ package uk.gov.crowncommercial.dts.scale.service.agreements.BLL;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;
-import uk.gov.crowncommercial.dts.scale.service.agreements.converter.AgreementConverter;
-import uk.gov.crowncommercial.dts.scale.service.agreements.converter.TemplateGroupConverter;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.*;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.CommercialAgreement;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.Lot;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.LotOrganisationRole;
 import uk.gov.crowncommercial.dts.scale.service.agreements.service.AgreementService;
+import uk.gov.crowncommercial.dts.scale.service.agreements.service.MappingService;
 import uk.gov.crowncommercial.dts.scale.service.agreements.service.QuestionTemplateService;
 import uk.gov.crowncommercial.dts.scale.service.agreements.service.WordpressService;
 
@@ -30,13 +29,10 @@ public class BusinessLogicClient {
     private WordpressService wordpressService;
 
     @Autowired
-    private AgreementConverter agreementConverter;
-
-    @Autowired
-    private TemplateGroupConverter templateGroupConverter;
-
-    @Autowired
     private QuestionTemplateService questionTemplateService;
+
+    @Autowired
+    protected MappingService mappingService;
 
     /**
      * Returns a list of all Commercial Agreements
@@ -47,7 +43,7 @@ public class BusinessLogicClient {
         final List<CommercialAgreement> agreements = agreementService.getAgreements();
 
         // Now convert the list to the objects we want to return
-        return agreements.stream().map(agreementConverter::convertAgreementToSummaryDTO).collect(Collectors.toList());
+        return agreements.stream().map(mappingService::mapCommercialAgreementToAgreementSummary).collect(Collectors.toList());
     }
 
     /**
@@ -65,7 +61,7 @@ public class BusinessLogicClient {
             agreementModel = wordpressService.getExpandedCommercialAgreement(agreementModel, agreementId);
 
             // Now we should have a complete agreement model - convert it to the format we desire, and then return it
-            model = agreementConverter.convertAgreementToDTO(agreementModel);
+            model = mappingService.mapCommercialAgreementToAgreementDetail(agreementModel);
         }
 
         return model;
@@ -83,7 +79,7 @@ public class BusinessLogicClient {
 
         if (agreementModel != null) {
             // Now convert the lots specified in the agreement into the format we want to return
-            model = agreementConverter.convertLotsToDTOs(agreementModel.getLots());
+            model = agreementModel.getLots().stream().map(mappingService::mapLotToLotDetail).collect(Collectors.toList());
 
             // Finally, if we're given a buying method we need to filter our results to just those matching the method specified
             if (buyingMethod != null && buyingMethod != BuyingMethod.NONE) {
@@ -107,9 +103,9 @@ public class BusinessLogicClient {
         // Fetch the commercial agreement from the service
         CommercialAgreement agreementModel = agreementService.findAgreementByNumber(agreementId);
 
-        if (agreementModel != null) {
+        if (agreementModel != null && agreementModel.getDocuments() != null) {
             // Now convert the documents specified in the agreement into the format we want to return
-            model = agreementConverter.convertAgreementDocumentsToDTOs(agreementModel.getDocuments());
+            model = agreementModel.getDocuments().stream().map(mappingService::mapCommercialAgreementDocumentToDocument).collect(Collectors.toList());
         }
 
         return model;
@@ -127,7 +123,7 @@ public class BusinessLogicClient {
 
         if (agreementModel != null) {
             // Now convert the updates specified in the agreement into the format we want to return
-            model = agreementConverter.convertAgreementUpdatesToDTOs(agreementModel.getUpdates());
+            model = agreementModel.getUpdates().stream().map(mappingService::mapCommercialAgreementUpdateToAgreementUpdate).collect(Collectors.toList());
         }
 
         return model;
@@ -148,7 +144,7 @@ public class BusinessLogicClient {
             lotModel = wordpressService.getExpandedLot(lotModel, agreementId, lotId);
 
             // Now we should have a complete lot model - convert it to the format we desire, and then return it
-            model = agreementConverter.convertLotToDTO(lotModel);
+            model = mappingService.mapLotToLotDetail(lotModel);
         }
 
         return model;
@@ -166,7 +162,7 @@ public class BusinessLogicClient {
 
         if (lotOrgRoles != null) {
             // Now convert the items we've found into the format we want to return
-            model = agreementConverter.convertLotOrgRolesToLotSupplierDTOs(lotOrgRoles);
+            model = lotOrgRoles.stream().map(mappingService::mapLotOrganisationRoleToLotSupplier).collect(Collectors.toList());
         }
 
         return model;
@@ -184,10 +180,7 @@ public class BusinessLogicClient {
 
         if (lotModel != null && lotModel.getProcurementEventTypes() != null) {
             // Now use the lot object to generate our list of EventType
-            model = agreementConverter.convertLotProcurementEventTypesToDTOs(lotModel.getProcurementEventTypes());
-
-            // Finally we need to use a further converter to assign templates to our output
-            templateGroupConverter.assignTemplates(lotModel, model);
+            model = lotModel.getProcurementEventTypes().stream().map(lotEventType -> mappingService.mapLotProcurementEventTypeToEventType(lotEventType, lotModel)).collect(Collectors.toList());
         }
 
         return model;
@@ -204,7 +197,7 @@ public class BusinessLogicClient {
         Lot lotModel = agreementService.findLotByAgreementNumberAndLotNumber(agreementId, lotId);
 
         if (lotModel != null) {
-            // Now use the let to fetch the data templates from the template service
+            // Now use the let to fetch the data templates from the template service.  Mapping is performed within the service for this one
             model = questionTemplateService.getDataTemplates(lotModel, eventType);
         }
 
@@ -223,7 +216,9 @@ public class BusinessLogicClient {
 
         if (lotModel != null && lotModel.getProcurementQuestionTemplates() != null) {
             // Now use the lot to convert the procurement question templates to documents
-            model = agreementConverter.convertLotProcurementQuestionTemplateToDocumentTemplates(lotModel.getProcurementQuestionTemplates(), eventType);
+            model = lotModel.getProcurementQuestionTemplates().stream().filter(t -> t.getProcurementQuestionTemplate().getTemplateUrl() != null
+                    && eventType.equalsIgnoreCase(t.getProcurementEventType().getName()))
+                    .map(template -> mappingService.mapLotProcurementQuestionTemplateToDocument(template.getProcurementQuestionTemplate())).collect(Collectors.toList());
         }
 
         return model;

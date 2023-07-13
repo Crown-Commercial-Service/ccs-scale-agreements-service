@@ -8,7 +8,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.crowncommercial.dts.scale.service.agreements.BLL.BusinessLogicClient;
-import uk.gov.crowncommercial.dts.scale.service.agreements.converter.TemplateGroupConverter;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.*;
 
 import java.util.Collection;
@@ -23,8 +22,6 @@ import java.util.Collection;
 public class LotController {
   @Autowired
   private BusinessLogicClient businessLogicClient;
-
-  private TemplateGroupConverter templateGroupConverter = new TemplateGroupConverter();
 
   @GetMapping
   public LotDetail getLot(@PathVariable(value = "agreement-id") final String agreementNumber, @PathVariable(value = "lot-id") final String lotNumber) {
