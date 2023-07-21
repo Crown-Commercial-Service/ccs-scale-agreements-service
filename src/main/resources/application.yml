@@ -1,3 +1,10 @@
+# App info (for Actuator)
+info:
+  app:
+    name: CCS Agreements Service
+    description: The Agreements Service API provided by Crown Commercial Service
+    version: 2.2
+
 server:
   port: 9010
   error:
@@ -12,6 +19,23 @@ caching:
     # 15 mins
     cacheLength: 900
     heapSize: 100
+
+# Actuator config
+management:
+  security:
+    enabled: false
+  endpoints:
+    web:
+      base-path: /
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      probes:
+        enabled: true
+  info:
+    env:
+      enabled: true
 
 logging:
   level:
