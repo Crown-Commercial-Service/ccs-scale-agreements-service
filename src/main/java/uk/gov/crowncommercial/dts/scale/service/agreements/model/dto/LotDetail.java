@@ -66,4 +66,8 @@ public class LotDetail implements Serializable {
    */
   private Collection<LotRuleDTO> rules;
 
+  /**
+   * Count of suppliers attached to the lot
+   */
+  private Integer supplierCount;
 }
