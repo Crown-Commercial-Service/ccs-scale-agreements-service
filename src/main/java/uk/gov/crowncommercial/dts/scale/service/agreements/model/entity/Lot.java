@@ -99,4 +99,7 @@ public class Lot {
   @OneToMany(fetch = FetchType.LAZY)
   @JoinColumn(name ="lot_id")
   Set<TemplateGroup> templateGroups;
+
+  @Formula("(SELECT COUNT(*) FROM lot_organisation_roles r WHERE r.lot_id = lot_id and r.role_type_id = '2' and r.organisation_status = 'A')")
+  Integer supplierCount;
 }
