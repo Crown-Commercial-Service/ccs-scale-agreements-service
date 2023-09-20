@@ -23,7 +23,7 @@
 		<mapstruct.version>1.5.5.Final</mapstruct.version>
 		<compiler.version>3.11.0</compiler.version>
 		<lombok.version>1.18.28</lombok.version>
-		<tomcat.version>9.0.78</tomcat.version>
+		<tomcat.version>9.0.80</tomcat.version>
 		<h2.version>2.2.220</h2.version>
 	</properties>
 
