@@ -24,7 +24,7 @@
 		<compiler.version>3.11.0</compiler.version>
 		<lombok.version>1.18.28</lombok.version>
 		<tomcat.version>9.0.80</tomcat.version>
-		<h2.version>2.2.220</h2.version>
+		<h2.version>2.2.224</h2.version>
 	</properties>
 
 	<dependencies>
