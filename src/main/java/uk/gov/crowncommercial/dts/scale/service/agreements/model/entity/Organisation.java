@@ -2,6 +2,7 @@ package uk.gov.crowncommercial.dts.scale.service.agreements.model.entity;
 
 import java.time.LocalDate;
 import java.util.Set;
+import java.util.function.Function;
 import javax.persistence.*;
 
 import org.hibernate.annotations.CacheConcurrencyStrategy;
@@ -10,6 +11,7 @@ import lombok.AccessLevel;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.FieldDefaults;
+import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.OrganizationDetail;
 
 /**
  * Organisation
@@ -67,4 +69,23 @@ public class Organisation {
   @org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE,region = "people")
   Set<Person> people;
 
+  public void setLegalName(String legalName) {
+    this.legalName = legalName;
+  }
+
+  public void setUri(String uri) {
+    this.uri = uri;
+  }
+
+  public void setIncorporationDate(LocalDate incorporationDate) {
+    this.incorporationDate = incorporationDate;
+  }
+
+  public void setIncorporationCountry(String incorporationCountry) {
+    this.incorporationCountry = incorporationCountry;
+  }
+
+  public Organisation map(Function<Organisation, Organisation> function) {
+    return function.apply(this);
+  }
 }
