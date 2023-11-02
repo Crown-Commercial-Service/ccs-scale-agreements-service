@@ -2,6 +2,7 @@ package uk.gov.crowncommercial.dts.scale.service.agreements.model.entity;
 
 import java.time.LocalDate;
 import java.util.Set;
+import java.util.function.Function;
 import javax.persistence.*;
 
 import org.hibernate.annotations.CacheConcurrencyStrategy;
@@ -15,7 +16,6 @@ import lombok.experimental.FieldDefaults;
  * Organisation
  */
 @Entity
-@Immutable
 @Table(name = "organisations")
 @Data
 @EqualsAndHashCode(exclude = "people")
@@ -24,6 +24,7 @@ import lombok.experimental.FieldDefaults;
 public class Organisation {
 
   @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
   @Column(name = "organisation_id")
   Integer id;
 
@@ -66,5 +67,65 @@ public class Organisation {
   @OneToMany(mappedBy = "organisation")
   @org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE,region = "people")
   Set<Person> people;
+
+  public void setId(Integer id) {
+    this.id = id;
+  }
+
+  public void setEntityId(String entityId) {
+    this.entityId = entityId;
+  }
+
+  public void setRegistryCode(String registryCode) {
+    this.registryCode = registryCode;
+  }
+
+  public void setLegalName(String legalName) {
+    this.legalName = legalName;
+  }
+
+  public void setBusinessType(String businessType) {
+    this.businessType = businessType;
+  }
+
+  public void setUri(String uri) {
+    this.uri = uri;
+  }
+
+  public void setStatus(String status) {
+    this.status = status;
+  }
+
+  public void setIncorporationDate(LocalDate incorporationDate) {
+    this.incorporationDate = incorporationDate;
+  }
+
+  public void setIncorporationCountry(String incorporationCountry) {
+    this.incorporationCountry = incorporationCountry;
+  }
+
+  public void setCountryName(String countryName) {
+    this.countryName = countryName;
+  }
+
+  public void setSme(Boolean sme) {
+    isSme = sme;
+  }
+
+  public void setVcse(Boolean vcse) {
+    isVcse = vcse;
+  }
+
+  public void setActive(Boolean active) {
+    isActive = active;
+  }
+
+  public void setPeople(Set<Person> people) {
+    this.people = people;
+  }
+
+  public Organisation map(Function<Organisation, Organisation> function) {
+    return function.apply(this);
+  }
 
 }

@@ -19,6 +19,7 @@ public class MappingService {
     public LotSupplierMapper supplierMapper = Mappers.getMapper(LotSupplierMapper.class);
     public EventTypeMapper eventTypeMapper = Mappers.getMapper(EventTypeMapper.class);
     public ProcurementDataTemplateMapper dataTemplateMapper = Mappers.getMapper(ProcurementDataTemplateMapper.class);
+    public OrganisationMapper organisationMapper = Mappers.getMapper(OrganisationMapper.class);
 
     /**
      * Map a CommercialAgreement to an AgreementSummary
@@ -61,6 +62,12 @@ public class MappingService {
      */
     public AgreementUpdate mapCommercialAgreementUpdateToAgreementUpdate(CommercialAgreementUpdate updateModel) {
         AgreementUpdate model = updateMapper.commercialAgreementUpdateToAgreementUpdate(updateModel);
+
+        return model;
+    }
+
+    public OrganizationDetail mapOrganisationToOrganizationDetail(Organisation caModel) {
+        OrganizationDetail model = organisationMapper.OrganisationToOrganizationDetail(caModel);
 
         return model;
     }
