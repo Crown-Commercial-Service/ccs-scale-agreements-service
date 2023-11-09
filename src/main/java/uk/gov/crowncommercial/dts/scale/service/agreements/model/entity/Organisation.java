@@ -1,7 +1,9 @@
 package uk.gov.crowncommercial.dts.scale.service.agreements.model.entity;
 
 import java.time.LocalDate;
+import java.util.Optional;
 import java.util.Set;
+import java.util.function.Function;
 import javax.persistence.*;
 
 import org.hibernate.annotations.CacheConcurrencyStrategy;
@@ -15,7 +17,6 @@ import lombok.experimental.FieldDefaults;
  * Organisation
  */
 @Entity
-@Immutable
 @Table(name = "organisations")
 @Data
 @EqualsAndHashCode(exclude = "people")
@@ -24,6 +25,7 @@ import lombok.experimental.FieldDefaults;
 public class Organisation {
 
   @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
   @Column(name = "organisation_id")
   Integer id;
 
@@ -67,4 +69,19 @@ public class Organisation {
   @org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE,region = "people")
   Set<Person> people;
 
+  public Boolean getIsSme() {
+    return isSme != null ? isSme : Boolean.FALSE;
+  }
+
+  public Boolean getIsVcse() {
+    return isVcse != null ? isVcse : Boolean.FALSE;
+  }
+
+  public Boolean getIsActive() {
+    return isActive != null ? isActive : Boolean.FALSE;
+  }
+
+  public Organisation map(Function<Organisation, Organisation> function) {
+    return function.apply(this);
+  }
 }

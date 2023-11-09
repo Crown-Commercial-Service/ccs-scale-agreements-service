@@ -2,6 +2,8 @@ package uk.gov.crowncommercial.dts.scale.service.agreements.model.dto;
 
 import java.io.Serializable;
 import java.util.Set;
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Data;
 
 /**

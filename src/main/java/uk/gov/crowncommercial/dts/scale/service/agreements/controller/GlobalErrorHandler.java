@@ -14,9 +14,7 @@ import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import lombok.extern.slf4j.Slf4j;
-import uk.gov.crowncommercial.dts.scale.service.agreements.exception.AgreementNotFoundException;
-import uk.gov.crowncommercial.dts.scale.service.agreements.exception.LotNotFoundException;
-import uk.gov.crowncommercial.dts.scale.service.agreements.exception.MethodNotImplementedException;
+import uk.gov.crowncommercial.dts.scale.service.agreements.exception.*;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.ApiError;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.ApiErrors;
 
@@ -56,7 +54,7 @@ public class GlobalErrorHandler implements ErrorController {
   }
 
   @ResponseStatus(HttpStatus.NOT_FOUND)
-  @ExceptionHandler({AgreementNotFoundException.class, LotNotFoundException.class})
+  @ExceptionHandler({AgreementNotFoundException.class, LotNotFoundException.class, OrganisationEntityIdNotFoundException.class, OrganisationIdNotFoundException.class})
   public ApiErrors handleResourceNotFoundException(final Exception exception) {
 
     rollbar.warning(exception, "Resource not found exception");

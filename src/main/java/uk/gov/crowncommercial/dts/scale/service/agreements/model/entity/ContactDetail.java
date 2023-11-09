@@ -1,10 +1,7 @@
 package uk.gov.crowncommercial.dts.scale.service.agreements.model.entity;
 
 import java.time.LocalDate;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.Immutable;
@@ -16,7 +13,6 @@ import lombok.experimental.FieldDefaults;
  *
  */
 @Entity
-@Immutable
 @Table(name = "contact_details")
 @Data
 @FieldDefaults(level = AccessLevel.PRIVATE)
@@ -24,6 +20,7 @@ import lombok.experimental.FieldDefaults;
 public class ContactDetail {
 
   @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
   @Column(name = "contact_detail_id")
   Integer id;
 

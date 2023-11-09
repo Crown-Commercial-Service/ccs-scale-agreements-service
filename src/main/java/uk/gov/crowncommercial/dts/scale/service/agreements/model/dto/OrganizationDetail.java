@@ -3,6 +3,7 @@ package uk.gov.crowncommercial.dts.scale.service.agreements.model.dto;
 import java.io.Serializable;
 import java.time.LocalDate;
 import org.springframework.format.annotation.DateTimeFormat;
+import java.util.function.Function;
 import org.springframework.format.annotation.DateTimeFormat.ISO;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
@@ -40,6 +41,9 @@ public class OrganizationDetail implements Serializable {
   @JsonProperty("is_vcse")
   private Boolean isVcse;
 
+  @JsonProperty("is_sme")
+  private Boolean isSme;
+
   /**
    * Organisation Status
    */
@@ -52,4 +56,109 @@ public class OrganizationDetail implements Serializable {
 
   private String tradingName;
 
+  private String dunsNumber;
+
+  private String uri;
+
+  private String id;
+
+  public String getScale() {
+    return scale;
+  }
+
+  public void setScale(String scale) {
+    this.scale = scale;
+  }
+
+  public LocalDate getCreationDate() {
+    return creationDate;
+  }
+
+  public void setCreationDate(LocalDate creationDate) {
+    this.creationDate = creationDate;
+  }
+
+  public String getCountryCode() {
+    return countryCode;
+  }
+
+  public void setCountryCode(String countryCode) {
+    this.countryCode = countryCode;
+  }
+
+  public String getCompanyType() {
+    return companyType;
+  }
+
+  public void setCompanyType(String companyType) {
+    this.companyType = companyType;
+  }
+
+  public Boolean getVcse() {
+    return isVcse;
+  }
+
+  public void setVcse(Boolean vcse) {
+    isVcse = vcse;
+  }
+
+  public String getStatus() {
+    return status;
+  }
+
+  public void setStatus(String status) {
+    this.status = status;
+  }
+
+  public Boolean getActive() {
+    return active;
+  }
+
+  public void setActive(Boolean active) {
+    this.active = active;
+  }
+
+  public String getTradingName() {
+    return tradingName;
+  }
+
+  public void setTradingName(String tradingName) {
+    this.tradingName = tradingName;
+  }
+
+  public String getDunsNumber() {
+    return dunsNumber;
+  }
+
+  public void setDunsNumber(String dunsNumber) {
+    dunsNumber = dunsNumber;
+  }
+
+  public String getUri() {
+    return uri;
+  }
+
+  public void setUri(String uri) {
+    this.uri = uri;
+  }
+
+  public String getId() {
+    return id;
+  }
+
+  public void setId(String id) {
+    this.id = id;
+  }
+
+  public Boolean getSme() {
+    return isSme;
+  }
+
+  public void setSme(Boolean sme) {
+    isSme = sme;
+  }
+
+  public OrganizationDetail map(Function<OrganizationDetail, OrganizationDetail> function) {
+    return function.apply(this);
+  }
 }

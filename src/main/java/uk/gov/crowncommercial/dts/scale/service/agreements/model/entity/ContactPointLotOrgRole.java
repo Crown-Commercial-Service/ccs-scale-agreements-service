@@ -1,6 +1,7 @@
 package uk.gov.crowncommercial.dts.scale.service.agreements.model.entity;
 
 import java.time.LocalDate;
+import java.util.function.Function;
 import javax.persistence.*;
 
 import org.hibernate.annotations.CacheConcurrencyStrategy;
@@ -13,7 +14,6 @@ import lombok.experimental.FieldDefaults;
  * Contact point - Lot organisation role (M:M join entity)
  */
 @Entity
-@Immutable
 @Table(name = "contact_point_lot_ors")
 @Data
 @FieldDefaults(level = AccessLevel.PRIVATE)
@@ -21,6 +21,7 @@ import lombok.experimental.FieldDefaults;
 public class ContactPointLotOrgRole {
 
   @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
   @Column(name = "contact_point_id")
   Integer id;
 
@@ -34,6 +35,10 @@ public class ContactPointLotOrgRole {
   @ManyToOne
   @JoinColumn(name = "contact_point_reason_id")
   ContactPointReason contactPointReason;
+
+  @ManyToOne
+  @JoinColumn(name = "lot_organisation_role_id")
+  LotOrganisationRole lotOrganisationRole;
 
   @Column(name = "effective_from")
   LocalDate effectiveFrom;
@@ -51,5 +56,18 @@ public class ContactPointLotOrgRole {
    */
   public Boolean getPrimary() {
     return primary != null ? primary : Boolean.FALSE;
+  }
+
+  public ContactPointLotOrgRole map(Function<ContactPointLotOrgRole, ContactPointLotOrgRole> function) {
+    return function.apply(this);
+  }
+
+  @Override
+  public String toString() {
+    return "";
+  }
+
+  public int hashCode() {
+    return this.id.hashCode();
   }
 }

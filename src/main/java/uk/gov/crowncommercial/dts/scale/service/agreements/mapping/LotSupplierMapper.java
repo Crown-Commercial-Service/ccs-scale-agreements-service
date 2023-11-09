@@ -39,7 +39,7 @@ public abstract class LotSupplierMapper {
             String replacement = "$1_$2";
             registryCode.replaceAll(regex, replacement);
 
-            return Enum.valueOf(Scheme.class, registryCode.toUpperCase().replace('-', '_'));
+            return Enum.valueOf(Scheme.class, registryCode.toUpperCase().replace("-", ""));
         }
 
         return null;

@@ -37,4 +37,8 @@ public class OrganizationIdentifier implements Serializable {
    */
   private String uri;
 
+  private String incorporationDate;
+
+  private String incorporationCountry;
+
 }
