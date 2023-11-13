@@ -2,6 +2,7 @@ package uk.gov.crowncommercial.dts.scale.service.agreements.model.entity;
 
 import java.time.LocalDate;
 import java.util.Set;
+import java.util.function.Function;
 import javax.persistence.*;
 
 import org.hibernate.annotations.CacheConcurrencyStrategy;
@@ -14,7 +15,6 @@ import lombok.experimental.FieldDefaults;
  * Commercial Agreement.
  */
 @Entity
-@Immutable
 @Table(name = "commercial_agreements")
 @Data
 @FieldDefaults(level = AccessLevel.PRIVATE)
@@ -24,6 +24,7 @@ public class CommercialAgreement {
 
   @Id
   @Column(name = "commercial_agreement_id")
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
   Integer id;
 
   @Column(name = "commercial_agreement_number")
@@ -73,4 +74,21 @@ public class CommercialAgreement {
 
   @Column(name = "lot_assessment_tool_id")
   Integer lotAssessmentTool;
+
+  public Boolean getPreDefinedLotRequired() {
+    return preDefinedLotRequired != null ? preDefinedLotRequired : Boolean.FALSE;
+  }
+
+  public CommercialAgreement map(Function<CommercialAgreement, CommercialAgreement> function) {
+    return function.apply(this);
+  }
+  @Override
+  public String toString() {
+    return "";
+  }
+
+  public int hashCode() {
+    return this.id.hashCode();
+  }
+
 }

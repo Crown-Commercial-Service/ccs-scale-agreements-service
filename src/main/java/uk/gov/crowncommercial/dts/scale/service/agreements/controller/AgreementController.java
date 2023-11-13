@@ -11,6 +11,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import uk.gov.crowncommercial.dts.scale.service.agreements.BLL.BusinessLogicClient;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.*;
+import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.CommercialAgreement;
+import uk.gov.crowncommercial.dts.scale.service.agreements.service.AgreementService;
+import uk.gov.crowncommercial.dts.scale.service.agreements.service.MappingService;
 
 /**
  * Agreement Controller
@@ -22,6 +25,13 @@ import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.*;
 public class AgreementController {
     @Autowired
     private BusinessLogicClient businessLogicClient;
+
+    @Autowired
+    private AgreementService agreementService;
+
+    @Autowired
+    protected MappingService mappingService;
+
 
     @GetMapping
     public Collection<AgreementSummary> getAgreements() {
@@ -39,6 +49,18 @@ public class AgreementController {
         AgreementDetail model = businessLogicClient.getAgreementDetail(agreementNumber);
 
         return model;
+    }
+
+    @PutMapping("/{agreement-id}")
+    public AgreementDetail updateAgreementDetail(@PathVariable(value = "agreement-id") final String agreementNumber, @RequestBody AgreementDetail agreementDetail) {
+
+
+
+        CommercialAgreement ca = mappingService.mapAgreementDetailToCommercialAgreement(agreementDetail);
+        ca.setNumber(agreementNumber);
+
+        return mappingService.mapCommercialAgreementToAgreementDetail(agreementService.createOrUpdateAgreement(ca));
+
     }
 
     @GetMapping("/{agreement-id}/lots")

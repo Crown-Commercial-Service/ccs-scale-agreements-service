@@ -25,6 +25,8 @@ public interface AgreementDetailMapper {
     @Mapping(source = "organisationRoles", target = "owner", qualifiedByName = "orgRolesToOrganization")
     AgreementDetail commercialAgreementToAgreementDetail(CommercialAgreement dbModel);
 
+    @Mapping(source = "benefits", target = "benefits", qualifiedByName = "stringsToCommercialAgreementBenefits")
+    CommercialAgreement agreementDetailToCommercialAgreement(AgreementDetail dbModel);
 
     // Mapping of child entities starts here
     // Lots
@@ -75,6 +77,26 @@ public interface AgreementDetailMapper {
         return model;
     }
 
+    @Named("stringsToCommercialAgreementBenefits")
+    public static Set<CommercialAgreementBenefit> stringsToCommercialAgreementBenefits(Collection<String> updateBenefits) {
+
+        if (updateBenefits != null) {
+            String[] updateBenefitsList = updateBenefits.toArray(new String[0]);
+            Set<CommercialAgreementBenefit> benefits = new LinkedHashSet<CommercialAgreementBenefit>();
+
+            for (int i = 0; i < updateBenefitsList.length; i++) {
+                CommercialAgreementBenefit cab = new CommercialAgreementBenefit();
+                cab.setName(updateBenefitsList[i]);
+                cab.setDescription(updateBenefitsList[i]);
+                cab.setSequence(i+1);
+
+                benefits.add(cab);
+            }
+            return benefits;
+        }
+
+        return null;
+    }
 
     // Organisation
     Address contactDetailToAddress(ContactDetail contactDetail);

@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -36,7 +37,7 @@ class AgreementServiceTest {
   private CommercialAgreementRepo mockCommercialAgreementRepo;
 
   @MockBean
-  private CommercialAgreement mockCommercialAgreement;
+  private Optional<CommercialAgreement> mockCommercialAgreement;
 
   @MockBean
   private List<CommercialAgreement> mockCommercialAgreements;
