@@ -5,8 +5,9 @@ import java.util.Set;
 import java.util.function.Function;
 import javax.persistence.*;
 
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
-import org.hibernate.annotations.Immutable;
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.experimental.FieldDefaults;
@@ -20,6 +21,7 @@ import uk.gov.crowncommercial.dts.scale.service.agreements.exception.InvalidAgre
 @Data
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @javax.persistence.Cacheable
+@EqualsAndHashCode(exclude = "benefits")
 @org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE,region = "commercial_agreements") //Provide cache strategy.
 public class CommercialAgreement {
 
@@ -70,6 +72,7 @@ public class CommercialAgreement {
 
   @org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE,region = "benefits")
   @OneToMany
+  @ToString.Exclude
   @JoinColumn(name = "commercial_agreement_id")
   Set<CommercialAgreementBenefit> benefits;
 
@@ -87,6 +90,19 @@ public class CommercialAgreement {
     return function.apply(this);
   }
 
+  public CommercialAgreement(){}
+
+  public CommercialAgreement(String number, String name, String owner, String description, LocalDate startDate, LocalDate endDate, String detailUrl, Boolean preDefinedLotRequired) {
+    this.number = number;
+    this.name = name;
+    this.owner = owner;
+    this.description = description;
+    this.startDate = startDate;
+    this.endDate = endDate;
+    this.detailUrl = detailUrl;
+    this.preDefinedLotRequired = preDefinedLotRequired;
+  }
+
   public void isValid(){
     if (name == null || name.isEmpty()) {throw new InvalidAgreementDetailException("name");}
     if (description == null || description.isEmpty()) {throw new InvalidAgreementDetailException("description");}
@@ -95,15 +111,6 @@ public class CommercialAgreement {
     if (endDate == null) {throw new InvalidAgreementDetailException("endDate");}
     if (detailUrl == null || detailUrl.isEmpty()) {throw new InvalidAgreementDetailException("detailUrl");}
     if (preDefinedLotRequired == null) {throw new InvalidAgreementDetailException("preDefinedLotRequired");}
-  }
-
-  @Override
-  public String toString() {
-    return "";
-  }
-
-  public int hashCode() {
-    return this.id.hashCode();
   }
 
 }

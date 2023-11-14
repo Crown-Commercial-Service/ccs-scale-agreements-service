@@ -2,6 +2,7 @@ package uk.gov.crowncommercial.dts.scale.service.agreements.model.entity;
 
 import javax.persistence.*;
 
+import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.Immutable;
@@ -15,6 +16,7 @@ import lombok.experimental.FieldDefaults;
 @Entity
 @Table(name = "commercial_agreement_benefits")
 @Data
+@EqualsAndHashCode(exclude = "agreement")
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE,region = "benefits")
 public class CommercialAgreementBenefit {
@@ -40,13 +42,4 @@ public class CommercialAgreementBenefit {
 
   @Column(name = "order_seq")
   Integer sequence;
-
-  @Override
-  public String toString() {
-    return "";
-  }
-
-  public int hashCode() {
-    return this.name.hashCode();
-  }
 }

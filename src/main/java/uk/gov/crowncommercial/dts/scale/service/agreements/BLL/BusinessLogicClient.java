@@ -232,7 +232,6 @@ public class BusinessLogicClient {
         ca.setNumber(agreementNumber);
         ca.isValid();
 
-        agreementService.createOrUpdateAgreement(ca);
-        return getAgreementDetail(agreementNumber);
+        return  mappingService.mapCommercialAgreementToAgreementDetail(agreementService.createOrUpdateAgreement(ca));
     }
 }

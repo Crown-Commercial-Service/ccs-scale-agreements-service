@@ -70,11 +70,11 @@ public class AgreementService {
               if (newCommercialAgreement.getBenefits() != null){
                   commercialAgreementBenefitService.removeBenefits(ca);
 
-                  newCommercialAgreement.getBenefits().stream().map((benefit) -> {
+                  ca.setBenefits( newCommercialAgreement.getBenefits().stream().map((benefit) -> {
                       benefit.setAgreement(ca);
                       commercialAgreementBenefitService.createBenefits(benefit);
                       return benefit;
-                  }).collect(Collectors.toList());
+                  }).collect(Collectors.toSet()));
               }
 
               commercialAgreementRepo.saveAndFlush(ca);

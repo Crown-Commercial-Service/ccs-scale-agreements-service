@@ -8,7 +8,7 @@ import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.Commerci
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.CommercialAgreementBenefit;
 import uk.gov.crowncommercial.dts.scale.service.agreements.repository.CommercialAgreementBenefitRepo;
 
-import java.util.Collection;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -22,9 +22,9 @@ public class CommercialAgreementBenefitService {
      * Find all benefits related to the agreement by passing in a CommercialAgreement object.
      *
      * @param ca Commercial Agreement
-     * @return Collection<CommercialAgreementBenefit>
+     * @return Set<CommercialAgreementBenefit>
      */
-    public Collection<CommercialAgreementBenefit> getBenefits (CommercialAgreement ca ){
+    public Set<CommercialAgreementBenefit> getBenefits (CommercialAgreement ca ){
         return commercialAgreementBenefitRepo.findByAgreement(ca).orElseThrow(()-> new BenefitNotFoundException(ca.getNumber()));
     }
 
