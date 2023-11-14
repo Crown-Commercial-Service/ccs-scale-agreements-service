@@ -421,8 +421,9 @@ public class BusinessLogicClientTests {
     @Test
     void testSaveAgreementWithValidAgreement() throws Exception {
         AgreementDetail ad = new AgreementDetail("Technology Products 2", "Short textual description of the commercial agreement", "CCS", java.time.LocalDate.now(), java.time.LocalDate.now().plusDays(5), "URL", true);
+        CommercialAgreement ca = new CommercialAgreement("RM1045", "Technology Products 2", "CCS", "Short textual description of the commercial agreement", java.time.LocalDate.now(), java.time.LocalDate.now().plusDays(5), "URL", true);
 
-        when(agreementService.createOrUpdateAgreement(mockCommercialAgreement)).thenReturn(mockCommercialAgreement);
+        when(agreementService.createOrUpdateAgreement(ca)).thenReturn(ca);
         AgreementDetail result = businessLogicClient.saveAgreement(ad, "RM1045");
 
         assertNotNull(result);
