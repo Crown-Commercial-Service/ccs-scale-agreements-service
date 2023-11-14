@@ -11,6 +11,7 @@ import java.sql.Timestamp;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -35,6 +36,7 @@ public class MapStructMappingTests {
 
     private static final String AGREEMENT_NAME = "Agreement Name";
     private static final String AGREEMENT_NUMBER = "RM1234";
+    private static final String AGREEMENT_DESCRIPTION = "This is an agreement description.";
     private static final String LOT_NUMBER = "Lot 1";
     private static final String LOT_NAME = "Name of Lot";
     private static final String DOCUMENT_TYPE = "Document Type";
@@ -88,6 +90,37 @@ public class MapStructMappingTests {
         assertNotNull(outputModel);
         assertEquals(sourceModel.getName(), outputModel.getName());
         assertEquals(sourceModel.getNumber(), outputModel.getNumber());
+    }
+
+    @Test
+    public void testAgreementDetailMapsToCommercialAgreement() throws Exception {
+        AgreementDetail sourceModel = new AgreementDetail();
+        sourceModel.setName(AGREEMENT_NAME);
+        sourceModel.setNumber(AGREEMENT_NUMBER);
+        sourceModel.setDescription(AGREEMENT_DESCRIPTION);
+        sourceModel.setOwnerName("CCS");
+        sourceModel.setStartDate(java.time.LocalDate.now());
+        sourceModel.setEndDate(java.time.LocalDate.now().plusDays(5));
+        sourceModel.setPreDefinedLotRequired(true);
+        String[] benefitArray = new String[]{"Benefit 1", "Benefit 2"};
+        sourceModel.setBenefits(Arrays.asList(benefitArray));
+
+        CommercialAgreement outputModel = agreementDetailMapper.agreementDetailToCommercialAgreement(sourceModel);
+
+        assertNotNull(outputModel);
+        assertEquals(sourceModel.getName(), outputModel.getName());
+        assertEquals(sourceModel.getNumber(), outputModel.getNumber());
+        assertEquals(sourceModel.getDescription(), outputModel.getDescription());
+        assertEquals(sourceModel.getOwnerName(), outputModel.getOwner());
+        assertEquals(sourceModel.getStartDate(), outputModel.getStartDate());
+        assertEquals(sourceModel.getEndDate(), outputModel.getEndDate());
+        assertEquals(sourceModel.getPreDefinedLotRequired(), outputModel.getPreDefinedLotRequired());
+
+        int index = 0;
+        for (CommercialAgreementBenefit benefit : outputModel.getBenefits()) {
+            assertEquals(benefitArray[index], benefit.getName());
+            index++;
+        }
     }
 
     @Test

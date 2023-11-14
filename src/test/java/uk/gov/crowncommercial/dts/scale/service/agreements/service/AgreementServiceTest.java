@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -56,13 +57,13 @@ class AgreementServiceTest {
   @Test
   void testGetAgreement() throws Exception {
     when(mockCommercialAgreementRepo.findByNumber(AGREEMENT_NUMBER))
-        .thenReturn(mockCommercialAgreement);
+        .thenReturn(Optional.ofNullable(mockCommercialAgreement));
     assertEquals(mockCommercialAgreement, service.findAgreementByNumber(AGREEMENT_NUMBER));
   }
 
   @Test
   void testGetAgreementNotFound() throws Exception {
-    when(mockCommercialAgreementRepo.findByNumber(AGREEMENT_NUMBER)).thenReturn(null);
+    when(mockCommercialAgreementRepo.findByNumber(AGREEMENT_NUMBER)).thenReturn(Optional.ofNullable(null));
 
     AgreementNotFoundException thrown = Assertions.assertThrows(
             AgreementNotFoundException.class,

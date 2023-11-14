@@ -223,4 +223,16 @@ public class BusinessLogicClient {
 
         return model;
     }
+
+    /**
+     * Returns the new agreement or updated agreement from the api call
+     */
+    public AgreementDetail saveAgreement(AgreementDetail cd, String agreementNumber){
+        CommercialAgreement ca = mappingService.mapAgreementDetailToCommercialAgreement(cd);
+        ca.setNumber(agreementNumber);
+        ca.isValid();
+
+        agreementService.createOrUpdateAgreement(ca);
+        return getAgreementDetail(agreementNumber);
+    }
 }

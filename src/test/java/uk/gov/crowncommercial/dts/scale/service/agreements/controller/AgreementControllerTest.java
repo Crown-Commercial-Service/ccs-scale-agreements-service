@@ -8,26 +8,33 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import java.time.Instant;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
+import java.time.LocalDate;
+import java.util.*;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
 import com.rollbar.notifier.Rollbar;
 
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import uk.gov.crowncommercial.dts.scale.service.agreements.BLL.BusinessLogicClient;
 import uk.gov.crowncommercial.dts.scale.service.agreements.exception.AgreementNotFoundException;
+import uk.gov.crowncommercial.dts.scale.service.agreements.exception.InvalidAgreementDetailException;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.*;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.*;
 import uk.gov.crowncommercial.dts.scale.service.agreements.service.AgreementService;
 
 @WebMvcTest(AgreementController.class)
+@ActiveProfiles("test")
 @Import(GlobalErrorHandler.class)
 class AgreementControllerTest {
 
@@ -292,6 +299,59 @@ class AgreementControllerTest {
     mockMvc.perform(get(String.format(GET_AGREEMENT_UPDATES_PATH, AGREEMENT_NUMBER)))
         .andExpect(status().is5xxServerError())
         .andExpect(jsonPath("$.description", is(GlobalErrorHandler.ERR_MSG_DEFAULT_DESCRIPTION)));
+  }
+
+  @Test
+  void testCreateAgreementValid() throws Exception {
+
+    String agreementNumber = "RM1045";
+    AgreementDetail inputValue = new AgreementDetail("Technology Products 2", "Short textual description of the commercial agreement", "CCS", LocalDate.of(2012, 11, 25), java.time.LocalDate.now().plusDays(5), "URL", true);
+    AgreementDetail result = new AgreementDetail("Technology Products 2", "Short textual description of the commercial agreement", "CCS", LocalDate.of(2012, 11, 25), java.time.LocalDate.now().plusDays(5), "URL", true);
+
+    result.setNumber(agreementNumber);
+    when(businessLogicClient.saveAgreement(inputValue, agreementNumber)).thenReturn(result);
+
+    mockMvc.perform(MockMvcRequestBuilders
+                    .put("/agreements/RM1045")
+                    .content(asJsonString(inputValue))
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("number", is(agreementNumber)))
+            .andExpect(jsonPath("name", is(inputValue.getName())))
+            .andExpect(jsonPath("description", is(inputValue.getDescription())))
+            .andExpect(jsonPath("startDate", is(inputValue.getStartDate().toString())))
+            .andExpect(jsonPath("preDefinedLotRequired", is(inputValue.getPreDefinedLotRequired())));
+  }
+
+  @Test
+  void testCreateAgreementInValidEmptyAgreementName() throws Exception {
+
+    String agreementNumber = "RM1045";
+    AgreementDetail inputValue = new AgreementDetail("Technology Products 2", "Short textual description of the commercial agreement", "CCS", java.time.LocalDate.now(), java.time.LocalDate.now().plusDays(5), "URL", true);
+    inputValue.setName(null);
+
+    when(businessLogicClient.saveAgreement(inputValue, agreementNumber)).thenThrow(new InvalidAgreementDetailException("name"));
+
+    mockMvc.perform(MockMvcRequestBuilders
+                    .put("/agreements/RM1045")
+                    .content(asJsonString(inputValue))
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isBadRequest())
+            .andExpect(jsonPath("$.description", is(GlobalErrorHandler.ERR_MSG_VALIDATION_DESCRIPTION)))
+            .andExpect(jsonPath("$.errors..detail", is(new ArrayList<String>(List.of(new String[]{"Invalid agreement format, missing 'name'"})))));
+  }
+
+  public static String asJsonString(final Object obj) {
+    try {
+      ObjectMapper objectMapper = new ObjectMapper();
+      objectMapper.registerModule(new JavaTimeModule());
+      return objectMapper.writeValueAsString(obj);
+    } catch (Exception e) {
+
+      throw new RuntimeException(e);
+    }
   }
 
 

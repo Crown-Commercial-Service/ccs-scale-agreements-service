@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import lombok.extern.slf4j.Slf4j;
 import uk.gov.crowncommercial.dts.scale.service.agreements.exception.AgreementNotFoundException;
+import uk.gov.crowncommercial.dts.scale.service.agreements.exception.InvalidAgreementDetailException;
 import uk.gov.crowncommercial.dts.scale.service.agreements.exception.LotNotFoundException;
 import uk.gov.crowncommercial.dts.scale.service.agreements.exception.MethodNotImplementedException;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.ApiError;
@@ -39,7 +40,7 @@ public class GlobalErrorHandler implements ErrorController {
 
   @ResponseStatus(HttpStatus.BAD_REQUEST)
   @ExceptionHandler({ValidationException.class, HttpMessageNotReadableException.class,
-      MethodArgumentTypeMismatchException.class})
+      MethodArgumentTypeMismatchException.class, InvalidAgreementDetailException.class})
   public ApiErrors handleValidationException(final Exception exception) {
 
     rollbar.warning(exception, "Request validation exception");
