@@ -1,6 +1,7 @@
 package uk.gov.crowncommercial.dts.scale.service.agreements.model.entity;
 
 import java.time.LocalDate;
+import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.function.Function;
 import javax.persistence.*;
@@ -71,10 +72,10 @@ public class CommercialAgreement {
   Set<CommercialAgreementOrgRole> organisationRoles;
 
   @org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE,region = "benefits")
-  @OneToMany
-  @ToString.Exclude
   @JoinColumn(name = "commercial_agreement_id")
-  Set<CommercialAgreementBenefit> benefits;
+  @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+  @ToString.Exclude
+  Set<CommercialAgreementBenefit> benefits = new LinkedHashSet<CommercialAgreementBenefit>();;
 
   @Column(name = "lot_required")
   Boolean preDefinedLotRequired;
@@ -113,4 +114,9 @@ public class CommercialAgreement {
     if (preDefinedLotRequired == null) {throw new InvalidAgreementDetailException("preDefinedLotRequired");}
   }
 
+  public CommercialAgreementBenefit addBenefit(CommercialAgreementBenefit benefit){
+    this.benefits.add(benefit);
+    benefit.setAgreement(this);
+    return benefit;
+  }
 }

@@ -2,7 +2,6 @@ package uk.gov.crowncommercial.dts.scale.service.agreements.service;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 import lombok.RequiredArgsConstructor;
@@ -67,14 +66,11 @@ public class AgreementService {
               ca.setDetailUrl(newCommercialAgreement.getDetailUrl());
               ca.setPreDefinedLotRequired(newCommercialAgreement.getPreDefinedLotRequired());
 
-              if (newCommercialAgreement.getBenefits() != null){
+              if (newCommercialAgreement.getBenefits() != null && !newCommercialAgreement.getBenefits().isEmpty() ){
                   commercialAgreementBenefitService.removeBenefits(ca);
-
-                  ca.setBenefits( newCommercialAgreement.getBenefits().stream().map((benefit) -> {
-                      benefit.setAgreement(ca);
-                      commercialAgreementBenefitService.createBenefits(benefit);
-                      return benefit;
-                  }).collect(Collectors.toSet()));
+                  newCommercialAgreement.getBenefits().forEach(benefit -> {
+                      ca.addBenefit(benefit);
+                  });
               }
 
               commercialAgreementRepo.saveAndFlush(ca);

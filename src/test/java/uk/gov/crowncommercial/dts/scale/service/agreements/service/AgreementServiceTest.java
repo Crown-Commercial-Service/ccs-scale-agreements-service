@@ -3,9 +3,9 @@ package uk.gov.crowncommercial.dts.scale.service.agreements.service;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
-import java.util.Collection;
-import java.util.List;
-import java.util.Optional;
+
+import java.time.LocalDate;
+import java.util.*;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -17,9 +17,12 @@ import org.springframework.test.context.ActiveProfiles;
 import uk.gov.crowncommercial.dts.scale.service.agreements.config.EhcacheConfig;
 import uk.gov.crowncommercial.dts.scale.service.agreements.exception.AgreementNotFoundException;
 import uk.gov.crowncommercial.dts.scale.service.agreements.exception.LotNotFoundException;
+import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.AgreementDetail;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.CommercialAgreement;
+import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.CommercialAgreementBenefit;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.Lot;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.LotProcurementQuestionTemplate;
+import uk.gov.crowncommercial.dts.scale.service.agreements.repository.CommercialAgreementBenefitRepo;
 import uk.gov.crowncommercial.dts.scale.service.agreements.repository.CommercialAgreementRepo;
 import uk.gov.crowncommercial.dts.scale.service.agreements.repository.LotRepo;
 
@@ -37,6 +40,12 @@ class AgreementServiceTest {
   private CommercialAgreementRepo mockCommercialAgreementRepo;
 
   @MockBean
+  private CommercialAgreementBenefitRepo mockCommercialAgreementBenefitRepo;
+
+  @MockBean
+  private CommercialAgreementBenefitService mockCommercialAgreementBenefitService;
+
+  @MockBean
   private CommercialAgreement mockCommercialAgreement;
 
   @MockBean
@@ -50,6 +59,9 @@ class AgreementServiceTest {
 
   @MockBean
   private Collection<LotProcurementQuestionTemplate> mockTemplates;
+
+  @MockBean
+  private Set<CommercialAgreementBenefit> mockCommercialAgreementBenefitCollection;
 
   @Autowired
   AgreementService service;
@@ -99,5 +111,86 @@ class AgreementServiceTest {
     );
 
     assertTrue(thrown.getMessage().contains("not found"));
+  }
+
+  @Test
+  void testUpdateAgreementWithBenefits() throws Exception {
+
+    CommercialAgreement input = new CommercialAgreement(AGREEMENT_NUMBER,"Technology Products 2", "CCS", "Short textual description of the commercial agreement", LocalDate.of(2012, 11, 25), java.time.LocalDate.now().plusDays(5), "URL", true);
+    CommercialAgreement result = new CommercialAgreement(AGREEMENT_NUMBER,"Technology Products 2", "CCS", "Short textual description of the commercial agreement", LocalDate.of(2012, 11, 25), java.time.LocalDate.now().plusDays(5), "URL", true);
+
+    Set<CommercialAgreementBenefit> benefits = new LinkedHashSet<CommercialAgreementBenefit>();
+
+    CommercialAgreementBenefit cab1 = new CommercialAgreementBenefit(), cab2 = new CommercialAgreementBenefit();
+    cab1.setName("Benefit 1");
+    cab1.setDescription("Benefit 1");
+    cab1.setSequence(1);
+    benefits.add(cab1);
+
+    cab2.setName("Benefit 2");
+    cab2.setDescription("Benefit 2");
+    cab2.setSequence(2);
+    benefits.add(cab2);
+
+    input.setBenefits(benefits);
+
+    when(mockCommercialAgreementRepo.findByNumber(AGREEMENT_NUMBER))
+            .thenReturn(Optional.ofNullable(result));
+    when(mockCommercialAgreementBenefitRepo.findByAgreement(input))
+            .thenReturn(Optional.ofNullable(mockCommercialAgreementBenefitCollection));
+
+    CommercialAgreement saveAgreement = service.createOrUpdateAgreement(input);
+
+    assertEquals(saveAgreement.getName(), result.getName());
+    assertEquals(saveAgreement.getNumber(), result.getNumber());
+    assertEquals(saveAgreement.getOwner(), result.getOwner());
+    assertEquals(saveAgreement.getDescription(), result.getDescription());
+    assertEquals(saveAgreement.getStartDate(), result.getStartDate());
+    assertEquals(saveAgreement.getEndDate(), result.getEndDate());
+    assertEquals(saveAgreement.getDetailUrl(), result.getDetailUrl());
+    assertEquals(saveAgreement.getBenefits(), result.getBenefits());
+  }
+
+  @Test
+  void testUpdateAgreementWithoutBenefits() throws Exception {
+
+    CommercialAgreement result = new CommercialAgreement(AGREEMENT_NUMBER,"Technology Products 2", "CCS", "Short textual description of the commercial agreement", LocalDate.of(2012, 11, 25), java.time.LocalDate.now().plusDays(5), "URL", true);
+
+    when(mockCommercialAgreementRepo.findByNumber(AGREEMENT_NUMBER))
+            .thenReturn(Optional.ofNullable(result));
+
+    CommercialAgreement saveAgreement = service.createOrUpdateAgreement(result);
+
+    assertEquals(saveAgreement.getName(), result.getName());
+    assertEquals(saveAgreement.getNumber(), result.getNumber());
+    assertEquals(saveAgreement.getOwner(), result.getOwner());
+    assertEquals(saveAgreement.getDescription(), result.getDescription());
+    assertEquals(saveAgreement.getStartDate(), result.getStartDate());
+    assertEquals(saveAgreement.getEndDate(), result.getEndDate());
+    assertEquals(saveAgreement.getDetailUrl(), result.getDetailUrl());
+    assertEquals(saveAgreement.getBenefits(), result.getBenefits());
+    for (CommercialAgreementBenefit benefit : saveAgreement.getBenefits()) {
+      assertEquals(benefit.getAgreement(), result);
+    }
+  }
+
+  @Test
+  void testCreateAgreementWithoutBenefits() throws Exception {
+
+    CommercialAgreement input = new CommercialAgreement(AGREEMENT_NUMBER,"Technology Products 2", "CCS", "Short textual description of the commercial agreement", LocalDate.of(2012, 11, 25), java.time.LocalDate.now().plusDays(5), "URL", true);
+    CommercialAgreement result = new CommercialAgreement(AGREEMENT_NUMBER,"Technology Products 2", "CCS", "Short textual description of the commercial agreement", LocalDate.of(2012, 11, 25), java.time.LocalDate.now().plusDays(5), "URL", true);
+
+    when(mockCommercialAgreementRepo.findByNumber(AGREEMENT_NUMBER)).thenReturn(Optional.ofNullable(null)).thenReturn(Optional.of(result));;
+
+    CommercialAgreement saveAgreement = service.createOrUpdateAgreement(input);
+
+    assertEquals(saveAgreement.getName(), result.getName());
+    assertEquals(saveAgreement.getNumber(), result.getNumber());
+    assertEquals(saveAgreement.getOwner(), result.getOwner());
+    assertEquals(saveAgreement.getDescription(), result.getDescription());
+    assertEquals(saveAgreement.getStartDate(), result.getStartDate());
+    assertEquals(saveAgreement.getEndDate(), result.getEndDate());
+    assertEquals(saveAgreement.getDetailUrl(), result.getDetailUrl());
+    assertEquals(saveAgreement.getBenefits(), result.getBenefits());
   }
 }
