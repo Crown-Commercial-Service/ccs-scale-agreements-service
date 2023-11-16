@@ -8,7 +8,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
 import uk.gov.crowncommercial.dts.scale.service.agreements.config.EhcacheConfig;
+import uk.gov.crowncommercial.dts.scale.service.agreements.controller.GlobalErrorHandler;
 import uk.gov.crowncommercial.dts.scale.service.agreements.exception.AgreementNotFoundException;
+import uk.gov.crowncommercial.dts.scale.service.agreements.exception.InvalidAgreementDetailException;
 import uk.gov.crowncommercial.dts.scale.service.agreements.exception.LotNotFoundException;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.*;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.*;
@@ -414,5 +416,32 @@ public class BusinessLogicClientTests {
         );
 
         assertTrue(thrown.getMessage().contains(EXCEPTION_CHECK_TEXT));
+    }
+
+    @Test
+    void testSaveAgreementWithValidAgreement() throws Exception {
+        AgreementDetail ad = new AgreementDetail("Technology Products 2", "Short textual description of the commercial agreement", "CCS", java.time.LocalDate.now(), java.time.LocalDate.now().plusDays(5), "URL", true);
+        CommercialAgreement ca = new CommercialAgreement("RM1045", "Technology Products 2", "CCS", "Short textual description of the commercial agreement", java.time.LocalDate.now(), java.time.LocalDate.now().plusDays(5), "URL", true);
+
+        when(agreementService.createOrUpdateAgreement(ca)).thenReturn(ca);
+        AgreementDetail result = businessLogicClient.saveAgreement(ad, "RM1045");
+
+        assertNotNull(result);
+    }
+
+    @Test
+    void testSaveAgreementWithInvalidAgreement() throws Exception {
+        AgreementDetail ad = new AgreementDetail("Technology Products 2", "", "CCS", java.time.LocalDate.now(), java.time.LocalDate.now().plusDays(5), "URL", true);
+
+        when(agreementService.createOrUpdateAgreement(mockCommercialAgreement)).thenThrow(new InvalidAgreementDetailException("description"));
+
+        InvalidAgreementDetailException thrown = Assertions.assertThrows(
+                InvalidAgreementDetailException.class,
+                () -> businessLogicClient.saveAgreement(ad, "RM1045"),
+                GlobalErrorHandler.ERR_MSG_VALIDATION_DESCRIPTION
+        );
+
+        System.out.println(thrown.getMessage());
+        assertTrue(thrown.getMessage().contains("Invalid agreement format, missing 'description'"));
     }
 }

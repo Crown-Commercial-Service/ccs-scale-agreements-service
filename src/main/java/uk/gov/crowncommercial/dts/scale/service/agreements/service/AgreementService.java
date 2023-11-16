@@ -8,10 +8,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import uk.gov.crowncommercial.dts.scale.service.agreements.exception.AgreementNotFoundException;
 import uk.gov.crowncommercial.dts.scale.service.agreements.exception.LotNotFoundException;
-import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.CommercialAgreement;
-import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.Lot;
-import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.LotOrganisationRole;
-import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.SimpleLot;
+import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.*;
 import uk.gov.crowncommercial.dts.scale.service.agreements.repository.CommercialAgreementRepo;
 import uk.gov.crowncommercial.dts.scale.service.agreements.repository.LotRepo;
 import uk.gov.crowncommercial.dts.scale.service.agreements.repository.SimpleLotRepo;
@@ -28,6 +25,7 @@ public class AgreementService {
   private final CommercialAgreementRepo commercialAgreementRepo;
   private final LotRepo lotRepo;
   private final SimpleLotRepo simpleLotRepo;
+  private final CommercialAgreementBenefitService commercialAgreementBenefitService;
 
   /**
    * Get all agreements.
@@ -48,15 +46,40 @@ public class AgreementService {
   public CommercialAgreement findAgreementByNumber(final String caNumber) {
     log.debug("findAgreementByNumber: {}", caNumber);
 
-    final CommercialAgreement agreementModel = commercialAgreementRepo.findByNumber(caNumber);
-
-    if (agreementModel == null) {
-      throw new AgreementNotFoundException(caNumber);
-    }
-
-    return agreementModel;
+    return commercialAgreementRepo.findByNumber(caNumber).orElseThrow(() -> new AgreementNotFoundException(caNumber) );
   }
 
+    /**
+     * Create or update the agreement that is passed in
+     *
+     * @param newCommercialAgreement Commercial Agreement
+     * @return Commercial Agreement
+     */
+  public CommercialAgreement createOrUpdateAgreement(final CommercialAgreement newCommercialAgreement) {
+    return commercialAgreementRepo.findByNumber(newCommercialAgreement.getNumber())
+            .map(ca -> {
+              ca.setName(newCommercialAgreement.getName());
+              ca.setOwner(newCommercialAgreement.getOwner());
+              ca.setDescription(newCommercialAgreement.getDescription());
+              ca.setStartDate(newCommercialAgreement.getStartDate());
+              ca.setEndDate(newCommercialAgreement.getEndDate());
+              ca.setDetailUrl(newCommercialAgreement.getDetailUrl());
+              ca.setPreDefinedLotRequired(newCommercialAgreement.getPreDefinedLotRequired());
+
+              if (newCommercialAgreement.getBenefits() != null && !newCommercialAgreement.getBenefits().isEmpty() ){
+                  commercialAgreementBenefitService.removeBenefits(ca);
+                  newCommercialAgreement.getBenefits().forEach(benefit -> {
+                      ca.addBenefit(benefit);
+                  });
+              }
+
+              commercialAgreementRepo.saveAndFlush(ca);
+              return findAgreementByNumber(ca.getNumber());
+            }).orElseGet(() -> {
+              commercialAgreementRepo.saveAndFlush(newCommercialAgreement);
+              return findAgreementByNumber(newCommercialAgreement.getNumber());
+            });
+  }
   /**
    * Find a specific Lot using Agreement Number and Lot Number.
    *

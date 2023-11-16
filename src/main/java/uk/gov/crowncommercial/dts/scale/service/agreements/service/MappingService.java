@@ -39,6 +39,15 @@ public class MappingService {
     }
 
     /**
+     * Map a AgreementDetail to an CommercialAgreement
+     */
+    public CommercialAgreement mapAgreementDetailToCommercialAgreement(AgreementDetail caModel) {
+        CommercialAgreement model = agreementDetailMapper.agreementDetailToCommercialAgreement(caModel);
+
+        return model;
+    }
+
+    /**
      * Map a Lot to a LotDetail
      */
     public LotDetail mapLotToLotDetail(Lot lotModel) {

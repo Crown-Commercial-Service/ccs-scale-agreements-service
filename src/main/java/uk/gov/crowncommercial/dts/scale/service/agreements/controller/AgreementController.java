@@ -72,4 +72,11 @@ public class AgreementController {
 
         return model;
     }
+
+    @PutMapping("/{agreement-id}")
+    public AgreementDetail updateAgreementDetail(@PathVariable(value = "agreement-id") final String agreementNumber, @RequestBody AgreementDetail agreementDetail) {
+        log.debug("updateAgreementDetail called with ID: {}", agreementNumber);
+
+        return businessLogicClient.saveAgreement(agreementDetail, agreementNumber);
+    }
 }
