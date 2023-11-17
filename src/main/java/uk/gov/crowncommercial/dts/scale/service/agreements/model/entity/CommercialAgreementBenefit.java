@@ -26,7 +26,7 @@ public class CommercialAgreementBenefit {
   Integer id;
 
   @ToString.Exclude
-  @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+  @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "commercial_agreement_id")
   CommercialAgreement agreement;
 
