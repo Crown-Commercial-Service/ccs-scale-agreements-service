@@ -10,7 +10,7 @@ import org.springframework.test.context.ActiveProfiles;
 import uk.gov.crowncommercial.dts.scale.service.agreements.config.EhcacheConfig;
 import uk.gov.crowncommercial.dts.scale.service.agreements.controller.GlobalErrorHandler;
 import uk.gov.crowncommercial.dts.scale.service.agreements.exception.AgreementNotFoundException;
-import uk.gov.crowncommercial.dts.scale.service.agreements.exception.InvalidAgreementDetailException;
+import uk.gov.crowncommercial.dts.scale.service.agreements.exception.InvalidAgreementException;
 import uk.gov.crowncommercial.dts.scale.service.agreements.exception.LotNotFoundException;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.*;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.*;
@@ -433,10 +433,10 @@ public class BusinessLogicClientTests {
     void testSaveAgreementWithInvalidAgreement() throws Exception {
         AgreementDetail ad = new AgreementDetail("Technology Products 2", "", "CCS", java.time.LocalDate.now(), java.time.LocalDate.now().plusDays(5), "URL", true);
 
-        when(agreementService.createOrUpdateAgreement(mockCommercialAgreement)).thenThrow(new InvalidAgreementDetailException("description"));
+        when(agreementService.createOrUpdateAgreement(mockCommercialAgreement)).thenThrow(new InvalidAgreementException("description"));
 
-        InvalidAgreementDetailException thrown = Assertions.assertThrows(
-                InvalidAgreementDetailException.class,
+        InvalidAgreementException thrown = Assertions.assertThrows(
+                InvalidAgreementException.class,
                 () -> businessLogicClient.saveAgreement(ad, "RM1045"),
                 GlobalErrorHandler.ERR_MSG_VALIDATION_DESCRIPTION
         );

@@ -95,7 +95,7 @@ class AgreementServiceTest {
   @Test
   void testGetLot() throws Exception {
     when(mockLotRepo.findByAgreementNumberAndNumber(AGREEMENT_NUMBER, LOT_NUMBER))
-        .thenReturn(mockLot);
+        .thenReturn(Optional.ofNullable(mockLot));
     assertEquals(mockLot,
         service.findLotByAgreementNumberAndLotNumber(AGREEMENT_NUMBER, LOT_NUMBER));
   }

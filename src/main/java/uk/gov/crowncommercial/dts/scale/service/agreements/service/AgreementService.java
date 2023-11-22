@@ -80,6 +80,32 @@ public class AgreementService {
               return findAgreementByNumber(newCommercialAgreement.getNumber());
             });
   }
+
+    /**
+     * Create or update the lot that is passed in
+     *
+     * @param newLot Lot
+     * @return Lot
+     */
+    public Lot createOrUpdateLot(final Lot newLot) {
+        String agreementNumber =newLot.getAgreement().getNumber();
+        String lotNumber = newLot.getNumber();
+        return lotRepo.findByAgreementNumberAndNumber(agreementNumber, lotNumber)
+                .map(lot -> {
+                    lot.setName(newLot.getName());
+                    lot.setDescription(newLot.getDescription());
+                    lot.setLotType(newLot.getLotType());
+                    lot.setStartDate(newLot.getStartDate());
+                    lot.setEndDate(newLot.getEndDate());
+
+                    lotRepo.saveAndFlush(lot);
+                    return findLotByAgreementNumberAndLotNumber(agreementNumber, lotNumber);
+                }).orElseGet(() -> {
+                    lotRepo.saveAndFlush(newLot);
+                    return findLotByAgreementNumberAndLotNumber(agreementNumber, lotNumber);
+                });
+    }
+
   /**
    * Find a specific Lot using Agreement Number and Lot Number.
    *
@@ -90,13 +116,7 @@ public class AgreementService {
   public Lot findLotByAgreementNumberAndLotNumber(final String agreementNumber, final String lotNumber) {
     log.debug("findLotByAgreementNumberAndLotNumber: agreementNumber={},lotNumber={}", agreementNumber, lotNumber);
 
-    final Lot lotModel = lotRepo.findByAgreementNumberAndNumber(agreementNumber, lotNumber);
-
-    if (lotModel == null) {
-      throw new LotNotFoundException(lotNumber, agreementNumber);
-    }
-
-    return lotModel;
+      return lotRepo.findByAgreementNumberAndNumber(agreementNumber, lotNumber).orElseThrow(() -> new LotNotFoundException(agreementNumber,lotNumber) );
   }
 
   /**

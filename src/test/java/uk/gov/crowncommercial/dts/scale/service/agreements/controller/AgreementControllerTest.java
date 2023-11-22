@@ -28,7 +28,7 @@ import com.rollbar.notifier.Rollbar;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import uk.gov.crowncommercial.dts.scale.service.agreements.BLL.BusinessLogicClient;
 import uk.gov.crowncommercial.dts.scale.service.agreements.exception.AgreementNotFoundException;
-import uk.gov.crowncommercial.dts.scale.service.agreements.exception.InvalidAgreementDetailException;
+import uk.gov.crowncommercial.dts.scale.service.agreements.exception.InvalidAgreementException;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.*;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.*;
 import uk.gov.crowncommercial.dts.scale.service.agreements.service.AgreementService;
@@ -331,7 +331,7 @@ class AgreementControllerTest {
     AgreementDetail inputValue = new AgreementDetail("Technology Products 2", "Short textual description of the commercial agreement", "CCS", java.time.LocalDate.now(), java.time.LocalDate.now().plusDays(5), "URL", true);
     inputValue.setName(null);
 
-    when(businessLogicClient.saveAgreement(inputValue, agreementNumber)).thenThrow(new InvalidAgreementDetailException("name"));
+    when(businessLogicClient.saveAgreement(inputValue, agreementNumber)).thenThrow(new InvalidAgreementException("name"));
 
     mockMvc.perform(MockMvcRequestBuilders
                     .put("/agreements/RM1045")

@@ -7,21 +7,18 @@ import org.hibernate.annotations.*;
 import javax.persistence.*;
 import java.time.LocalDate;
 import java.util.Set;
-import javax.persistence.*;
+import java.util.function.Function;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 
-import org.hibernate.annotations.Immutable;
 import lombok.AccessLevel;
-import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.experimental.FieldDefaults;
+import uk.gov.crowncommercial.dts.scale.service.agreements.exception.InvalidLotException;
 
 /**
  * Lot.
  */
 @Entity
-@Immutable
 @EqualsAndHashCode(exclude = "agreement")
 @Table(name = "lots")
 @Getter
@@ -33,6 +30,7 @@ public class Lot {
 
   @Id
   @Column(name = "lot_id")
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
   Integer id;
 
   @Column(name = "lot_number")
@@ -102,4 +100,18 @@ public class Lot {
 
   @Formula("(SELECT COUNT(*) FROM lot_organisation_roles r WHERE r.lot_id = lot_id and r.role_type_id = '2' and r.organisation_status = 'A')")
   Integer supplierCount;
+
+  public Lot map(Function<Lot, Lot> function) {
+    return function.apply(this);
+  }
+
+  public void isValid(){
+    if (number == null || number.isEmpty()) {throw new InvalidLotException("number");}
+    if (name == null || name.isEmpty()) {throw new InvalidLotException("name");}
+    if (description == null || description.isEmpty()) {throw new InvalidLotException("description");}
+    if (lotType == null || lotType.isEmpty()) {throw new InvalidLotException("lotType");}
+    if (startDate == null) {throw new InvalidLotException("startDate");}
+    if (endDate == null) {throw new InvalidLotException("endDate");}
+    if (agreement == null) {throw new InvalidLotException("agreement");}
+  }
 }

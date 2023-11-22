@@ -232,6 +232,19 @@ public class BusinessLogicClient {
         ca.setNumber(agreementNumber);
         ca.isValid();
 
-        return  mappingService.mapCommercialAgreementToAgreementDetail(agreementService.createOrUpdateAgreement(ca));
+        return mappingService.mapCommercialAgreementToAgreementDetail(agreementService.createOrUpdateAgreement(ca));
+    }
+
+    /**
+     * Returns the new lot or updated lot from the api call
+     */
+    public LotDetail saveLot(LotDetail ld, String agreementNumber, String lotNumber){
+
+        Lot lot = mappingService.mapLotDetailToLot(ld);
+        lot.setAgreement(agreementService.findAgreementByNumber(agreementNumber));
+        lot.setNumber(lotNumber);
+        lot.isValid();
+
+        return mappingService.mapLotToLotDetail(agreementService.createOrUpdateLot(lot));
     }
 }
