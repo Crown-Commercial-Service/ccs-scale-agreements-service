@@ -11,6 +11,7 @@ import uk.gov.crowncommercial.dts.scale.service.agreements.config.EhcacheConfig;
 import uk.gov.crowncommercial.dts.scale.service.agreements.controller.GlobalErrorHandler;
 import uk.gov.crowncommercial.dts.scale.service.agreements.exception.AgreementNotFoundException;
 import uk.gov.crowncommercial.dts.scale.service.agreements.exception.InvalidAgreementException;
+import uk.gov.crowncommercial.dts.scale.service.agreements.exception.InvalidLotException;
 import uk.gov.crowncommercial.dts.scale.service.agreements.exception.LotNotFoundException;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.*;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.*;
@@ -443,5 +444,34 @@ public class BusinessLogicClientTests {
 
         System.out.println(thrown.getMessage());
         assertTrue(thrown.getMessage().contains("Invalid agreement format, missing 'description'"));
+    }
+
+    @Test
+    void testSaveLotWithValidLot() throws Exception {
+        LotDetail lotDetail = new LotDetail("11", "Lot 11 Name", java.time.LocalDate.now(), java.time.LocalDate.now().plusDays(2), "Some description",  LotType.PRODUCT);
+        Lot lot = new Lot("11", "Lot 11 Name", "Some description", "PRODUCT", java.time.LocalDate.now(), java.time.LocalDate.now().plusDays(2), mockCommercialAgreement);
+
+        when(agreementService.findAgreementByNumber(mockCommercialAgreement.getNumber())).thenReturn(mockCommercialAgreement);
+        when(agreementService.createOrUpdateLot(lot)).thenReturn(lot);
+        LotDetail result = businessLogicClient.saveLot(lotDetail, mockCommercialAgreement.getNumber(), "11");
+
+        assertNotNull(result);
+    }
+
+    @Test
+    void testSaveLotWithInvalidLot() throws Exception {
+        LotDetail lotDetail = new LotDetail("11", "Lot 11 Name", java.time.LocalDate.now(), java.time.LocalDate.now().plusDays(2), "Some description",  LotType.PRODUCT);
+        lotDetail.setDescription(null);
+
+        when(agreementService.createOrUpdateLot(mockLot)).thenThrow(new InvalidLotException("description"));
+
+        InvalidLotException thrown = Assertions.assertThrows(
+                InvalidLotException.class,
+                () -> businessLogicClient.saveLot(lotDetail, mockCommercialAgreement.getNumber(), "11"),
+                GlobalErrorHandler.ERR_MSG_VALIDATION_DESCRIPTION
+        );
+
+        System.out.println(thrown.getMessage());
+        assertTrue(thrown.getMessage().contains("Invalid lot format, missing 'description'"));
     }
 }

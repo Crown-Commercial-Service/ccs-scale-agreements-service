@@ -128,12 +128,35 @@ public class MapStructMappingTests {
         Lot sourceModel = new Lot();
         sourceModel.setNumber(LOT_NUMBER);
         sourceModel.setName(LOT_NAME);
+        sourceModel.setLotType("service");
 
         LotDetail outputModel = lotDetailMapper.lotToLotDetail(sourceModel);
 
         assertNotNull(outputModel);
         assertEquals(sourceModel.getName(), outputModel.getName());
         assertEquals(sourceModel.getNumber(), outputModel.getNumber());
+        assertEquals(LotType.SERVICE.getName(), outputModel.getType().getName());
+
+    }
+
+    @Test
+    public void testLotDetailMapsToLot() throws Exception {
+        LotDetail sourceModel = new LotDetail();
+        sourceModel.setNumber(LOT_NUMBER);
+        sourceModel.setName(LOT_NAME);
+        sourceModel.setStartDate(java.time.LocalDate.now());
+        sourceModel.setEndDate(java.time.LocalDate.now().plusDays(5));
+        sourceModel.setType(LotType.PRODUCT);
+
+
+        Lot outputModel = lotDetailMapper.lotDetailToLot(sourceModel);
+
+        assertNotNull(outputModel);
+        assertEquals(sourceModel.getName(), outputModel.getName());
+        assertEquals(sourceModel.getNumber(), outputModel.getNumber());
+        assertEquals(sourceModel.getStartDate(), outputModel.getStartDate());
+        assertEquals(sourceModel.getEndDate(), outputModel.getEndDate());
+        assertEquals(LotType.PRODUCT.getName(), outputModel.getLotType().toLowerCase());
     }
 
     @Test

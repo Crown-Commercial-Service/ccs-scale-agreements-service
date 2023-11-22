@@ -102,7 +102,7 @@ class AgreementServiceTest {
 
   @Test
   void testGetLotNotFound() throws Exception {
-    when(mockLotRepo.findByAgreementNumberAndNumber(AGREEMENT_NUMBER, LOT_NUMBER)).thenReturn(null);
+    when(mockLotRepo.findByAgreementNumberAndNumber(AGREEMENT_NUMBER, LOT_NUMBER)).thenReturn(Optional.ofNullable(null));
 
     LotNotFoundException thrown = Assertions.assertThrows(
             LotNotFoundException.class,
@@ -192,5 +192,38 @@ class AgreementServiceTest {
     assertEquals(saveAgreement.getEndDate(), result.getEndDate());
     assertEquals(saveAgreement.getDetailUrl(), result.getDetailUrl());
     assertEquals(saveAgreement.getBenefits(), result.getBenefits());
+  }
+
+  @Test
+  void testCreateLot() throws Exception {
+
+    Lot lot = new Lot(LOT_NUMBER, "Just a Name", "Some description", "PRODUCT", java.time.LocalDate.now(), java.time.LocalDate.now().plusDays(2), mockCommercialAgreement);
+
+    when(mockLotRepo.findByAgreementNumberAndNumber(mockCommercialAgreement.getNumber(), LOT_NUMBER)).thenReturn(Optional.ofNullable(null)).thenReturn(Optional.of(lot));
+    Lot result = service.createOrUpdateLot(lot);
+
+    assertEquals(lot.getName(), result.getName());
+    assertEquals(lot.getNumber(), result.getNumber());
+    assertEquals(lot.getDescription(), result.getDescription());
+    assertEquals(lot.getStartDate(), result.getStartDate());
+    assertEquals(lot.getEndDate(), result.getEndDate());
+    assertEquals(lot.getLotType(), result.getLotType());
+  }
+
+  @Test
+  void testUpdateLot() throws Exception {
+
+    Lot lot = new Lot(LOT_NUMBER, "Just a Name", "Some description", "SERVICE", java.time.LocalDate.now(), java.time.LocalDate.now().plusDays(2), mockCommercialAgreement);
+
+    when(mockLotRepo.findByAgreementNumberAndNumber(mockCommercialAgreement.getNumber(), LOT_NUMBER)).thenReturn(Optional.ofNullable(lot));
+
+    Lot result = service.createOrUpdateLot(lot);
+
+    assertEquals(lot.getName(), result.getName());
+    assertEquals(lot.getNumber(), result.getNumber());
+    assertEquals(lot.getDescription(), result.getDescription());
+    assertEquals(lot.getStartDate(), result.getStartDate());
+    assertEquals(lot.getEndDate(), result.getEndDate());
+    assertEquals(lot.getLotType(), result.getLotType());
   }
 }

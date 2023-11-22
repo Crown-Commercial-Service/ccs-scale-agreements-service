@@ -114,4 +114,17 @@ public class Lot {
     if (endDate == null) {throw new InvalidLotException("endDate");}
     if (agreement == null) {throw new InvalidLotException("agreement");}
   }
+
+  public Lot() {
+  }
+
+  public Lot(String number, String name, String description, String lotType, LocalDate startDate, LocalDate endDate, CommercialAgreement agreement) {
+    this.number = number;
+    this.name = name;
+    this.description = description;
+    this.lotType = lotType;
+    this.startDate = startDate;
+    this.endDate = endDate;
+    this.agreement = agreement;
+  }
 }
