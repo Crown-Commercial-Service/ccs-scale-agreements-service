@@ -4,14 +4,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.*;
-import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.CommercialAgreement;
-import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.Lot;
-import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.LotOrganisationRole;
+import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.*;
 import uk.gov.crowncommercial.dts.scale.service.agreements.service.AgreementService;
 import uk.gov.crowncommercial.dts.scale.service.agreements.service.MappingService;
 import uk.gov.crowncommercial.dts.scale.service.agreements.service.QuestionTemplateService;
 import uk.gov.crowncommercial.dts.scale.service.agreements.service.WordpressService;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -173,7 +172,7 @@ public class BusinessLogicClient {
      */
     @Cacheable(value = "getLotEventTypes", key="#agreementId + #lotId")
     public Collection<EventType> getLotEventTypes(String agreementId, String lotId) {
-        Collection<EventType> model = null;
+        Collection<EventType> model;
 
         // Fetch the lot from the service
         Lot lotModel = agreementService.findLotByAgreementNumberAndLotNumber(agreementId, lotId);
@@ -181,6 +180,33 @@ public class BusinessLogicClient {
         if (lotModel != null && lotModel.getProcurementEventTypes() != null) {
             // Now use the lot object to generate our list of EventType
             model = lotModel.getProcurementEventTypes().stream().map(lotEventType -> mappingService.mapLotProcurementEventTypeToEventType(lotEventType, lotModel)).collect(Collectors.toList());
+
+            // Before we finish we also need to assign the relevant template groups to our results
+            Collection<TemplateGroup> templateGroups = lotModel.getTemplateGroups();
+
+            if (templateGroups != null && !templateGroups.isEmpty()) {
+                // We've found template groups, so now for each one we've found get the matching Event Type and then map the question templates to it
+                templateGroups.forEach(group -> {
+                    Collection<ProcurementQuestionTemplate> questionTemplates = group.getQuestionTemplates();
+
+                    if (questionTemplates != null && !questionTemplates.isEmpty()) {
+                        EventType matchingType = model.stream().filter(result -> result.getType().equals(group.getEventType().getName())).findFirst().orElse(null);
+
+                        if (matchingType != null) {
+                            // We've found the event type to match the data with - now just directly map it
+                            if (matchingType.getTemplateGroups() == null) {
+                                matchingType.setTemplateGroups(new ArrayList<>());
+                            }
+
+                            questionTemplates.forEach(qt -> {
+                                matchingType.getTemplateGroups().add(mappingService.mapProcurementQuestionTemplateToQuestionTemplate(qt, group.getId()));
+                            });
+                        }
+                    }
+                });
+            }
+        } else {
+            model = null;
         }
 
         return model;

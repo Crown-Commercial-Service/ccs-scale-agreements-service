@@ -11,102 +11,90 @@ import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.*;
  */
 @Service
 public class MappingService {
-    public AgreementSummaryMapper agreementSummaryMapper = Mappers.getMapper(AgreementSummaryMapper.class);
-    public AgreementDetailMapper agreementDetailMapper = Mappers.getMapper(AgreementDetailMapper.class);
-    public LotDetailMapper lotDetailMapper = Mappers.getMapper(LotDetailMapper.class);
-    public DocumentMapper documentMapper = Mappers.getMapper(DocumentMapper.class);
-    public AgreementUpdateMapper updateMapper = Mappers.getMapper(AgreementUpdateMapper.class);
-    public LotSupplierMapper supplierMapper = Mappers.getMapper(LotSupplierMapper.class);
-    public EventTypeMapper eventTypeMapper = Mappers.getMapper(EventTypeMapper.class);
-    public ProcurementDataTemplateMapper dataTemplateMapper = Mappers.getMapper(ProcurementDataTemplateMapper.class);
+    private final AgreementSummaryMapper agreementSummaryMapper = Mappers.getMapper(AgreementSummaryMapper.class);
+    private final AgreementDetailMapper agreementDetailMapper = Mappers.getMapper(AgreementDetailMapper.class);
+    private final LotDetailMapper lotDetailMapper = Mappers.getMapper(LotDetailMapper.class);
+    private final DocumentMapper documentMapper = Mappers.getMapper(DocumentMapper.class);
+    private final AgreementUpdateMapper updateMapper = Mappers.getMapper(AgreementUpdateMapper.class);
+    private final LotSupplierMapper supplierMapper = Mappers.getMapper(LotSupplierMapper.class);
+    private final EventTypeMapper eventTypeMapper = Mappers.getMapper(EventTypeMapper.class);
+    private final ProcurementDataTemplateMapper dataTemplateMapper = Mappers.getMapper(ProcurementDataTemplateMapper.class);
+    private final QuestionTemplateMapper questionTemplateMapper = Mappers.getMapper(QuestionTemplateMapper.class);
 
     /**
      * Map a CommercialAgreement to an AgreementSummary
      */
     public AgreementSummary mapCommercialAgreementToAgreementSummary(CommercialAgreement caModel) {
-        AgreementSummary model = agreementSummaryMapper.commercialAgreementToAgreementSummary(caModel);
-
-        return model;
+        return agreementSummaryMapper.commercialAgreementToAgreementSummary(caModel);
     }
 
     /**
      * Map a CommercialAgreement to an AgreementDetail
      */
     public AgreementDetail mapCommercialAgreementToAgreementDetail(CommercialAgreement caModel) {
-        AgreementDetail model = agreementDetailMapper.commercialAgreementToAgreementDetail(caModel);
-
-        return model;
+        return agreementDetailMapper.commercialAgreementToAgreementDetail(caModel);
     }
 
     /**
      * Map a AgreementDetail to an CommercialAgreement
      */
     public CommercialAgreement mapAgreementDetailToCommercialAgreement(AgreementDetail caModel) {
-        CommercialAgreement model = agreementDetailMapper.agreementDetailToCommercialAgreement(caModel);
-
-        return model;
+        return agreementDetailMapper.agreementDetailToCommercialAgreement(caModel);
     }
 
     /**
      * Map a Lot to a LotDetail
      */
     public LotDetail mapLotToLotDetail(Lot lotModel) {
-        LotDetail model = lotDetailMapper.lotToLotDetail(lotModel);
-
-        return model;
+        return lotDetailMapper.lotToLotDetail(lotModel);
     }
 
     /**
      * Map a CommercialAgreementDocument to a Document
      */
     public Document mapCommercialAgreementDocumentToDocument(CommercialAgreementDocument documentModel) {
-        Document model = documentMapper.commercialAgreementDocumentToDocument(documentModel);
-
-        return model;
+        return documentMapper.commercialAgreementDocumentToDocument(documentModel);
     }
 
     /**
      * Map a CommercialAgreementUpdate to an AgreementUpdate
      */
     public AgreementUpdate mapCommercialAgreementUpdateToAgreementUpdate(CommercialAgreementUpdate updateModel) {
-        AgreementUpdate model = updateMapper.commercialAgreementUpdateToAgreementUpdate(updateModel);
-
-        return model;
+        return updateMapper.commercialAgreementUpdateToAgreementUpdate(updateModel);
     }
 
     /**
      * Map a LotOrganisationRole to an LotSupplier
      */
     public LotSupplier mapLotOrganisationRoleToLotSupplier(LotOrganisationRole orgRoleModel) {
-        LotSupplier model = supplierMapper.lotOrganisationRoleToLotSupplier(orgRoleModel);
-
-        return model;
+        return supplierMapper.lotOrganisationRoleToLotSupplier(orgRoleModel);
     }
 
     /**
      * Map a LotProcurementEventType to an EventType
      */
     public EventType mapLotProcurementEventTypeToEventType(LotProcurementEventType lotEventTypeModel, Lot lotModel) {
-        EventType model = eventTypeMapper.lotProcurementEventTypeToEventType(lotEventTypeModel, lotModel);
-
-        return model;
+        return eventTypeMapper.lotProcurementEventTypeToEventType(lotEventTypeModel, lotModel);
     }
 
     /**
      * Map a ProcurementQuestionTemplate to a ProcurementDataTemplate
      */
     public ProcurementDataTemplate mapProcurementQuestionTemplateToProcurementDataTemplate(ProcurementQuestionTemplate templateModel) {
-        ProcurementDataTemplate model = dataTemplateMapper.procurementQuestionTemplateToProcurementDataTemplate(templateModel);
-
-        return model;
+        return dataTemplateMapper.procurementQuestionTemplateToProcurementDataTemplate(templateModel);
     }
 
     /**
      * Map a ProcurementQuestionTemplate to a Document
      */
     public Document mapLotProcurementQuestionTemplateToDocument(ProcurementQuestionTemplate templateModel) {
-        Document model = documentMapper.procurementQuestionTemplateToDocument(templateModel);
+        return documentMapper.procurementQuestionTemplateToDocument(templateModel);
+    }
 
-        return model;
+    /**
+     * Map a ProcurementQuestionTemplate to a QuestionTemplate
+     */
+    public QuestionTemplate mapProcurementQuestionTemplateToQuestionTemplate(ProcurementQuestionTemplate templateModel, Integer groupId) {
+        return questionTemplateMapper.procurementQuestionTemplateToQuestionTemplate(templateModel, groupId);
     }
 }
