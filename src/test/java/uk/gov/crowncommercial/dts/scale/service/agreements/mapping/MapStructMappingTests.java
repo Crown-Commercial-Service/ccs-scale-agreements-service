@@ -25,14 +25,15 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 @SpringBootTest
 @ActiveProfiles("test")
 public class MapStructMappingTests {
-    private AgreementSummaryMapper agreementSummaryMapper = Mappers.getMapper(AgreementSummaryMapper.class);
-    private AgreementDetailMapper agreementDetailMapper = Mappers.getMapper(AgreementDetailMapper.class);
-    private LotDetailMapper lotDetailMapper = Mappers.getMapper(LotDetailMapper.class);
-    private DocumentMapper documentMapper = Mappers.getMapper(DocumentMapper.class);
-    private AgreementUpdateMapper updateMapper = Mappers.getMapper(AgreementUpdateMapper.class);
-    private LotSupplierMapper supplierMapper = Mappers.getMapper(LotSupplierMapper.class);
-    private EventTypeMapper eventTypeMapper = Mappers.getMapper(EventTypeMapper.class);
-    private ProcurementDataTemplateMapper dataTemplateMapper = Mappers.getMapper(ProcurementDataTemplateMapper.class);
+    private final AgreementSummaryMapper agreementSummaryMapper = Mappers.getMapper(AgreementSummaryMapper.class);
+    private final AgreementDetailMapper agreementDetailMapper = Mappers.getMapper(AgreementDetailMapper.class);
+    private final LotDetailMapper lotDetailMapper = Mappers.getMapper(LotDetailMapper.class);
+    private final DocumentMapper documentMapper = Mappers.getMapper(DocumentMapper.class);
+    private final AgreementUpdateMapper updateMapper = Mappers.getMapper(AgreementUpdateMapper.class);
+    private final LotSupplierMapper supplierMapper = Mappers.getMapper(LotSupplierMapper.class);
+    private final EventTypeMapper eventTypeMapper = Mappers.getMapper(EventTypeMapper.class);
+    private final ProcurementDataTemplateMapper dataTemplateMapper = Mappers.getMapper(ProcurementDataTemplateMapper.class);
+    private final QuestionTemplateMapper questionTemplateMapper = Mappers.getMapper(QuestionTemplateMapper.class);
 
     private static final String AGREEMENT_NAME = "Agreement Name";
     private static final String AGREEMENT_NUMBER = "RM1234";
@@ -264,5 +265,21 @@ public class MapStructMappingTests {
 
         assertNotNull(outputModel);
         assertEquals(sourceModel.getTemplateUrl(), outputModel.getUrl());
+    }
+
+    @Test
+    public void testProcurementQuestionTemplateMapsToQuestionTemplate() throws Exception {
+        ProcurementQuestionTemplate sourceModel = new ProcurementQuestionTemplate();
+        sourceModel.setId(TEMPLATE_ID);
+        sourceModel.setTemplateName(TEMPLATE_NAME);
+        sourceModel.setMandatory(true);
+        Integer groupId = 10;
+
+        QuestionTemplate outputModel = questionTemplateMapper.procurementQuestionTemplateToQuestionTemplate(sourceModel, groupId);
+
+        assertNotNull(outputModel);
+        assertEquals(sourceModel.getId(), outputModel.getTemplateId());
+        assertEquals(groupId, outputModel.getTemplateGroupId());
+        assertEquals(sourceModel.getTemplateName(), outputModel.getName());
     }
 }
