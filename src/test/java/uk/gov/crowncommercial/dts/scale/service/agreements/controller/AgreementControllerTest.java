@@ -3,7 +3,7 @@ package uk.gov.crowncommercial.dts.scale.service.agreements.controller;
 import static org.hamcrest.CoreMatchers.is;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -14,6 +14,7 @@ import java.util.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -29,6 +30,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import uk.gov.crowncommercial.dts.scale.service.agreements.BLL.BusinessLogicClient;
 import uk.gov.crowncommercial.dts.scale.service.agreements.exception.AgreementNotFoundException;
 import uk.gov.crowncommercial.dts.scale.service.agreements.exception.InvalidAgreementException;
+import uk.gov.crowncommercial.dts.scale.service.agreements.exception.InvalidLotException;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.*;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.*;
 import uk.gov.crowncommercial.dts.scale.service.agreements.service.AgreementService;
@@ -341,6 +343,47 @@ class AgreementControllerTest {
             .andExpect(status().isBadRequest())
             .andExpect(jsonPath("$.description", is(GlobalErrorHandler.ERR_MSG_VALIDATION_DESCRIPTION)))
             .andExpect(jsonPath("$.errors..detail", is(new ArrayList<String>(List.of(new String[]{"Invalid agreement format, missing 'name'"})))));
+  }
+
+  @Test
+  void testSavingLotsWithAllValid() throws Exception {
+
+    LotDetail lotDetail = new LotDetail("1", "Lot 1 Name", java.time.LocalDate.now(), java.time.LocalDate.now().plusDays(2), "Some description",  LotType.PRODUCT);
+    LotDetail lotDetail1 = new LotDetail("2", "Lot 2 Name", java.time.LocalDate.now(), java.time.LocalDate.now().plusDays(2), "Some description",  LotType.SERVICE);
+
+    Collection<LotDetail> inputSet  = new HashSet<LotDetail>(List.of(lotDetail, lotDetail1));
+    Collection<LotDetail> outputSet  = new HashSet<LotDetail>(List.of(lotDetail, lotDetail1));
+
+    when(businessLogicClient.saveLots(inputSet,AGREEMENT_NUMBER)).thenReturn(outputSet);
+
+    mockMvc.perform(MockMvcRequestBuilders
+                    .put(String.format("/agreements/%s/lots", AGREEMENT_NUMBER))
+                    .content(asJsonString(inputSet))
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$[0].number").isString());
+  }
+
+
+  @Test
+  void testSavingLotsWithOneInvalid() throws Exception {
+
+    LotDetail lotDetail = new LotDetail("1", "Lot 1 Name", java.time.LocalDate.now(), java.time.LocalDate.now().plusDays(2), "Some description",  LotType.PRODUCT);
+    LotDetail lotDetail1 = new LotDetail("2", "Lot 2 Name", java.time.LocalDate.now(), java.time.LocalDate.now().plusDays(2), "Some description",  LotType.SERVICE);
+    lotDetail.setDescription(null);
+    Collection<LotDetail> inputSet  = new HashSet<LotDetail>(List.of(lotDetail, lotDetail1));
+
+
+    Mockito.doThrow(new InvalidLotException("description","1")).when(businessLogicClient).saveLots(inputSet,AGREEMENT_NUMBER);
+    mockMvc.perform(MockMvcRequestBuilders
+                    .put(String.format("/agreements/%s/lots", AGREEMENT_NUMBER))
+                    .content(asJsonString(inputSet))
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isBadRequest())
+            .andExpect(jsonPath("$.description", is(GlobalErrorHandler.ERR_MSG_VALIDATION_DESCRIPTION)))
+            .andExpect(jsonPath("$.errors..detail", is(new ArrayList<String>(List.of(new String[]{"Invalid lot format, missing 'description' for Lot 1"})))));
   }
 
   public static String asJsonString(final Object obj) {

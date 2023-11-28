@@ -13,6 +13,7 @@ import uk.gov.crowncommercial.dts.scale.service.agreements.service.QuestionTempl
 import uk.gov.crowncommercial.dts.scale.service.agreements.service.WordpressService;
 
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -246,5 +247,23 @@ public class BusinessLogicClient {
         lot.isValid();
 
         return mappingService.mapLotToLotDetail(agreementService.createOrUpdateLot(lot));
+    }
+
+    /**
+     * batch create or update the lot details that was given and return it
+     * Nothing will write to the DB until it verify that all lots are valid
+     */
+    public Collection<LotDetail> saveLots(Collection<LotDetail> lotDetailSet, String agreementNumber){
+
+        Collection<Lot> lotCollection = new HashSet<Lot>();
+
+        lotDetailSet.forEach(lotDetail -> {
+            Lot lot = mappingService.mapLotDetailToLot(lotDetail);
+            lot.setAgreement(agreementService.findAgreementByNumber(agreementNumber));
+            lot.isValid();
+            lotCollection.add(lot);
+        });
+
+        return lotCollection.stream().map(lot -> { return mappingService.mapLotToLotDetail(agreementService.createOrUpdateLot(lot));}).collect(Collectors.toSet());
     }
 }

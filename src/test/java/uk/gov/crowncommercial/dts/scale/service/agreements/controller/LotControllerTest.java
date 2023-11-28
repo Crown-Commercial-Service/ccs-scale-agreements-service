@@ -322,7 +322,7 @@ class LotControllerTest {
     LotDetail lotDetail = new LotDetail("11", "Lot 11 Name", java.time.LocalDate.now(), java.time.LocalDate.now().plusDays(2), "Some description",  LotType.PRODUCT);
     lotDetail.setDescription(null);
 
-    when(businessLogicClient.saveLot(lotDetail, AGREEMENT_NUMBER, lotDetail.getNumber())).thenThrow(new InvalidLotException("description"));
+    when(businessLogicClient.saveLot(lotDetail, AGREEMENT_NUMBER, lotDetail.getNumber())).thenThrow(new InvalidLotException("description", lotDetail.getNumber()));
 
     mockMvc.perform(MockMvcRequestBuilders
                     .put(String.format("/agreements/%s/lots/%s", AGREEMENT_NUMBER, lotDetail.getNumber()))

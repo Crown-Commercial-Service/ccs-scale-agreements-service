@@ -106,13 +106,13 @@ public class Lot {
   }
 
   public void isValid(){
-    if (number == null || number.isEmpty()) {throw new InvalidLotException("number");}
-    if (name == null || name.isEmpty()) {throw new InvalidLotException("name");}
-    if (description == null || description.isEmpty()) {throw new InvalidLotException("description");}
-    if (lotType == null || lotType.isEmpty()) {throw new InvalidLotException("lotType");}
-    if (startDate == null) {throw new InvalidLotException("startDate");}
-    if (endDate == null) {throw new InvalidLotException("endDate");}
-    if (agreement == null) {throw new InvalidLotException("agreement");}
+    if (number == null || number.isEmpty()) {throw new InvalidLotException("number", number);}
+    if (name == null || name.isEmpty()) {throw new InvalidLotException("name", number);}
+    if (description == null || description.isEmpty()) {throw new InvalidLotException("description", number);}
+    if (lotType == null || lotType.isEmpty()) {throw new InvalidLotException("lotType", number);}
+    if (startDate == null) {throw new InvalidLotException("startDate", number);}
+    if (endDate == null) {throw new InvalidLotException("endDate", number);}
+    if (agreement == null) {throw new InvalidLotException("agreement", number);}
   }
 
   public Lot() {
