@@ -12,6 +12,7 @@ import uk.gov.crowncommercial.dts.scale.service.agreements.service.WordpressServ
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -258,6 +259,37 @@ public class BusinessLogicClient {
         ca.setNumber(agreementNumber);
         ca.isValid();
 
-        return  mappingService.mapCommercialAgreementToAgreementDetail(agreementService.createOrUpdateAgreement(ca));
+        return mappingService.mapCommercialAgreementToAgreementDetail(agreementService.createOrUpdateAgreement(ca));
+    }
+
+    /**
+     * Returns the new lot or updated lot from the api call
+     */
+    public LotDetail saveLot(LotDetail ld, String agreementNumber, String lotNumber){
+
+        Lot lot = mappingService.mapLotDetailToLot(ld);
+        lot.setAgreement(agreementService.findAgreementByNumber(agreementNumber));
+        lot.setNumber(lotNumber);
+        lot.isValid();
+
+        return mappingService.mapLotToLotDetail(agreementService.createOrUpdateLot(lot));
+    }
+
+    /**
+     * batch create or update the lot details that was given and return it
+     * Nothing will write to the DB until it verify that all lots are valid
+     */
+    public Collection<LotDetail> saveLots(Collection<LotDetail> lotDetailSet, String agreementNumber){
+
+        Collection<Lot> lotCollection = new HashSet<Lot>();
+
+        lotDetailSet.forEach(lotDetail -> {
+            Lot lot = mappingService.mapLotDetailToLot(lotDetail);
+            lot.setAgreement(agreementService.findAgreementByNumber(agreementNumber));
+            lot.isValid();
+            lotCollection.add(lot);
+        });
+
+        return lotCollection.stream().map(lot -> { return mappingService.mapLotToLotDetail(agreementService.createOrUpdateLot(lot));}).collect(Collectors.toSet());
     }
 }

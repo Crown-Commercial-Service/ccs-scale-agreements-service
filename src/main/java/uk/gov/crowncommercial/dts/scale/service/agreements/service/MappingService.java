@@ -1,5 +1,6 @@
 package uk.gov.crowncommercial.dts.scale.service.agreements.service;
 
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import org.mapstruct.factory.Mappers;
 import org.springframework.stereotype.Service;
 import uk.gov.crowncommercial.dts.scale.service.agreements.mapping.*;
@@ -47,6 +48,16 @@ public class MappingService {
      */
     public LotDetail mapLotToLotDetail(Lot lotModel) {
         return lotDetailMapper.lotToLotDetail(lotModel);
+    }
+
+    /**
+     * Map a LotDetail to a Lot
+     */
+    public Lot mapLotDetailToLot(LotDetail lotDetailModel) {
+
+        Lot model = lotDetailMapper.lotDetailToLot(lotDetailModel);
+
+        return model;
     }
 
     /**

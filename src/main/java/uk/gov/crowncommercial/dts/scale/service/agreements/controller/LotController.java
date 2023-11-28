@@ -3,10 +3,7 @@ package uk.gov.crowncommercial.dts.scale.service.agreements.controller;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import uk.gov.crowncommercial.dts.scale.service.agreements.BLL.BusinessLogicClient;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.*;
 
@@ -66,5 +63,12 @@ public class LotController {
     Collection<Document> model = businessLogicClient.getEventDocumentTemplates(agreementNumber, lotNumber, eventType);
 
     return model;
+  }
+
+  @PutMapping
+  public LotDetail updateLot(@PathVariable(value = "agreement-id") final String agreementNumber, @PathVariable(value = "lot-id") final String lotNumber, @RequestBody final LotDetail lotDetail) {
+    log.debug("updateLot called with ID: {}", agreementNumber + "Lot: "+ lotNumber);
+
+    return businessLogicClient.saveLot(lotDetail, agreementNumber, lotNumber);
   }
 }

@@ -31,7 +31,7 @@ public enum SupplierStatus {
   public static SupplierStatus getSupplierStatusFromName(String value) {
 
     for (SupplierStatus ss : SupplierStatus.values()) {
-      if (ss.getName().equals(value)) {
+      if (ss.getName().equalsIgnoreCase(value)) {
         return ss;
       }
     }

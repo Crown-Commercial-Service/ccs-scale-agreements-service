@@ -15,7 +15,7 @@ public class BuyingMethodConverter implements Converter<String, BuyingMethod> {
 
   @Override
   public BuyingMethod convert(String name) {
-    return ofNullable(BuyingMethod.fromName(name)).orElseThrow(
+    return ofNullable(BuyingMethod.getBuyingMethodFromName(name)).orElseThrow(
         () -> new IllegalArgumentException(String.format(ERR_MSG_TEMPLATE, BuyingMethod.names())));
   }
 

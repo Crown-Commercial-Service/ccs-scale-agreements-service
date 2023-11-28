@@ -12,7 +12,7 @@ import org.hibernate.annotations.CacheConcurrencyStrategy;
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.experimental.FieldDefaults;
-import uk.gov.crowncommercial.dts.scale.service.agreements.exception.InvalidAgreementDetailException;
+import uk.gov.crowncommercial.dts.scale.service.agreements.exception.InvalidAgreementException;
 
 /**
  * Commercial Agreement.
@@ -105,13 +105,13 @@ public class CommercialAgreement {
   }
 
   public void isValid(){
-    if (name == null || name.isEmpty()) {throw new InvalidAgreementDetailException("name");}
-    if (description == null || description.isEmpty()) {throw new InvalidAgreementDetailException("description");}
-    if (owner == null || owner.isEmpty()) {throw new InvalidAgreementDetailException("ownerName");}
-    if (startDate == null) {throw new InvalidAgreementDetailException("startDate");}
-    if (endDate == null) {throw new InvalidAgreementDetailException("endDate");}
-    if (detailUrl == null || detailUrl.isEmpty()) {throw new InvalidAgreementDetailException("detailUrl");}
-    if (preDefinedLotRequired == null) {throw new InvalidAgreementDetailException("preDefinedLotRequired");}
+    if (name == null || name.isEmpty()) {throw new InvalidAgreementException("name");}
+    if (description == null || description.isEmpty()) {throw new InvalidAgreementException("description");}
+    if (owner == null || owner.isEmpty()) {throw new InvalidAgreementException("ownerName");}
+    if (startDate == null) {throw new InvalidAgreementException("startDate");}
+    if (endDate == null) {throw new InvalidAgreementException("endDate");}
+    if (detailUrl == null || detailUrl.isEmpty()) {throw new InvalidAgreementException("detailUrl");}
+    if (preDefinedLotRequired == null) {throw new InvalidAgreementException("preDefinedLotRequired");}
   }
 
   public CommercialAgreementBenefit addBenefit(CommercialAgreementBenefit benefit){
