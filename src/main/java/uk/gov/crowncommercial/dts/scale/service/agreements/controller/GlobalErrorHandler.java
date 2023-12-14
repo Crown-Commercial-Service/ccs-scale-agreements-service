@@ -37,7 +37,7 @@ public class GlobalErrorHandler implements ErrorController {
 
   @ResponseStatus(HttpStatus.BAD_REQUEST)
   @ExceptionHandler({ValidationException.class, HttpMessageNotReadableException.class,
-      MethodArgumentTypeMismatchException.class, InvalidAgreementException.class, InvalidLotException.class})
+      MethodArgumentTypeMismatchException.class, InvalidAgreementException.class, InvalidLotException.class, InvalidSchemeExpection.class, InvalidOrganisationException.class, InvalidContactDetailExpection.class})
   public ApiErrors handleValidationException(final Exception exception) {
 
     rollbar.warning(exception, "Request validation exception");
@@ -54,7 +54,7 @@ public class GlobalErrorHandler implements ErrorController {
   }
 
   @ResponseStatus(HttpStatus.NOT_FOUND)
-  @ExceptionHandler({AgreementNotFoundException.class, LotNotFoundException.class})
+  @ExceptionHandler({AgreementNotFoundException.class, LotNotFoundException.class, OrganisationNotFoundException.class})
   public ApiErrors handleResourceNotFoundException(final Exception exception) {
 
     rollbar.warning(exception, "Resource not found exception");

@@ -1,11 +1,12 @@
 package uk.gov.crowncommercial.dts.scale.service.agreements.model.entity;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Set;
 import javax.persistence.*;
 
+import lombok.ToString;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
-import org.hibernate.annotations.Immutable;
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.experimental.FieldDefaults;
@@ -14,7 +15,6 @@ import lombok.experimental.FieldDefaults;
  * Lot organisation role
  */
 @Entity
-@Immutable
 @Table(name = "lot_organisation_roles")
 @Data
 @FieldDefaults(level = AccessLevel.PRIVATE)
@@ -23,7 +23,11 @@ public class LotOrganisationRole {
 
   @Id
   @Column(name = "lot_organisation_role_id")
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
   Integer id;
+
+   @Column(name = "lot_id")
+   int lotId;
 
   @ManyToOne
   @JoinColumn(name = "organisation_id")
@@ -38,6 +42,7 @@ public class LotOrganisationRole {
   @OneToMany(fetch = FetchType.LAZY)
   @JoinColumn(name = "lot_organisation_role_id")
   @org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE,region = "contactPointLotOrgRoles")
+  @ToString.Exclude
   Set<ContactPointLotOrgRole> contactPointLotOrgRoles;
 
   @ManyToOne
@@ -54,6 +59,15 @@ public class LotOrganisationRole {
   @Column(name="organisation_status")
   char status;
 
-  @Column(name = "role_type_id", insertable = false, updatable=false)
-  Integer roleTypeId;
+  @Column(name="created_by")
+  String createdBy;
+
+  @Column(name = "created_at")
+  LocalDateTime createdAt;
+
+  @Column(name="updated_by")
+  String updatedBy;
+
+  @Column(name = "updated_at")
+  LocalDateTime updatedAt;
 }

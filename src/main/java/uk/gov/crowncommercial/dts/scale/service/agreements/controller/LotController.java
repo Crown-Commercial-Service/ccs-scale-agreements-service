@@ -8,6 +8,7 @@ import uk.gov.crowncommercial.dts.scale.service.agreements.BLL.BusinessLogicClie
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.*;
 
 import java.util.Collection;
+import java.util.Set;
 
 /**
  * Lot Controller
@@ -71,4 +72,12 @@ public class LotController {
 
     return businessLogicClient.saveLot(lotDetail, agreementNumber, lotNumber);
   }
+
+  @PutMapping("/suppliers")
+  public Collection<LotSupplier> updateLotSuppliers(@PathVariable(value = "agreement-id") final String agreementNumber, @PathVariable(value = "lot-id") final String lotNumber, @RequestBody final Set<LotSupplier> lotSuppliersSet) {
+    log.debug("updateLotSuppliers called with values: agreementNumber={}, lotNumber={}", agreementNumber, lotNumber);
+
+    return businessLogicClient.saveLotSuppliers(agreementNumber, lotNumber, lotSuppliersSet);
+  }
+
 }
