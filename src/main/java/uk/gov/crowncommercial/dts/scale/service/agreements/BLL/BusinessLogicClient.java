@@ -293,8 +293,8 @@ public class BusinessLogicClient {
     /**
      * batch create or update a list of LotSupplier objects that was given and return it
      */
-    public Collection<LotSupplier> saveLotSuppliers(String agreementId, String lotId,  Set<LotSupplier> lotSuppliersSet) {
-        Lot lot = agreementService.findLotByAgreementNumberAndLotNumber(agreementId, lotId);
+    public Collection<LotSupplier> saveLotSuppliers(String agreementId, String lotNumber,  Set<LotSupplier> lotSuppliersSet) {
+        Lot lot = agreementService.findLotByAgreementNumberAndLotNumber(agreementId, lotNumber);
 
         lotSuppliersSet.forEach(lotDetail ->{
             final Organisation organisation = mappingService.mapLotSupplierToOrganisation(lotDetail);
@@ -306,6 +306,6 @@ public class BusinessLogicClient {
             supplierService.addSupplierRelationship(lot, organisation, contactDetail, lotDetail.getLastUpdatedBy(), lotDetail.getSupplierStatus());
         });
 
-        return getLotSuppliers(agreementId, lotId);
+        return getLotSuppliers(agreementId, lotNumber);
     }
 }

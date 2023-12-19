@@ -26,8 +26,8 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import uk.gov.crowncommercial.dts.scale.service.agreements.BLL.BusinessLogicClient;
-import uk.gov.crowncommercial.dts.scale.service.agreements.exception.InvalidAgreementException;
 import uk.gov.crowncommercial.dts.scale.service.agreements.exception.InvalidLotException;
+import uk.gov.crowncommercial.dts.scale.service.agreements.exception.InvalidOrganisationException;
 import uk.gov.crowncommercial.dts.scale.service.agreements.exception.LotNotFoundException;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.*;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.*;
@@ -332,6 +332,121 @@ class LotControllerTest {
             .andExpect(status().isBadRequest())
             .andExpect(jsonPath("$.description", is(GlobalErrorHandler.ERR_MSG_VALIDATION_DESCRIPTION)))
             .andExpect(jsonPath("$.errors..detail", is(new ArrayList<String>(List.of(new String[]{"Invalid lot format, missing 'description' for Lot 11"})))));
+  }
+
+  LotSupplier setupLotSupplier(){
+    OrganizationIdentifier oi = new OrganizationIdentifier();
+    oi.setLegalName("First company ever");
+    oi.setScheme(Scheme.GBCHC);
+    oi.setId("1234567");
+    OrganizationDetail od = new OrganizationDetail();
+    od.setActive(true);
+    od.setCountryCode("GB");
+    od.setCreationDate(LocalDate.now());
+    Address add = new Address();
+    add.setStreetAddress("Street Name");
+    add.setPostalCode("ABC123");
+    add.setCountryCode("GB");
+    add.setCountryName("United Kingdom");
+    ContactPoint cp = new ContactPoint();
+    cp.setName("Person Incharge");
+    cp.setEmail("Test@email.com");
+    cp.setTelephone("0123456789");
+    cp.setFaxNumber("6574839201");
+    cp.setUrl("www.url.co.uk");
+
+    Organization org = new Organization();
+    org.setIdentifier(oi);
+    org.setDetails(od);
+    org.setAddress(add);
+    org.setContactPoint(cp);
+
+    LotSupplier lotSupplier = new LotSupplier();
+    lotSupplier.setOrganization(org);
+    lotSupplier.setSupplierStatus(SupplierStatus.ACTIVE);
+    lotSupplier.setLastUpdatedBy("Local Macbook");
+
+    return lotSupplier;
+  }
+
+  @Test
+  void testAddLotSupplierWithContactDetail() throws Exception {
+
+    final String AGREEMENT_NUMBER = "RM1045";
+    final String LOT_NUMBER= "LOT1_NUMBER";
+
+    LotSupplier lotSupplier = setupLotSupplier();
+    final Set<LotSupplier> lotSupplierSet = Collections.singleton(lotSupplier);
+
+    when(businessLogicClient.saveLotSuppliers(AGREEMENT_NUMBER, LOT_NUMBER, lotSupplierSet)).thenReturn(lotSupplierSet);
+
+    mockMvc.perform(MockMvcRequestBuilders
+                    .put(String.format("/agreements/%s/lots/%s/suppliers", AGREEMENT_NUMBER, LOT_NUMBER))
+                    .content(asJsonString(lotSupplierSet))
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.[0].organization.identifier.scheme", is(lotSupplier.getOrganization().getIdentifier().getScheme().getName())))
+            .andExpect(jsonPath("$.[0].organization.identifier.legalName", is(lotSupplier.getOrganization().getIdentifier().getLegalName())))
+            .andExpect(jsonPath("$.[0].organization.details.creationDate", is(lotSupplier.getOrganization().getDetails().getCreationDate().toString())))
+            .andExpect(jsonPath("$.[0].organization.details.active", is(lotSupplier.getOrganization().getDetails().getActive())))
+            .andExpect(jsonPath("$.[0].organization.address.streetAddress", is(lotSupplier.getOrganization().getAddress().getStreetAddress())))
+            .andExpect(jsonPath("$.[0].organization.address.postalCode", is(lotSupplier.getOrganization().getAddress().getPostalCode())))
+            .andExpect(jsonPath("$.[0].organization.contactPoint.name", is(lotSupplier.getOrganization().getContactPoint().getName())))
+            .andExpect(jsonPath("$.[0].organization.contactPoint.email", is(lotSupplier.getOrganization().getContactPoint().getEmail())))
+            .andExpect(jsonPath("$.[0].supplierStatus", is(lotSupplier.getSupplierStatus().getName())))
+            .andExpect(jsonPath("$.[0].lastUpdatedBy", is(lotSupplier.getLastUpdatedBy())));
+  }
+
+  @Test
+  void testAddLotSupplierWithoutContactDetail() throws Exception {
+
+    final String AGREEMENT_NUMBER = "RM1045";
+    final String LOT_NUMBER= "LOT1_NUMBER";
+
+    LotSupplier lotSupplier = setupLotSupplier();
+    lotSupplier.getOrganization().setAddress(null);
+    lotSupplier.getOrganization().setContactPoint(null);
+
+    final Set<LotSupplier> lotSupplierSet = Collections.singleton(lotSupplier);
+
+    when(businessLogicClient.saveLotSuppliers(AGREEMENT_NUMBER, LOT_NUMBER, lotSupplierSet)).thenReturn(lotSupplierSet);
+
+    mockMvc.perform(MockMvcRequestBuilders
+                    .put(String.format("/agreements/%s/lots/%s/suppliers", AGREEMENT_NUMBER, LOT_NUMBER))
+                    .content(asJsonString(lotSupplierSet))
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.[0].organization.identifier.scheme", is(lotSupplier.getOrganization().getIdentifier().getScheme().getName())))
+            .andExpect(jsonPath("$.[0].organization.identifier.legalName", is(lotSupplier.getOrganization().getIdentifier().getLegalName())))
+            .andExpect(jsonPath("$.[0].organization.details.creationDate", is(lotSupplier.getOrganization().getDetails().getCreationDate().toString())))
+            .andExpect(jsonPath("$.[0].organization.details.active", is(lotSupplier.getOrganization().getDetails().getActive())))
+            .andExpect(jsonPath("$.[0].supplierStatus", is(lotSupplier.getSupplierStatus().getName())))
+            .andExpect(jsonPath("$.[0].lastUpdatedBy", is(lotSupplier.getLastUpdatedBy())));
+  }
+
+  @Test
+  void testAddInvalidLotSupplier() throws Exception {
+
+    final String AGREEMENT_NUMBER = "RM1045";
+    final String LOT_NUMBER= "LOT1_NUMBER";
+
+    LotSupplier lotSupplier = setupLotSupplier();
+    lotSupplier.getOrganization().getIdentifier().setLegalName(null);
+
+    final Set<LotSupplier> lotSupplierSet = Collections.singleton(lotSupplier);
+
+    when(businessLogicClient.saveLotSuppliers(AGREEMENT_NUMBER, LOT_NUMBER, lotSupplierSet)).thenThrow(new InvalidOrganisationException("legalName"));
+
+    mockMvc.perform(MockMvcRequestBuilders
+                    .put(String.format("/agreements/%s/lots/%s/suppliers", AGREEMENT_NUMBER, LOT_NUMBER))
+                    .content(asJsonString(lotSupplierSet))
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isBadRequest())
+            .andExpect(jsonPath("$.description", is(GlobalErrorHandler.ERR_MSG_VALIDATION_DESCRIPTION)))
+            .andExpect(jsonPath("$.errors..detail", is(new ArrayList<String>(List.of(new String[]{"Invalid organisation format, missing 'legalName'"})))));
   }
 
   public static String asJsonString(final Object obj) {
