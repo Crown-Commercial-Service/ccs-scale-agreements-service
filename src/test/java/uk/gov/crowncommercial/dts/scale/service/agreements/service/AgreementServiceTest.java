@@ -195,6 +195,38 @@ class AgreementServiceTest {
   }
 
   @Test
+  void testCreateAgreementWithBenefit() throws Exception {
+
+    CommercialAgreement input = new CommercialAgreement(AGREEMENT_NUMBER,"Technology Products 2", "CCS", "Short textual description of the commercial agreement", LocalDate.of(2012, 11, 25), java.time.LocalDate.now().plusDays(5), "URL", true);
+    CommercialAgreement result = new CommercialAgreement(AGREEMENT_NUMBER,"Technology Products 2", "CCS", "Short textual description of the commercial agreement", LocalDate.of(2012, 11, 25), java.time.LocalDate.now().plusDays(5), "URL", true);
+
+    Set<CommercialAgreementBenefit> benefits = new LinkedHashSet<CommercialAgreementBenefit>();
+
+    CommercialAgreementBenefit cab1 = new CommercialAgreementBenefit(), cab2 = new CommercialAgreementBenefit();
+    cab1.setName("Benefit 1");
+    cab1.setDescription("Benefit 1");
+    cab1.setSequence(1);
+    benefits.add(cab1);
+
+    input.setBenefits(benefits);
+    result.setBenefits(benefits);
+
+    when(mockCommercialAgreementRepo.findByNumber(AGREEMENT_NUMBER)).thenReturn(Optional.ofNullable(null)).thenReturn(Optional.of(result));;
+
+    CommercialAgreement saveAgreement = service.createOrUpdateAgreement(input);
+
+    assertEquals(saveAgreement.getName(), result.getName());
+    assertEquals(saveAgreement.getNumber(), result.getNumber());
+    assertEquals(saveAgreement.getOwner(), result.getOwner());
+    assertEquals(saveAgreement.getDescription(), result.getDescription());
+    assertEquals(saveAgreement.getStartDate(), result.getStartDate());
+    assertEquals(saveAgreement.getEndDate(), result.getEndDate());
+    assertEquals(saveAgreement.getDetailUrl(), result.getDetailUrl());
+    assertEquals(saveAgreement.getBenefits(), result.getBenefits());
+  }
+
+
+  @Test
   void testCreateLot() throws Exception {
 
     Lot lot = new Lot(LOT_NUMBER, "Just a Name", "Some description", "PRODUCT", java.time.LocalDate.now(), java.time.LocalDate.now().plusDays(2), mockCommercialAgreement);
