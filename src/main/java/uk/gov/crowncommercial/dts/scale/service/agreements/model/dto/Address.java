@@ -40,4 +40,8 @@ public class Address implements Serializable {
    */
   private String countryCode;
 
+  /**
+   * Unique Property Reference Number
+   */
+  private String uprn;
 }

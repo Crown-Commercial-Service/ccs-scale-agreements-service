@@ -9,14 +9,12 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
 import uk.gov.crowncommercial.dts.scale.service.agreements.config.EhcacheConfig;
 import uk.gov.crowncommercial.dts.scale.service.agreements.controller.GlobalErrorHandler;
-import uk.gov.crowncommercial.dts.scale.service.agreements.exception.AgreementNotFoundException;
-import uk.gov.crowncommercial.dts.scale.service.agreements.exception.InvalidAgreementException;
-import uk.gov.crowncommercial.dts.scale.service.agreements.exception.InvalidLotException;
-import uk.gov.crowncommercial.dts.scale.service.agreements.exception.LotNotFoundException;
+import uk.gov.crowncommercial.dts.scale.service.agreements.exception.*;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.*;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.*;
 import uk.gov.crowncommercial.dts.scale.service.agreements.service.AgreementService;
 import uk.gov.crowncommercial.dts.scale.service.agreements.service.QuestionTemplateService;
+import uk.gov.crowncommercial.dts.scale.service.agreements.service.SupplierService;
 import uk.gov.crowncommercial.dts.scale.service.agreements.service.WordpressService;
 
 import java.math.BigDecimal;
@@ -27,6 +25,7 @@ import java.util.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.Mockito.*;
 
 @SpringBootTest
@@ -59,6 +58,9 @@ public class BusinessLogicClientTests {
 
     @Autowired
     private BusinessLogicClient businessLogicClient;
+
+    @MockBean
+    private SupplierService supplierService;
 
     private static final String AGREEMENT_NUMBER = "RM3733";
     private static final String LOT_NUMBER = "Lot 1";
@@ -515,5 +517,68 @@ public class BusinessLogicClientTests {
         );
 
         assertTrue(thrown.getMessage().contains("Invalid lot format, missing 'description' for Lot 2"));
+    }
+
+    LotSupplier setupLotSupplier(){
+        OrganizationIdentifier oi = new OrganizationIdentifier();
+        oi.setLegalName("First company ever");
+        oi.setScheme(Scheme.GBCHC);
+        oi.setId("1234567");
+        OrganizationDetail od = new OrganizationDetail();
+        od.setActive(true);
+        od.setCountryCode("GB");
+        od.setCreationDate(LocalDate.now());
+        Address add = new Address();
+        add.setStreetAddress("Street Name");
+        add.setPostalCode("ABC123");
+        add.setCountryCode("GB");
+        add.setCountryName("United Kingdom");
+        ContactPoint cp = new ContactPoint();
+        cp.setName("Person Incharge");
+        cp.setEmail("Test@email.com");
+        cp.setTelephone("0123456789");
+        cp.setFaxNumber("6574839201");
+        cp.setUrl("www.url.co.uk");
+ 
+        Organization org = new Organization();
+        org.setIdentifier(oi);
+        org.setDetails(od);
+        org.setAddress(add);
+        org.setContactPoint(cp);
+
+        LotSupplier lotSupplier = new LotSupplier();
+        lotSupplier.setOrganization(org);
+        lotSupplier.setSupplierStatus(SupplierStatus.ACTIVE);
+        lotSupplier.setLastUpdatedBy("Local Macbook");
+
+        return lotSupplier; 
+    }
+
+    @Test
+    void testAddValidSingleSupplier() throws Exception {
+        final Set<LotSupplier> lotSupplierSet = Collections.singleton(setupLotSupplier());
+
+        when(agreementService.findLotByAgreementNumberAndLotNumber(AGREEMENT_NUMBER, LOT_NUMBER)).thenReturn(mockLot);
+
+        Collection<LotSupplier> result = businessLogicClient.saveLotSuppliers(AGREEMENT_NUMBER, LOT_NUMBER, lotSupplierSet);
+        assertNotNull(result);
+    }
+
+    @Test
+    void testAddInvalidSingleSupplier() throws Exception {
+        LotSupplier ls = setupLotSupplier();
+        ls.getOrganization().getIdentifier().setLegalName(null);
+        final Set<LotSupplier> lotSupplierSet = Collections.singleton(ls);
+
+        when(agreementService.findLotByAgreementNumberAndLotNumber(AGREEMENT_NUMBER, LOT_NUMBER)).thenReturn(mockLot);
+
+        InvalidOrganisationException thrown = Assertions.assertThrows(
+                InvalidOrganisationException.class,
+                () -> businessLogicClient.saveLotSuppliers(AGREEMENT_NUMBER, LOT_NUMBER, lotSupplierSet),
+                GlobalErrorHandler.ERR_MSG_VALIDATION_DESCRIPTION
+        );
+
+        System.out.println(thrown.getMessage());
+        assertTrue(thrown.getMessage().contains("organisation format, missing 'legalName'"));
     }
 }

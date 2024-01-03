@@ -108,4 +108,20 @@ public class MappingService {
     public QuestionTemplate mapProcurementQuestionTemplateToQuestionTemplate(ProcurementQuestionTemplate templateModel, Integer groupId) {
         return questionTemplateMapper.procurementQuestionTemplateToQuestionTemplate(templateModel, groupId);
     }
+
+    /**
+     * Map a LotSupplier to a Organisation
+     */
+    public Organisation mapLotSupplierToOrganisation(LotSupplier lotSupplier) {
+
+        return supplierMapper.lotSupplierToOrganisation(lotSupplier);
+    }
+
+    /**
+     * Map a LotSupplier to a ContactDetail
+     */
+    public ContactDetail mapLotSupplierToContactDetail(LotSupplier lotSupplier) {
+
+        return supplierMapper.lotSupplierToContactDetail(lotSupplier);
+    }
 }

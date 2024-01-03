@@ -5,15 +5,9 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.*;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.*;
-import uk.gov.crowncommercial.dts.scale.service.agreements.service.AgreementService;
-import uk.gov.crowncommercial.dts.scale.service.agreements.service.MappingService;
-import uk.gov.crowncommercial.dts.scale.service.agreements.service.QuestionTemplateService;
-import uk.gov.crowncommercial.dts.scale.service.agreements.service.WordpressService;
+import uk.gov.crowncommercial.dts.scale.service.agreements.service.*;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -24,6 +18,9 @@ import java.util.stream.Collectors;
 public class BusinessLogicClient {
     @Autowired
     private AgreementService agreementService;
+
+    @Autowired
+    private SupplierService supplierService;
 
     @Autowired
     private WordpressService wordpressService;
@@ -291,5 +288,24 @@ public class BusinessLogicClient {
         });
 
         return lotCollection.stream().map(lot -> { return mappingService.mapLotToLotDetail(agreementService.createOrUpdateLot(lot));}).collect(Collectors.toSet());
+    }
+
+    /**
+     * batch create or update a list of LotSupplier objects that was given and return it
+     */
+    public Collection<LotSupplier> saveLotSuppliers(String agreementId, String lotNumber,  Set<LotSupplier> lotSuppliersSet) {
+        Lot lot = agreementService.findLotByAgreementNumberAndLotNumber(agreementId, lotNumber);
+
+        lotSuppliersSet.forEach(lotDetail ->{
+            final Organisation organisation = mappingService.mapLotSupplierToOrganisation(lotDetail);
+            organisation.isValid();
+
+            ContactDetail contactDetail = mappingService.mapLotSupplierToContactDetail(lotDetail);
+            contactDetail = contactDetail.isValid() ? contactDetail : null;
+
+            supplierService.addSupplierRelationship(lot, organisation, contactDetail, lotDetail.getLastUpdatedBy(), lotDetail.getSupplierStatus());
+        });
+
+        return getLotSuppliers(agreementId, lotNumber);
     }
 }

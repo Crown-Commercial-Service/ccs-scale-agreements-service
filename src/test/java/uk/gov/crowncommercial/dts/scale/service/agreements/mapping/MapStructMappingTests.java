@@ -305,4 +305,65 @@ public class MapStructMappingTests {
         assertEquals(groupId, outputModel.getTemplateGroupId());
         assertEquals(sourceModel.getTemplateName(), outputModel.getName());
     }
+
+    @Test
+    public void testLotSupplierToOrganisationWithValidScheme() throws Exception {
+        OrganizationIdentifier oi = new OrganizationIdentifier();
+        oi.setLegalName("First company ever");
+        oi.setScheme(Scheme.GBCHC);
+        oi.setId("1234567");
+
+        OrganizationDetail od = new OrganizationDetail();
+        od.setActive(true);
+        od.setCountryCode("GB");
+        od.setCreationDate(LocalDate.now());
+
+        Organization org = new Organization();
+        org.setIdentifier(oi);
+        org.setDetails(od);
+
+        LotSupplier sourceModel = new LotSupplier();
+        sourceModel.setOrganization(org);
+
+        Organisation outputModel = supplierMapper.lotSupplierToOrganisation(sourceModel);
+
+        assertNotNull(outputModel);
+        assertEquals(sourceModel.getOrganization().getIdentifier().getLegalName(), outputModel.getLegalName());
+        assertEquals(sourceModel.getOrganization().getIdentifier().getId(), outputModel.getEntityId());
+        assertEquals(sourceModel.getOrganization().getIdentifier().getScheme().getName(), outputModel.getRegistryCode());
+        assertEquals(sourceModel.getOrganization().getDetails().getCountryCode(), outputModel.getIncorporationCountry());
+        assertEquals(sourceModel.getOrganization().getDetails().getActive(), outputModel.getIsActive());
+    }
+
+    @Test
+    public void testLotSupplierToContactDetail() throws Exception {
+        Address add = new Address();
+        add.setStreetAddress("Street Name");
+        add.setPostalCode("ABC123");
+        add.setCountryCode("GB");
+        add.setCountryName("United Kingdom");
+        ContactPoint cp = new ContactPoint();
+        cp.setName("Person Incharge");
+        cp.setEmail("Test@email.com");
+        cp.setTelephone("0123456789");
+        cp.setFaxNumber("6574839201");
+        cp.setUrl("www.url.co.uk");
+
+        Organization org = new Organization();
+        org.setAddress(add);
+        org.setContactPoint(cp);
+
+        LotSupplier sourceModel = new LotSupplier();
+        sourceModel.setOrganization(org);
+
+
+        ContactDetail outputModel = supplierMapper.lotSupplierToContactDetail(sourceModel);
+
+        assertNotNull(outputModel);
+        assertEquals(sourceModel.getOrganization().getAddress().getStreetAddress(), outputModel.getStreetAddress());
+        assertEquals(sourceModel.getOrganization().getAddress().getPostalCode(), outputModel.getPostalCode());
+        assertEquals(sourceModel.getOrganization().getContactPoint().getName(), outputModel.getName());
+        assertEquals(sourceModel.getOrganization().getContactPoint().getEmail(), outputModel.getEmailAddress());
+        assertEquals(sourceModel.getOrganization().getContactPoint().getUrl(), outputModel.getUrl());
+    }
 }

@@ -39,4 +39,12 @@ public enum SupplierStatus {
     return null;
   }
 
+  public static char getChar(SupplierStatus ss) {
+    switch(ss) {
+      case SUSPENDED: return 'S';
+      case EXCLUDED:  return 'E';
+      default:        return 'A';
+    }
+  }
+
 }

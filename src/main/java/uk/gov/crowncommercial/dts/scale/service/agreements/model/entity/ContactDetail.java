@@ -1,13 +1,9 @@
 package uk.gov.crowncommercial.dts.scale.service.agreements.model.entity;
 
 import java.time.LocalDate;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 import org.hibernate.annotations.CacheConcurrencyStrategy;
-import org.hibernate.annotations.Immutable;
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.experimental.FieldDefaults;
@@ -16,7 +12,6 @@ import lombok.experimental.FieldDefaults;
  *
  */
 @Entity
-@Immutable
 @Table(name = "contact_details")
 @Data
 @FieldDefaults(level = AccessLevel.PRIVATE)
@@ -24,11 +19,15 @@ import lombok.experimental.FieldDefaults;
 public class ContactDetail {
 
   @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
   @Column(name = "contact_detail_id")
   Integer id;
 
+  @Transient
+  String name;
+
   @Column(name = "effective_from")
-  LocalDate effectiveFrom;
+  LocalDate effectiveFrom = LocalDate.now();
 
   @Column(name = "effective_to")
   LocalDate effectiveTo;
@@ -65,4 +64,17 @@ public class ContactDetail {
 
   @Column(name = "url")
   String url;
+
+  public Boolean isValid(){
+    if (streetAddress == null || streetAddress.isEmpty()) {
+      if (postalCode == null || postalCode.isEmpty()){
+        if (countryCode == null || countryCode.isEmpty()) {
+          if (countryName == null || countryName.isEmpty()) {
+            return Boolean.FALSE;
+          }
+        }
+      }
+    }
+    return Boolean.TRUE;
+  }
 }
