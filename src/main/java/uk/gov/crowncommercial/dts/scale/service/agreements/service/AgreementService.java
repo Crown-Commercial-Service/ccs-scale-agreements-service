@@ -76,8 +76,13 @@ public class AgreementService {
               commercialAgreementRepo.saveAndFlush(ca);
               return findAgreementByNumber(ca.getNumber());
             }).orElseGet(() -> {
-              commercialAgreementRepo.saveAndFlush(newCommercialAgreement);
-              return findAgreementByNumber(newCommercialAgreement.getNumber());
+                if (newCommercialAgreement.getBenefits() != null && !newCommercialAgreement.getBenefits().isEmpty() ){
+                    newCommercialAgreement.getBenefits().forEach(benefit -> {
+                        benefit.setAgreement(newCommercialAgreement);
+                    });
+                }
+                commercialAgreementRepo.saveAndFlush(newCommercialAgreement);
+                return findAgreementByNumber(newCommercialAgreement.getNumber());
             });
   }
 
