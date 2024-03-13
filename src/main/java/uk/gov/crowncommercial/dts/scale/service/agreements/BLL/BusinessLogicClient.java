@@ -1,7 +1,9 @@
 package uk.gov.crowncommercial.dts.scale.service.agreements.BLL;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Component;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.*;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.*;
@@ -250,7 +252,10 @@ public class BusinessLogicClient {
 
     /**
      * Returns the new agreement or updated agreement from the api call
+     * Clear cache after its being called
      */
+
+    @CacheEvict(value = { "getAgreementsList", "getAgreementDetail" }, allEntries = true)
     public AgreementDetail saveAgreement(AgreementDetail cd, String agreementNumber){
         CommercialAgreement ca = mappingService.mapAgreementDetailToCommercialAgreement(cd);
         ca.setNumber(agreementNumber);
@@ -261,7 +266,9 @@ public class BusinessLogicClient {
 
     /**
      * Returns the new lot or updated lot from the api call
+     * Clear cache after its being called
      */
+    @CacheEvict(value = { "getAgreementDetail", "getLotsForAgreement", "getLotDetail" }, allEntries = true)
     public LotDetail saveLot(LotDetail ld, String agreementNumber, String lotNumber){
 
         Lot lot = mappingService.mapLotDetailToLot(ld);
@@ -275,7 +282,9 @@ public class BusinessLogicClient {
     /**
      * batch create or update the lot details that was given and return it
      * Nothing will write to the DB until it verify that all lots are valid
+     * Clear cache after its being called
      */
+    @CacheEvict(value = { "getAgreementDetail", "getLotsForAgreement", "getLotDetail" }, allEntries = true)
     public Collection<LotDetail> saveLots(Collection<LotDetail> lotDetailSet, String agreementNumber){
 
         Collection<Lot> lotCollection = new HashSet<Lot>();
@@ -292,9 +301,14 @@ public class BusinessLogicClient {
 
     /**
      * batch create or update a list of LotSupplier objects that was given and return it
+     * Clear cache after its being called
      */
-    public Collection<LotSupplier> saveLotSuppliers(String agreementId, String lotNumber,  Set<LotSupplier> lotSuppliersSet) {
-        Lot lot = agreementService.findLotByAgreementNumberAndLotNumber(agreementId, lotNumber);
+    @Caching(evict = {
+            @CacheEvict(value = { "getLotDetail"}, allEntries = true),
+            @CacheEvict(value = "getLotSuppliers", key = "#agreementId + #lotId")
+    })
+    public Collection<LotSupplier> saveLotSuppliers(String agreementId, String lotId,  Set<LotSupplier> lotSuppliersSet) {
+        Lot lot = agreementService.findLotByAgreementNumberAndLotNumber(agreementId, lotId);
 
         lotSuppliersSet.forEach(lotDetail ->{
             final Organisation organisation = mappingService.mapLotSupplierToOrganisation(lotDetail);
@@ -306,6 +320,6 @@ public class BusinessLogicClient {
             supplierService.addSupplierRelationship(lot, organisation, contactDetail, lotDetail.getLastUpdatedBy(), lotDetail.getSupplierStatus());
         });
 
-        return getLotSuppliers(agreementId, lotNumber);
+        return getLotSuppliers(agreementId, lotId);
     }
 }
