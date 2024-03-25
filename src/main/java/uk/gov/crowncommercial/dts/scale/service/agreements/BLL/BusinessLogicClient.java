@@ -304,8 +304,8 @@ public class BusinessLogicClient {
      * Clear cache after its being called
      */
     @Caching(evict = {
-            @CacheEvict(value = { "getLotDetail"}, allEntries = true),
-            @CacheEvict(value = "getLotSuppliers", key = "#agreementId + #lotId")
+        @CacheEvict(value = { "getLotsForAgreement", "getLotDetail" }, allEntries = true),
+        @CacheEvict(value = "getLotSuppliers", key = "#agreementId + #lotId")
     })
     public Collection<LotSupplier> saveLotSuppliers(String agreementId, String lotId,  Set<LotSupplier> lotSuppliersSet) {
         Lot lot = agreementService.findLotByAgreementNumberAndLotNumber(agreementId, lotId);

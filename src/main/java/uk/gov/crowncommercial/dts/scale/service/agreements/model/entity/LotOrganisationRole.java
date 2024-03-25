@@ -18,7 +18,6 @@ import lombok.experimental.FieldDefaults;
 @Table(name = "lot_organisation_roles")
 @Data
 @FieldDefaults(level = AccessLevel.PRIVATE)
-@org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE,region = "lotOrganisationRoles")
 public class LotOrganisationRole {
 
   @Id
@@ -41,7 +40,6 @@ public class LotOrganisationRole {
 
   @OneToMany(fetch = FetchType.LAZY)
   @JoinColumn(name = "lot_organisation_role_id")
-  @org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE,region = "contactPointLotOrgRoles")
   @ToString.Exclude
   Set<ContactPointLotOrgRole> contactPointLotOrgRoles;
 
