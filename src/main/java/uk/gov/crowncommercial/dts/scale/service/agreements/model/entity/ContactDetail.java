@@ -15,7 +15,6 @@ import lombok.experimental.FieldDefaults;
 @Table(name = "contact_details")
 @Data
 @FieldDefaults(level = AccessLevel.PRIVATE)
-@org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE,region = "contactDetail")
 public class ContactDetail {
 
   @Id

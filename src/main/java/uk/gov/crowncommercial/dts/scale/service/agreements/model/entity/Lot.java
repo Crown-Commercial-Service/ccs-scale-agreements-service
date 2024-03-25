@@ -25,7 +25,6 @@ import uk.gov.crowncommercial.dts.scale.service.agreements.exception.InvalidLotE
 @Setter
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @javax.persistence.Cacheable
-@org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE,region = "lots") //Provide cache strategy.
 public class Lot {
 
   @Id
