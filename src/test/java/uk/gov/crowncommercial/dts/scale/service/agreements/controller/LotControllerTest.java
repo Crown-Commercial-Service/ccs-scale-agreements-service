@@ -369,6 +369,15 @@ class LotControllerTest {
     return lotSupplier;
   }
 
+  SupplierSummary setupSupplierSummary(){
+    SupplierSummary ss = new SupplierSummary();
+    ss.setLastUpdatedBy("Local Macbook");
+    ss.setLastUpdatedDate(LocalDate.now());
+    ss.setSupplierCount(1);
+    
+    return ss;
+  }
+
   @Test
   void testAddLotSupplierWithContactDetail() throws Exception {
 
@@ -377,8 +386,9 @@ class LotControllerTest {
 
     LotSupplier lotSupplier = setupLotSupplier();
     final Set<LotSupplier> lotSupplierSet = Collections.singleton(lotSupplier);
+    final SupplierSummary supplierSummary = setupSupplierSummary();
 
-    when(businessLogicClient.saveLotSuppliers(AGREEMENT_NUMBER, LOT_NUMBER, lotSupplierSet)).thenReturn(lotSupplierSet);
+    when(businessLogicClient.saveLotSuppliers(AGREEMENT_NUMBER, LOT_NUMBER, lotSupplierSet)).thenReturn(supplierSummary);
 
     mockMvc.perform(MockMvcRequestBuilders
                     .put(String.format("/agreements/%s/lots/%s/suppliers", AGREEMENT_NUMBER, LOT_NUMBER))
@@ -386,16 +396,9 @@ class LotControllerTest {
                     .contentType(MediaType.APPLICATION_JSON)
                     .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$.[0].organization.identifier.scheme", is(lotSupplier.getOrganization().getIdentifier().getScheme().getName())))
-            .andExpect(jsonPath("$.[0].organization.identifier.legalName", is(lotSupplier.getOrganization().getIdentifier().getLegalName())))
-            .andExpect(jsonPath("$.[0].organization.details.creationDate", is(lotSupplier.getOrganization().getDetails().getCreationDate().toString())))
-            .andExpect(jsonPath("$.[0].organization.details.active", is(lotSupplier.getOrganization().getDetails().getActive())))
-            .andExpect(jsonPath("$.[0].organization.address.streetAddress", is(lotSupplier.getOrganization().getAddress().getStreetAddress())))
-            .andExpect(jsonPath("$.[0].organization.address.postalCode", is(lotSupplier.getOrganization().getAddress().getPostalCode())))
-            .andExpect(jsonPath("$.[0].organization.contactPoint.name", is(lotSupplier.getOrganization().getContactPoint().getName())))
-            .andExpect(jsonPath("$.[0].organization.contactPoint.email", is(lotSupplier.getOrganization().getContactPoint().getEmail())))
-            .andExpect(jsonPath("$.[0].supplierStatus", is(lotSupplier.getSupplierStatus().getName())))
-            .andExpect(jsonPath("$.[0].lastUpdatedBy", is(lotSupplier.getLastUpdatedBy())));
+            .andExpect(jsonPath("$.lastUpdatedDate", is(supplierSummary.getLastUpdatedDate().toString())))
+            .andExpect(jsonPath("$.lastUpdatedBy", is(supplierSummary.getLastUpdatedBy())))
+            .andExpect(jsonPath("$.supplierCount", is(supplierSummary.getSupplierCount())));
   }
 
   @Test
@@ -409,8 +412,10 @@ class LotControllerTest {
     lotSupplier.getOrganization().setContactPoint(null);
 
     final Set<LotSupplier> lotSupplierSet = Collections.singleton(lotSupplier);
+    final SupplierSummary supplierSummary = setupSupplierSummary();
 
-    when(businessLogicClient.saveLotSuppliers(AGREEMENT_NUMBER, LOT_NUMBER, lotSupplierSet)).thenReturn(lotSupplierSet);
+
+    when(businessLogicClient.saveLotSuppliers(AGREEMENT_NUMBER, LOT_NUMBER, lotSupplierSet)).thenReturn(supplierSummary);
 
     mockMvc.perform(MockMvcRequestBuilders
                     .put(String.format("/agreements/%s/lots/%s/suppliers", AGREEMENT_NUMBER, LOT_NUMBER))
@@ -418,12 +423,9 @@ class LotControllerTest {
                     .contentType(MediaType.APPLICATION_JSON)
                     .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$.[0].organization.identifier.scheme", is(lotSupplier.getOrganization().getIdentifier().getScheme().getName())))
-            .andExpect(jsonPath("$.[0].organization.identifier.legalName", is(lotSupplier.getOrganization().getIdentifier().getLegalName())))
-            .andExpect(jsonPath("$.[0].organization.details.creationDate", is(lotSupplier.getOrganization().getDetails().getCreationDate().toString())))
-            .andExpect(jsonPath("$.[0].organization.details.active", is(lotSupplier.getOrganization().getDetails().getActive())))
-            .andExpect(jsonPath("$.[0].supplierStatus", is(lotSupplier.getSupplierStatus().getName())))
-            .andExpect(jsonPath("$.[0].lastUpdatedBy", is(lotSupplier.getLastUpdatedBy())));
+            .andExpect(jsonPath("$.lastUpdatedDate", is(supplierSummary.getLastUpdatedDate().toString())))
+            .andExpect(jsonPath("$.lastUpdatedBy", is(supplierSummary.getLastUpdatedBy())))
+            .andExpect(jsonPath("$.supplierCount", is(supplierSummary.getSupplierCount())));
   }
 
   @Test
