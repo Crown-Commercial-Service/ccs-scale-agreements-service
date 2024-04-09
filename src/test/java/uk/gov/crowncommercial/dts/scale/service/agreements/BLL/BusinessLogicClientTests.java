@@ -560,7 +560,7 @@ public class BusinessLogicClientTests {
 
         when(agreementService.findLotByAgreementNumberAndLotNumber(AGREEMENT_NUMBER, LOT_NUMBER)).thenReturn(mockLot);
 
-        Collection<LotSupplier> result = businessLogicClient.saveLotSuppliers(AGREEMENT_NUMBER, LOT_NUMBER, lotSupplierSet);
+        SupplierSummary result = businessLogicClient.saveLotSuppliers(AGREEMENT_NUMBER, LOT_NUMBER, lotSupplierSet);
         assertNotNull(result);
     }
 

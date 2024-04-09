@@ -9,6 +9,7 @@ import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.*;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.*;
 import uk.gov.crowncommercial.dts.scale.service.agreements.service.*;
 
+import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -307,7 +308,7 @@ public class BusinessLogicClient {
         @CacheEvict(value = { "getLotsForAgreement", "getLotDetail" }, allEntries = true),
         @CacheEvict(value = "getLotSuppliers", key = "#agreementId + #lotId")
     })
-    public Collection<LotSupplier> saveLotSuppliers(String agreementId, String lotId,  Set<LotSupplier> lotSuppliersSet) {
+    public SupplierSummary saveLotSuppliers(String agreementId, String lotId,  Set<LotSupplier> lotSuppliersSet) {
         Lot lot = agreementService.findLotByAgreementNumberAndLotNumber(agreementId, lotId);
 
         lotSuppliersSet.forEach(lotDetail ->{
@@ -319,7 +320,8 @@ public class BusinessLogicClient {
 
             supplierService.addSupplierRelationship(lot, organisation, contactDetail, lotDetail.getLastUpdatedBy(), lotDetail.getSupplierStatus());
         });
+        String lastUpdatedBy = lotSuppliersSet.stream().findFirst().get().getLastUpdatedBy();
 
-        return getLotSuppliers(agreementId, lotId);
+        return new SupplierSummary(LocalDate.now(), lastUpdatedBy, getLotSuppliers(agreementId, lotId).size());        
     }
 }

@@ -74,7 +74,7 @@ public class LotController {
   }
 
   @PutMapping("/suppliers")
-  public Collection<LotSupplier> updateLotSuppliers(@PathVariable(value = "agreement-id") final String agreementNumber, @PathVariable(value = "lot-id") final String lotNumber, @RequestBody final Set<LotSupplier> lotSuppliersSet) {
+  public SupplierSummary updateLotSuppliers(@PathVariable(value = "agreement-id") final String agreementNumber, @PathVariable(value = "lot-id") final String lotNumber, @RequestBody final Set<LotSupplier> lotSuppliersSet) {
     log.debug("updateLotSuppliers called with values: agreementNumber={}, lotNumber={}", agreementNumber, lotNumber);
 
     return businessLogicClient.saveLotSuppliers(agreementNumber, lotNumber, lotSuppliersSet);
