@@ -8,7 +8,6 @@ import javax.persistence.*;
 
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.experimental.FieldDefaults;
@@ -23,7 +22,6 @@ import uk.gov.crowncommercial.dts.scale.service.agreements.exception.InvalidAgre
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @javax.persistence.Cacheable
 @EqualsAndHashCode(exclude = "benefits")
-@org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE,region = "commercial_agreements") //Provide cache strategy.
 public class CommercialAgreement {
 
   @Id
@@ -52,26 +50,21 @@ public class CommercialAgreement {
   @Column(name = "agreement_url")
   String detailUrl;
 
-  @org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE,region = "lots")
   @OneToMany(mappedBy = "agreement")
   Set<Lot> lots;
 
-  @org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE,region = "documents")
   @OneToMany
   @JoinColumn(name = "commercial_agreement_id")
   Set<CommercialAgreementDocument> documents;
 
-  @org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE,region = "updates")
   @OneToMany
   @JoinColumn(name = "commercial_agreement_id")
   Set<CommercialAgreementUpdate> updates;
 
-  @org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE,region = "organisationRoles")
   @OneToMany
   @JoinColumn(name = "commercial_agreement_id")
   Set<CommercialAgreementOrgRole> organisationRoles;
 
-  @org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE,region = "benefits")
   @JoinColumn(name = "commercial_agreement_id")
   @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
   @ToString.Exclude
