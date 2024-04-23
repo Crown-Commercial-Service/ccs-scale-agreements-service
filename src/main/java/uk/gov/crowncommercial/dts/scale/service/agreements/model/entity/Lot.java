@@ -56,37 +56,31 @@ public class Lot {
   CommercialAgreement agreement;
 
   @ToString.Exclude
-  @org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE,region = "lotSectors")
   @ManyToMany
   @JoinTable(name = "lot_sectors", joinColumns = @JoinColumn(name = "lot_id"),
       inverseJoinColumns = @JoinColumn(name = "sector_code"))
   Set<Sector> sectors;
 
   @ToString.Exclude
-  @org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE,region = "lotRoutesToMarket")
   @OneToMany
   @JoinColumn(name = "lot_id")
   Set<LotRouteToMarket> routesToMarket;
 
   @ToString.Exclude
-  @org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE,region = "lotRules")
   @OneToMany
   @JoinColumn(name = "lot_id")
   Set<LotRule> rules;
 
   @ToString.Exclude
-  @org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE,region = "lotRelatedAgreementLots")
   @OneToMany
   @JoinColumn(name = "lot_id")
   Set<LotRelatedLot> relatedAgreementLots;
 
   @ToString.Exclude
-  @org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE,region = "lotProcurementEventTypes")
   @OneToMany(fetch = FetchType.LAZY)
   @JoinColumn(name = "lot_id")
   Set<LotProcurementEventType> procurementEventTypes;
 
-  @org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE,region = "lotProcurementQuestionTemplates")
   @ToString.Exclude
   @OneToMany(fetch = FetchType.LAZY)
   @JoinColumn(name = "lot_id")

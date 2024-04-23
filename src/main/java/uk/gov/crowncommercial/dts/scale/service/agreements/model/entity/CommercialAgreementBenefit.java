@@ -3,12 +3,9 @@ package uk.gov.crowncommercial.dts.scale.service.agreements.model.entity;
 import javax.persistence.*;
 
 import lombok.ToString;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.experimental.FieldDefaults;
-import org.hibernate.annotations.OnDelete;
-import org.hibernate.annotations.OnDeleteAction;
 
 /**
  * Commercial Agreement Benefit.
@@ -17,7 +14,6 @@ import org.hibernate.annotations.OnDeleteAction;
 @Table(name = "commercial_agreement_benefits")
 @Data
 @FieldDefaults(level = AccessLevel.PRIVATE)
-@org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE,region = "benefits")
 public class CommercialAgreementBenefit {
 
   @Id

@@ -3,7 +3,6 @@ package uk.gov.crowncommercial.dts.scale.service.agreements.model.entity;
 import java.time.LocalDate;
 import javax.persistence.*;
 
-import org.hibernate.annotations.CacheConcurrencyStrategy;
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.experimental.FieldDefaults;

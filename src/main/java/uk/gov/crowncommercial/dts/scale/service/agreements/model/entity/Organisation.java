@@ -5,7 +5,6 @@ import java.util.Set;
 import java.util.function.Function;
 import javax.persistence.*;
 
-import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 import lombok.AccessLevel;
 import lombok.Data;
@@ -21,7 +20,6 @@ import uk.gov.crowncommercial.dts.scale.service.agreements.exception.InvalidOrga
 @Data
 @EqualsAndHashCode(exclude = "people")
 @FieldDefaults(level = AccessLevel.PRIVATE)
-@org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE,region = "organisation")
 public class Organisation {
 
   @Id
@@ -66,7 +64,6 @@ public class Organisation {
   Boolean isActive;
 
   @OneToMany(mappedBy = "organisation")
-  @org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE,region = "people")
   Set<Person> people;
 
   public Boolean getIsSme() {
