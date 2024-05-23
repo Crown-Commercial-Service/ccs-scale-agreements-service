@@ -9,13 +9,12 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
 import uk.gov.crowncommercial.dts.scale.service.agreements.config.EhcacheConfig;
 import uk.gov.crowncommercial.dts.scale.service.agreements.controller.GlobalErrorHandler;
-import uk.gov.crowncommercial.dts.scale.service.agreements.exception.AgreementNotFoundException;
-import uk.gov.crowncommercial.dts.scale.service.agreements.exception.InvalidAgreementDetailException;
-import uk.gov.crowncommercial.dts.scale.service.agreements.exception.LotNotFoundException;
+import uk.gov.crowncommercial.dts.scale.service.agreements.exception.*;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.*;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.*;
 import uk.gov.crowncommercial.dts.scale.service.agreements.service.AgreementService;
 import uk.gov.crowncommercial.dts.scale.service.agreements.service.QuestionTemplateService;
+import uk.gov.crowncommercial.dts.scale.service.agreements.service.SupplierService;
 import uk.gov.crowncommercial.dts.scale.service.agreements.service.WordpressService;
 
 import java.math.BigDecimal;
@@ -26,7 +25,8 @@ import java.util.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.when;
+import static org.mockito.ArgumentMatchers.isA;
+import static org.mockito.Mockito.*;
 
 @SpringBootTest
 @ActiveProfiles("test")
@@ -58,6 +58,9 @@ public class BusinessLogicClientTests {
 
     @Autowired
     private BusinessLogicClient businessLogicClient;
+
+    @MockBean
+    private SupplierService supplierService;
 
     private static final String AGREEMENT_NUMBER = "RM3733";
     private static final String LOT_NUMBER = "Lot 1";
@@ -433,15 +436,149 @@ public class BusinessLogicClientTests {
     void testSaveAgreementWithInvalidAgreement() throws Exception {
         AgreementDetail ad = new AgreementDetail("Technology Products 2", "", "CCS", java.time.LocalDate.now(), java.time.LocalDate.now().plusDays(5), "URL", true);
 
-        when(agreementService.createOrUpdateAgreement(mockCommercialAgreement)).thenThrow(new InvalidAgreementDetailException("description"));
+        when(agreementService.createOrUpdateAgreement(mockCommercialAgreement)).thenThrow(new InvalidAgreementException("description"));
 
-        InvalidAgreementDetailException thrown = Assertions.assertThrows(
-                InvalidAgreementDetailException.class,
+        InvalidAgreementException thrown = Assertions.assertThrows(
+                InvalidAgreementException.class,
                 () -> businessLogicClient.saveAgreement(ad, "RM1045"),
                 GlobalErrorHandler.ERR_MSG_VALIDATION_DESCRIPTION
         );
 
-        System.out.println(thrown.getMessage());
         assertTrue(thrown.getMessage().contains("Invalid agreement format, missing 'description'"));
+    }
+
+    @Test
+    void testSaveLotWithValidLot() throws Exception {
+        LotDetail lotDetail = new LotDetail("11", "Lot 11 Name", java.time.LocalDate.now(), java.time.LocalDate.now().plusDays(2), "Some description",  LotType.PRODUCT);
+        Lot lot = new Lot("11", "Lot 11 Name", "Some description", "PRODUCT", java.time.LocalDate.now(), java.time.LocalDate.now().plusDays(2), mockCommercialAgreement);
+
+        when(agreementService.findAgreementByNumber(mockCommercialAgreement.getNumber())).thenReturn(mockCommercialAgreement);
+        when(agreementService.createOrUpdateLot(lot)).thenReturn(lot);
+        LotDetail result = businessLogicClient.saveLot(lotDetail, mockCommercialAgreement.getNumber(), "11");
+
+        assertNotNull(result);
+    }
+
+    @Test
+    void testSaveLotWithInvalidLot() throws Exception {
+        LotDetail lotDetail = new LotDetail("11", "Lot 11 Name", java.time.LocalDate.now(), java.time.LocalDate.now().plusDays(2), "Some description",  LotType.PRODUCT);
+        lotDetail.setDescription(null);
+
+        when(agreementService.createOrUpdateLot(mockLot)).thenThrow(new InvalidLotException("description", lotDetail.getNumber()));
+        when(agreementService.findAgreementByNumber(mockCommercialAgreement.getNumber())).thenReturn(mockCommercialAgreement);
+
+        InvalidLotException thrown = Assertions.assertThrows(
+                InvalidLotException.class,
+                () -> businessLogicClient.saveLot(lotDetail, mockCommercialAgreement.getNumber(), "11"),
+                GlobalErrorHandler.ERR_MSG_VALIDATION_DESCRIPTION
+        );
+
+        assertTrue(thrown.getMessage().contains("Invalid lot format, missing 'description'"));
+    }
+
+    @Test
+    void testSaveLotsWithAllValidLots() throws Exception {
+        LotDetail lotDetail = new LotDetail("1", "Lot 1 Name", java.time.LocalDate.now(), java.time.LocalDate.now().plusDays(2), "Some description",  LotType.PRODUCT);
+        LotDetail lotDetail1 = new LotDetail("2", "Lot 2 Name", java.time.LocalDate.now(), java.time.LocalDate.now().plusDays(2), "Some description",  LotType.SERVICE);
+
+        Lot lot = new Lot("1", "Lot 1 Name", "Some description", "PRODUCT", java.time.LocalDate.now(), java.time.LocalDate.now().plusDays(2), mockCommercialAgreement);
+        Lot lot1 = new Lot("2", "Lot 2 Name", "Some description", "SERVICE", java.time.LocalDate.now(), java.time.LocalDate.now().plusDays(2), mockCommercialAgreement);
+
+        Collection<LotDetail> lotDetailSet  = new HashSet<LotDetail>(List.of(lotDetail, lotDetail1));
+
+        Lot lotClass = mock(Lot.class);
+        when(agreementService.findAgreementByNumber(mockCommercialAgreement.getNumber())).thenReturn(mockCommercialAgreement);
+        doNothing().doNothing().when(lotClass).isValid();
+        when(agreementService.createOrUpdateLot(isA(Lot.class))).thenReturn(lot).thenReturn(lot1);
+
+
+        Collection<LotDetail> result = businessLogicClient.saveLots(lotDetailSet, mockCommercialAgreement.getNumber());
+        assertNotNull(result);
+    }
+
+    @Test
+    void testSaveLotsWithAnInvalidLot() throws Exception {
+        LotDetail lotDetail = new LotDetail("1", "Lot 1 Name", java.time.LocalDate.now(), java.time.LocalDate.now().plusDays(2), "Some description",  LotType.PRODUCT);
+        LotDetail lotDetail1 = new LotDetail("2", "Lot 2 Name", java.time.LocalDate.now(), java.time.LocalDate.now().plusDays(2), "Some description",  LotType.SERVICE);
+
+        lotDetail1.setDescription(null);
+
+        Collection<LotDetail> lotDetailSet  = new HashSet<LotDetail>(List.of(lotDetail, lotDetail1));
+
+        Lot lotClass = mock(Lot.class);
+        when(agreementService.findAgreementByNumber(mockCommercialAgreement.getNumber())).thenReturn(mockCommercialAgreement);
+        doNothing().doThrow(new InvalidLotException("description", lotDetail.getNumber())).when(lotClass).isValid();
+
+
+        InvalidLotException thrown = Assertions.assertThrows(
+                InvalidLotException.class,
+                () -> businessLogicClient.saveLots(lotDetailSet, mockCommercialAgreement.getNumber()),
+                GlobalErrorHandler.ERR_MSG_VALIDATION_DESCRIPTION
+        );
+
+        assertTrue(thrown.getMessage().contains("Invalid lot format, missing 'description' for Lot 2"));
+    }
+
+    LotSupplier setupLotSupplier(){
+        OrganizationIdentifier oi = new OrganizationIdentifier();
+        oi.setLegalName("First company ever");
+        oi.setScheme(Scheme.GBCHC);
+        oi.setId("1234567");
+        OrganizationDetail od = new OrganizationDetail();
+        od.setActive(true);
+        od.setCountryCode("GB");
+        od.setCreationDate(LocalDate.now());
+        Address add = new Address();
+        add.setStreetAddress("Street Name");
+        add.setPostalCode("ABC123");
+        add.setCountryCode("GB");
+        add.setCountryName("United Kingdom");
+        ContactPoint cp = new ContactPoint();
+        cp.setName("Person Incharge");
+        cp.setEmail("Test@email.com");
+        cp.setTelephone("0123456789");
+        cp.setFaxNumber("6574839201");
+        cp.setUrl("www.url.co.uk");
+ 
+        Organization org = new Organization();
+        org.setIdentifier(oi);
+        org.setDetails(od);
+        org.setAddress(add);
+        org.setContactPoint(cp);
+
+        LotSupplier lotSupplier = new LotSupplier();
+        lotSupplier.setOrganization(org);
+        lotSupplier.setSupplierStatus(SupplierStatus.ACTIVE);
+        lotSupplier.setLastUpdatedBy("Local Macbook");
+
+        return lotSupplier; 
+    }
+
+    @Test
+    void testAddValidSingleSupplier() throws Exception {
+        final Set<LotSupplier> lotSupplierSet = Collections.singleton(setupLotSupplier());
+
+        when(agreementService.findLotByAgreementNumberAndLotNumber(AGREEMENT_NUMBER, LOT_NUMBER)).thenReturn(mockLot);
+
+        SupplierSummary result = businessLogicClient.saveLotSuppliers(AGREEMENT_NUMBER, LOT_NUMBER, lotSupplierSet);
+        assertNotNull(result);
+    }
+
+    @Test
+    void testAddInvalidSingleSupplier() throws Exception {
+        LotSupplier ls = setupLotSupplier();
+        ls.getOrganization().getIdentifier().setLegalName(null);
+        final Set<LotSupplier> lotSupplierSet = Collections.singleton(ls);
+
+        when(agreementService.findLotByAgreementNumberAndLotNumber(AGREEMENT_NUMBER, LOT_NUMBER)).thenReturn(mockLot);
+
+        InvalidOrganisationException thrown = Assertions.assertThrows(
+                InvalidOrganisationException.class,
+                () -> businessLogicClient.saveLotSuppliers(AGREEMENT_NUMBER, LOT_NUMBER, lotSupplierSet),
+                GlobalErrorHandler.ERR_MSG_VALIDATION_DESCRIPTION
+        );
+
+        System.out.println(thrown.getMessage());
+        assertTrue(thrown.getMessage().contains("organisation format, missing 'legalName'"));
     }
 }

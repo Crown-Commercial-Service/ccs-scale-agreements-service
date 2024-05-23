@@ -2,12 +2,9 @@ package uk.gov.crowncommercial.dts.scale.service.agreements.model.entity;
 
 import lombok.*;
 import lombok.experimental.FieldDefaults;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.Immutable;
 
 import javax.persistence.*;
-import java.time.LocalDate;
-import java.util.Set;
 
 /**
  * Lot.
@@ -19,7 +16,6 @@ import java.util.Set;
 @Setter
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Cacheable
-@org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE,region = "trading_organisations") //Provide cache strategy.
 public class TradingOrganisation {
 
   @Id
@@ -31,6 +27,5 @@ public class TradingOrganisation {
 
   @ManyToOne
   @JoinColumn(name = "organisation_id")
-  @org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE,region = "organisation")
   Organisation organisation;
 }

@@ -31,12 +31,20 @@ public enum SupplierStatus {
   public static SupplierStatus getSupplierStatusFromName(String value) {
 
     for (SupplierStatus ss : SupplierStatus.values()) {
-      if (ss.getName().equals(value)) {
+      if (ss.getName().equalsIgnoreCase(value)) {
         return ss;
       }
     }
 
     return null;
+  }
+
+  public static char getChar(SupplierStatus ss) {
+    switch(ss) {
+      case SUSPENDED: return 'S';
+      case EXCLUDED:  return 'E';
+      default:        return 'A';
+    }
   }
 
 }
