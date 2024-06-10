@@ -58,7 +58,7 @@ public enum Scheme {
   public static Scheme getSchemeFromName(String value) {
 
     for (Scheme scheme : Scheme.values()) {
-      if (scheme.getName().equals(value)) {
+      if (scheme.getName().equalsIgnoreCase(value)) {
         return scheme;
       }
     }

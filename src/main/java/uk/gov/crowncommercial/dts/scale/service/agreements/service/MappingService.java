@@ -1,5 +1,6 @@
 package uk.gov.crowncommercial.dts.scale.service.agreements.service;
 
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import org.mapstruct.factory.Mappers;
 import org.springframework.stereotype.Service;
 import uk.gov.crowncommercial.dts.scale.service.agreements.mapping.*;
@@ -50,6 +51,16 @@ public class MappingService {
     }
 
     /**
+     * Map a LotDetail to a Lot
+     */
+    public Lot mapLotDetailToLot(LotDetail lotDetailModel) {
+
+        Lot model = lotDetailMapper.lotDetailToLot(lotDetailModel);
+
+        return model;
+    }
+
+    /**
      * Map a CommercialAgreementDocument to a Document
      */
     public Document mapCommercialAgreementDocumentToDocument(CommercialAgreementDocument documentModel) {
@@ -96,5 +107,21 @@ public class MappingService {
      */
     public QuestionTemplate mapProcurementQuestionTemplateToQuestionTemplate(ProcurementQuestionTemplate templateModel, Integer groupId) {
         return questionTemplateMapper.procurementQuestionTemplateToQuestionTemplate(templateModel, groupId);
+    }
+
+    /**
+     * Map a LotSupplier to a Organisation
+     */
+    public Organisation mapLotSupplierToOrganisation(LotSupplier lotSupplier) {
+
+        return supplierMapper.lotSupplierToOrganisation(lotSupplier);
+    }
+
+    /**
+     * Map a LotSupplier to a ContactDetail
+     */
+    public ContactDetail mapLotSupplierToContactDetail(LotSupplier lotSupplier) {
+
+        return supplierMapper.lotSupplierToContactDetail(lotSupplier);
     }
 }

@@ -58,7 +58,7 @@ public enum PartyRole implements Serializable {
   public static PartyRole getPartyRoleFromName(String value) {
 
     for (PartyRole pr : PartyRole.values()) {
-      if (pr.getName().equals(value)) {
+      if (pr.getName().equalsIgnoreCase(value)) {
         return pr;
       }
     }

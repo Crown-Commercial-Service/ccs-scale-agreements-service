@@ -1,5 +1,6 @@
 package uk.gov.crowncommercial.dts.scale.service.agreements.mapping;
 
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Named;
@@ -16,6 +17,7 @@ import java.util.stream.Collectors;
  */
 @Mapper(componentModel = "spring")
 public abstract class LotDetailMapper {
+
     @Autowired
     protected AgreementService agreementService;
 
@@ -26,6 +28,11 @@ public abstract class LotDetailMapper {
     @Mapping(source = "routesToMarket", target = "routesToMarket", qualifiedByName = "lotRouteToMarketsToRouteToMarketDtos")
     public abstract LotDetail lotToLotDetail(Lot dbModel);
 
+
+    @Mapping(target = "sectors", ignore = true)
+    @Mapping(source = "type", target = "lotType")
+    public abstract Lot lotDetailToLot(LotDetail dbModel);
+
     // Mapping of child entities starts here
     // Type
     @Named("stringToLotType")
@@ -33,10 +40,13 @@ public abstract class LotDetailMapper {
         if (lotType != null && !lotType.isEmpty()) {
             switch (lotType.toLowerCase()) {
                 case "products":
+                case "product":
                     return LotType.PRODUCT;
                 case "services":
+                case "service":
                     return LotType.SERVICE;
                 case "products and services":
+                case "product_and_service":
                     return LotType.PRODUCT_AND_SERVICE;
                 default:
                     return null;

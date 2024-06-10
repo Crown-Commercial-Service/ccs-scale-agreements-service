@@ -4,6 +4,7 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Named;
 import org.mapstruct.factory.Mappers;
+import uk.gov.crowncommercial.dts.scale.service.agreements.exception.InvalidSchemeExpection;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.*;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.ContactDetail;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.ContactPointLotOrgRole;
@@ -32,6 +33,36 @@ public abstract class LotSupplierMapper {
     @Mapping(source = "isActive", target = "active")
     public abstract OrganizationDetail organisationToOrganizationDetail(Organisation orgModel);
 
+
+
+    @Mapping(source = "organization.address.streetAddress", target = "streetAddress")
+    @Mapping(source = "organization.address.locality", target = "locality")
+    @Mapping(source = "organization.address.region", target = "region")
+    @Mapping(source = "organization.address.postalCode", target = "postalCode")
+    @Mapping(source = "organization.address.countryName", target = "countryName")
+    @Mapping(source = "organization.address.countryCode", target = "countryCode")
+    @Mapping(source = "organization.address.uprn", target = "uprn")
+    @Mapping(source = "organization.contactPoint.name", target = "name")
+    @Mapping(source = "organization.contactPoint.email", target = "emailAddress")
+    @Mapping(source = "organization.contactPoint.telephone", target = "telephoneNumber")
+    @Mapping(source = "organization.contactPoint.faxNumber", target = "faxNumber")
+    @Mapping(source = "organization.contactPoint.url", target = "url")
+    public abstract ContactDetail lotSupplierToContactDetail(LotSupplier orgModel);
+
+
+    @Mapping(source = "organization.identifier.legalName", target = "legalName")
+    @Mapping(source = "organization.identifier.scheme", target = "registryCode", qualifiedByName = "schemeToRegistryCode")
+    @Mapping(source = "organization.identifier.id", target = "entityId")
+    @Mapping(source = "organization.identifier.uri", target = "uri")
+    @Mapping(source = "supplierStatus", target = "status")
+    @Mapping(source = "organization.details.creationDate", target = "incorporationDate")
+    @Mapping(source = "organization.details.countryCode", target = "incorporationCountry")
+    @Mapping(source = "organization.address.countryName", target = "countryName")
+    @Mapping(source = "organization.details.isSme", target = "isSme")
+    @Mapping(source = "organization.details.isVcse", target = "isVcse")
+    @Mapping(source = "organization.details.active", target = "isActive")
+    public abstract Organisation lotSupplierToOrganisation(LotSupplier orgModel);
+
     @Named("registryCodeToOrgScheme")
     public static Scheme registryCodeToOrgScheme(String registryCode) {
         if (registryCode != null && !registryCode.isEmpty()) {
@@ -43,6 +74,17 @@ public abstract class LotSupplierMapper {
         }
 
         return null;
+    }
+
+    @Named("schemeToRegistryCode")
+    public static String schemeToRegistryCodeString(Scheme scheme) {
+
+        if (scheme != null){
+            return scheme.getName();
+        }else{
+            throw new InvalidSchemeExpection();
+        }
+
     }
 
     @Mapping(target="id", source="orgModel.entityId")

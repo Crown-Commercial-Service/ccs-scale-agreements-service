@@ -3,8 +3,6 @@ package uk.gov.crowncommercial.dts.scale.service.agreements.model.entity;
 import java.time.LocalDate;
 import javax.persistence.*;
 
-import org.hibernate.annotations.CacheConcurrencyStrategy;
-import org.hibernate.annotations.Immutable;
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.experimental.FieldDefaults;
@@ -13,21 +11,20 @@ import lombok.experimental.FieldDefaults;
  * Contact point - Lot organisation role (M:M join entity)
  */
 @Entity
-@Immutable
 @Table(name = "contact_point_lot_ors")
 @Data
 @FieldDefaults(level = AccessLevel.PRIVATE)
-@org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE,region = "contactPointLotOrgRoles")
 public class ContactPointLotOrgRole {
 
   @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
   @Column(name = "contact_point_id")
   Integer id;
 
   @Column(name = "contact_point_name")
   String contactPointName;
 
-  @ManyToOne
+  @ManyToOne(cascade = CascadeType.ALL)
   @JoinColumn(name = "contact_detail_id")
   ContactDetail contactDetail;
 
@@ -35,8 +32,11 @@ public class ContactPointLotOrgRole {
   @JoinColumn(name = "contact_point_reason_id")
   ContactPointReason contactPointReason;
 
+  @Column(name = "lot_organisation_role_id")
+  int lotOrganisationRoleId;
+
   @Column(name = "effective_from")
-  LocalDate effectiveFrom;
+  LocalDate effectiveFrom = LocalDate.now();
 
   @Column(name = "effective_to")
   LocalDate effectiveTo;

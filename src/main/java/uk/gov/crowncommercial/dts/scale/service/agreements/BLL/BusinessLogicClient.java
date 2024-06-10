@@ -1,18 +1,16 @@
 package uk.gov.crowncommercial.dts.scale.service.agreements.BLL;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Component;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.*;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.*;
-import uk.gov.crowncommercial.dts.scale.service.agreements.service.AgreementService;
-import uk.gov.crowncommercial.dts.scale.service.agreements.service.MappingService;
-import uk.gov.crowncommercial.dts.scale.service.agreements.service.QuestionTemplateService;
-import uk.gov.crowncommercial.dts.scale.service.agreements.service.WordpressService;
+import uk.gov.crowncommercial.dts.scale.service.agreements.service.*;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import java.time.LocalDate;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -23,6 +21,9 @@ import java.util.stream.Collectors;
 public class BusinessLogicClient {
     @Autowired
     private AgreementService agreementService;
+
+    @Autowired
+    private SupplierService supplierService;
 
     @Autowired
     private WordpressService wordpressService;
@@ -252,12 +253,75 @@ public class BusinessLogicClient {
 
     /**
      * Returns the new agreement or updated agreement from the api call
+     * Clear cache after its being called
      */
+
+    @CacheEvict(value = { "getAgreementsList", "getAgreementDetail" }, allEntries = true)
     public AgreementDetail saveAgreement(AgreementDetail cd, String agreementNumber){
         CommercialAgreement ca = mappingService.mapAgreementDetailToCommercialAgreement(cd);
         ca.setNumber(agreementNumber);
         ca.isValid();
 
-        return  mappingService.mapCommercialAgreementToAgreementDetail(agreementService.createOrUpdateAgreement(ca));
+        return mappingService.mapCommercialAgreementToAgreementDetail(agreementService.createOrUpdateAgreement(ca));
+    }
+
+    /**
+     * Returns the new lot or updated lot from the api call
+     * Clear cache after its being called
+     */
+    @CacheEvict(value = { "getAgreementDetail", "getLotsForAgreement", "getLotDetail" }, allEntries = true)
+    public LotDetail saveLot(LotDetail ld, String agreementNumber, String lotNumber){
+
+        Lot lot = mappingService.mapLotDetailToLot(ld);
+        lot.setAgreement(agreementService.findAgreementByNumber(agreementNumber));
+        lot.setNumber(lotNumber);
+        lot.isValid();
+
+        return mappingService.mapLotToLotDetail(agreementService.createOrUpdateLot(lot));
+    }
+
+    /**
+     * batch create or update the lot details that was given and return it
+     * Nothing will write to the DB until it verify that all lots are valid
+     * Clear cache after its being called
+     */
+    @CacheEvict(value = { "getAgreementDetail", "getLotsForAgreement", "getLotDetail" }, allEntries = true)
+    public Collection<LotDetail> saveLots(Collection<LotDetail> lotDetailSet, String agreementNumber){
+
+        Collection<Lot> lotCollection = new HashSet<Lot>();
+
+        lotDetailSet.forEach(lotDetail -> {
+            Lot lot = mappingService.mapLotDetailToLot(lotDetail);
+            lot.setAgreement(agreementService.findAgreementByNumber(agreementNumber));
+            lot.isValid();
+            lotCollection.add(lot);
+        });
+
+        return lotCollection.stream().map(lot -> { return mappingService.mapLotToLotDetail(agreementService.createOrUpdateLot(lot));}).collect(Collectors.toSet());
+    }
+
+    /**
+     * batch create or update a list of LotSupplier objects that was given and return it
+     * Clear cache after its being called
+     */
+    @Caching(evict = {
+        @CacheEvict(value = { "getLotsForAgreement", "getLotDetail" }, allEntries = true),
+        @CacheEvict(value = "getLotSuppliers", key = "#agreementId + #lotId")
+    })
+    public SupplierSummary saveLotSuppliers(String agreementId, String lotId,  Set<LotSupplier> lotSuppliersSet) {
+        Lot lot = agreementService.findLotByAgreementNumberAndLotNumber(agreementId, lotId);
+
+        lotSuppliersSet.forEach(lotDetail ->{
+            final Organisation organisation = mappingService.mapLotSupplierToOrganisation(lotDetail);
+            organisation.isValid();
+
+            ContactDetail contactDetail = mappingService.mapLotSupplierToContactDetail(lotDetail);
+            contactDetail = contactDetail.isValid() ? contactDetail : null;
+
+            supplierService.addSupplierRelationship(lot, organisation, contactDetail, lotDetail.getLastUpdatedBy(), lotDetail.getSupplierStatus());
+        });
+        String lastUpdatedBy = lotSuppliersSet.stream().findFirst().get().getLastUpdatedBy();
+
+        return new SupplierSummary(LocalDate.now(), lastUpdatedBy, getLotSuppliers(agreementId, lotId).size());        
     }
 }

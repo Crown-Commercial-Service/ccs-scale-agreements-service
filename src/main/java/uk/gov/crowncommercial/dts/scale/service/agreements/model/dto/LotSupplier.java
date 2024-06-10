@@ -15,4 +15,6 @@ public class LotSupplier implements Serializable {
   private SupplierStatus supplierStatus;
 
   private Set<Contact> lotContacts;
+
+  private String lastUpdatedBy;
 }

@@ -70,4 +70,16 @@ public class LotDetail implements Serializable {
    * Count of suppliers attached to the lot
    */
   private Integer supplierCount;
+
+  public LotDetail() {
+  }
+
+  public LotDetail(String number, String name, LocalDate startDate, LocalDate endDate, String description, LotType type) {
+    this.number = number;
+    this.name = name;
+    this.startDate = startDate;
+    this.endDate = endDate;
+    this.description = description;
+    this.type = type;
+  }
 }

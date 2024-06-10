@@ -34,6 +34,9 @@ public class OrganizationDetail implements Serializable {
    */
   private String companyType;
 
+  @JsonProperty("is_sme")
+  private Boolean isSme;
+
   /**
    * Is company voluntary, community and social enterprise
    */

@@ -2,6 +2,8 @@ package uk.gov.crowncommercial.dts.scale.service.agreements.controller;
 
 import java.util.Collection;
 import java.util.Optional;
+import java.util.Set;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -78,5 +80,12 @@ public class AgreementController {
         log.debug("updateAgreementDetail called with ID: {}", agreementNumber);
 
         return businessLogicClient.saveAgreement(agreementDetail, agreementNumber);
+    }
+
+    @PutMapping("/{agreement-id}/lots")
+    public Collection<LotDetail> updateLots(@PathVariable(value = "agreement-id") final String agreementNumber, @RequestBody final Set<LotDetail> lotDetailSet) {
+        log.debug("updateLots called with ID: {}", agreementNumber);
+
+        return businessLogicClient.saveLots(lotDetailSet, agreementNumber);
     }
 }
