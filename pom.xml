@@ -25,9 +25,15 @@
 		<lombok.version>1.18.30</lombok.version>
 		<tomcat.version>9.0.85</tomcat.version>
 		<h2.version>2.2.224</h2.version>
+		<feignclient.version>3.1.9</feignclient.version>
 	</properties>
 
 	<dependencies>
+		<dependency>
+			<groupId>org.springframework.cloud</groupId>
+			<artifactId>spring-cloud-starter-openfeign</artifactId>
+			<version>${feignclient.version}</version>
+		</dependency>
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-webmvc</artifactId>
