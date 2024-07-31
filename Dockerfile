@@ -10,7 +10,7 @@ RUN mvn package
 FROM openjdk:21
 WORKDIR /app
 # Copy app jar files and external configuration files
-COPY --from=build $TMP_DIR/target/ccs-agreements-service-*.jar /app/ccs-agreements-service.jar
+COPY --from=build $TMP_DIR/target/ccs-scale-agreements-service-*.jar /app/ccs-scale-agreements-service.jar
 # Create the user and usergroup for the app to run as
 RUN groupadd -g 10001 ujava && \
     useradd -u 10000 -g ujava ujava \

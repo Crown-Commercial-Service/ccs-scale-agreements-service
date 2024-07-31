@@ -23,7 +23,7 @@
 		<spring-boot.version>3.1.0</spring-boot.version>
 		<tomcat.version>10.1.9</tomcat.version>
 		<jackson.version>2.15.2</jackson.version>
-		<lombok.version>1.18.28</lombok.version>
+		<lombok.version>1.18.30</lombok.version>
 		<hibernate.version>6.2.5.Final</hibernate.version>
 	</properties>
 
