@@ -20,7 +20,6 @@ import uk.gov.crowncommercial.dts.scale.service.agreements.exception.InvalidAgre
 @Table(name = "commercial_agreements")
 @Data
 @FieldDefaults(level = AccessLevel.PRIVATE)
-@javax.persistence.Cacheable
 @EqualsAndHashCode(exclude = "benefits")
 public class CommercialAgreement {
 
