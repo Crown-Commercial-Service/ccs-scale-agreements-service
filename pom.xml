@@ -23,7 +23,7 @@
 		<mapstruct.version>1.6.2</mapstruct.version>
 		<compiler.version>3.13.0</compiler.version>
 		<lombok.version>1.18.34</lombok.version>
-		<tomcat.version>9.0.85</tomcat.version>
+		<tomcat.version>11.0.0</tomcat.version>
 		<h2.version>2.3.232</h2.version>
 		<jackson.version>2.18.0</jackson.version>
 	</properties>
