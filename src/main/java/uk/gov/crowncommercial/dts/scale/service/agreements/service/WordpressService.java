@@ -87,7 +87,9 @@ public class WordpressService {
             String agreementEndDate = validateWordpressData("end_date", jsonData, agreementId);
 
             if(agreementDesc != null) model.setDescription(agreementDesc);
-            if(agreementEndDate != null) model.setEndDate(LocalDate.parse(agreementEndDate));
+
+            // Only override the end date if the service doesn't have one configured - our data is the master data here
+            if(agreementEndDate != null && model.getEndDate() == null) model.setEndDate(LocalDate.parse(agreementEndDate));
         }
 
         return model;
