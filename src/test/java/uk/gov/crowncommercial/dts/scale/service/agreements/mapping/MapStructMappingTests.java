@@ -366,4 +366,49 @@ public class MapStructMappingTests {
         assertEquals(sourceModel.getOrganization().getContactPoint().getEmail(), outputModel.getEmailAddress());
         assertEquals(sourceModel.getOrganization().getContactPoint().getUrl(), outputModel.getUrl());
     }
+
+    @Test
+    public void testOrganisationToOrganizationIdentifier() throws Exception {
+        Organisation sourceModel = new Organisation();
+        sourceModel.setLegalName(format(ORG_LEGAL_NAME, 1));
+        sourceModel.setEntityId(format(ORG_ENTITY_ID, 1));
+        sourceModel.setRegistryCode("GB-COH");
+
+        OrganizationIdentifier outputModel = supplierMapper.OrganisationToOrganizationIdentifier(sourceModel);
+
+        assertNotNull(outputModel);
+        assertEquals(sourceModel.getLegalName(), outputModel.getLegalName());
+        assertEquals(sourceModel.getEntityId(), outputModel.getId());
+        assertEquals(sourceModel.getRegistryCode(), outputModel.getScheme().getName());
+    }
+
+    @Test
+    public void testOrganisationToOrganizationIdentifierWithoutScheme() throws Exception {
+        Organisation sourceModel = new Organisation();
+        sourceModel.setLegalName(format(ORG_LEGAL_NAME, 1));
+        sourceModel.setEntityId(format(ORG_ENTITY_ID, 1));
+
+        OrganizationIdentifier outputModel = supplierMapper.OrganisationToOrganizationIdentifier(sourceModel);
+
+        assertNotNull(outputModel);
+        assertEquals(sourceModel.getLegalName(), outputModel.getLegalName());
+        assertEquals(sourceModel.getEntityId(), outputModel.getId());
+        assertEquals(sourceModel.getRegistryCode(), null);
+    }
+
+    @Test
+    public void testOrganizationIdentifierToOrganisation() throws Exception {
+
+        OrganizationIdentifier sourceModel = new OrganizationIdentifier();
+        sourceModel.setLegalName(format(ORG_LEGAL_NAME, 1));
+        sourceModel.setId(format(ORG_ENTITY_ID, 1));
+        sourceModel.setScheme(Scheme.GBCHC);
+
+        Organisation outputModel = supplierMapper.OrganizationIdentifierToOrganisation(sourceModel);
+
+        assertNotNull(outputModel);
+        assertEquals(sourceModel.getLegalName(), outputModel.getLegalName());
+        assertEquals(sourceModel.getId(), outputModel.getEntityId());
+        assertEquals(sourceModel.getScheme().getName(), outputModel.getRegistryCode());
+    }
 }
