@@ -255,7 +255,6 @@ public class BusinessLogicClient {
      * Returns the new agreement or updated agreement from the api call
      * Clear cache after its being called
      */
-
     @CacheEvict(value = { "getAgreementsList", "getAgreementDetail" }, allEntries = true)
     public AgreementDetail saveAgreement(AgreementDetail cd, String agreementNumber){
         CommercialAgreement ca = mappingService.mapAgreementDetailToCommercialAgreement(cd);
