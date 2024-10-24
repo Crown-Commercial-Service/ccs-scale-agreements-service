@@ -2,10 +2,12 @@ package uk.gov.crowncommercial.dts.scale.service.agreements.service;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.transaction.annotation.Transactional;
 import uk.gov.crowncommercial.dts.scale.service.agreements.exception.AgreementNotFoundException;
 import uk.gov.crowncommercial.dts.scale.service.agreements.exception.LotNotFoundException;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.*;
@@ -52,39 +54,47 @@ public class AgreementService {
     /**
      * Create or update the agreement that is passed in
      *
-     * @param newCommercialAgreement Commercial Agreement
+     * @param model Commercial Agreement
      * @return Commercial Agreement
      */
-  public CommercialAgreement createOrUpdateAgreement(final CommercialAgreement newCommercialAgreement) {
-    return commercialAgreementRepo.findByNumber(newCommercialAgreement.getNumber())
-            .map(ca -> {
-              ca.setName(newCommercialAgreement.getName());
-              ca.setOwner(newCommercialAgreement.getOwner());
-              ca.setDescription(newCommercialAgreement.getDescription());
-              ca.setStartDate(newCommercialAgreement.getStartDate());
-              ca.setEndDate(newCommercialAgreement.getEndDate());
-              ca.setDetailUrl(newCommercialAgreement.getDetailUrl());
-              ca.setPreDefinedLotRequired(newCommercialAgreement.getPreDefinedLotRequired());
+    @Transactional
+    public CommercialAgreement createOrUpdateAgreement(final CommercialAgreement model) {
+        // Start by grabbing the existing object from the database
+        Optional<CommercialAgreement> existingModelOpt = commercialAgreementRepo.findByNumber(model.getNumber());
 
-              if (newCommercialAgreement.getBenefits() != null && !newCommercialAgreement.getBenefits().isEmpty() ){
-                  commercialAgreementBenefitService.removeBenefits(ca);
-                  newCommercialAgreement.getBenefits().forEach(benefit -> {
-                      ca.addBenefit(benefit);
-                  });
-              }
+        if (existingModelOpt.isPresent()) {
+            // This is an update request - amend the data of the existing object with any requested amends
+            CommercialAgreement existingModel = existingModelOpt.get();
 
-              commercialAgreementRepo.saveAndFlush(ca);
-              return findAgreementByNumber(ca.getNumber());
-            }).orElseGet(() -> {
-                if (newCommercialAgreement.getBenefits() != null && !newCommercialAgreement.getBenefits().isEmpty() ){
-                    newCommercialAgreement.getBenefits().forEach(benefit -> {
-                        benefit.setAgreement(newCommercialAgreement);
-                    });
-                }
-                commercialAgreementRepo.saveAndFlush(newCommercialAgreement);
-                return findAgreementByNumber(newCommercialAgreement.getNumber());
-            });
-  }
+            existingModel.setName(model.getName());
+            existingModel.setOwner(model.getOwner());
+            existingModel.setDescription(model.getDescription());
+            existingModel.setStartDate(model.getStartDate());
+            existingModel.setEndDate(model.getEndDate());
+            existingModel.setDetailUrl(model.getDetailUrl());
+            existingModel.setPreDefinedLotRequired(model.getPreDefinedLotRequired());
+
+            if (model.getBenefits() != null && !model.getBenefits().isEmpty() ){
+                commercialAgreementBenefitService.removeBenefits(existingModel);
+                model.getBenefits().forEach(existingModel::addBenefit);
+            }
+
+            // Model is now updated, so trigger the save
+            commercialAgreementRepo.saveAndFlush(existingModel);
+        } else {
+            // This is a create request - we just need to configure any benefits correctly then trigger saving
+            if (model.getBenefits() != null && !model.getBenefits().isEmpty()){
+                model.getBenefits().forEach(benefit -> {
+                    benefit.setAgreement(model);
+                });
+            }
+
+            commercialAgreementRepo.saveAndFlush(model);
+        }
+
+        // Now fetch a fresh copy to return
+        return findAgreementByNumber(model.getNumber());
+    }
 
     /**
      * Create or update the lot that is passed in
@@ -142,7 +152,7 @@ public class AgreementService {
    * @param lotNumber Lot number
    * @return collection of lot supplier org roles
    * @throws LotNotFoundException if CA or lot not found
-   */
+   * */
   public Collection<LotOrganisationRole> findLotSupplierOrgRolesByAgreementNumberAndLotNumber(
       final String agreementNumber, final String lotNumber) {
 
@@ -153,5 +163,4 @@ public class AgreementService {
 
     return lot.getActiveOrganisationRoles();
   }
-
 }
