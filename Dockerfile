@@ -5,13 +5,14 @@ COPY . /tmp/build
 RUN mvn clean install
 RUN mvn package
 # pull open jdk 21
-FROM openjdk:21
+#FROM openjdk:21
+FROM amazoncorretto:21-alpine-jdk
 WORKDIR /app
 # Copy app jar files and external configuration files
 COPY --from=build /tmp/build/target/ccs-scale-agreements-service-*.jar /app/ccs-scale-agreements-service.jar
 # Create the user and usergroup for the app to run as
-RUN groupadd -g 10001 ujava && \
-    useradd -u 10000 -g ujava ujava \
+RUN addgroup ujava && \
+    adduser -S -G ujava ujava \
     && chown -R ujava: /app
 USER ujava
 # Working directory for the app
