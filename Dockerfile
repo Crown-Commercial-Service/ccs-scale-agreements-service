@@ -16,7 +16,7 @@ RUN groupadd -g 10001 ujava && \
 USER ujava
 # Working directory for the app
 WORKDIR  /app
-# prfile to be used when running the application
+# profile to be used when running the application
 ENV SPRING_PROFILES_ACTIVE=prod
 # Expose the port for the application to run on
 EXPOSE 3000
