@@ -21,4 +21,6 @@ ENV SPRING_PROFILES_ACTIVE=prod
 # Expose the port for the application to run on
 EXPOSE 3000
 # Command to run once the container starts
-CMD ["java", "-jar", "ccs-agreements-service.jar"]
+#CMD ["java", "-jar", "ccs-agreements-service.jar"]
+RUN ls -la
+ENTRYPOINT ["java", "-jar", "./ccs-agreements-service.jar"]
