@@ -22,4 +22,4 @@ ENV SPRING_PROFILES_ACTIVE=prod
 EXPOSE 3000
 # Command to run once the container starts
 #CMD ["java", "-jar", "ccs-agreements-service.jar"]
-ENTRYPOINT ["java", "-jar", "./ccs-agreements-service.jar"]
+ENTRYPOINT ["java", "-jar", "ccs-scale-agreements-service.jar"]
