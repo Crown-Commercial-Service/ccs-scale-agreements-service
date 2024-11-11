@@ -114,7 +114,6 @@ public class AgreementDetail implements Serializable {
   }
 
   public void setAgreementType(String agreementTypeInput) {
-
     if (agreementTypeInput == null) {return;}
 
     AgreementType userInputedEnum = AgreementType.getAgreementTypeFromName(agreementTypeInput);
@@ -122,9 +121,7 @@ public class AgreementDetail implements Serializable {
 
     if (this.regulation != null) {
       List<AgreementType> allowedList = getAllowedAgreementTypes(this.regulation);
-
       if (allowedList == null ||  !allowedList.contains(userInputedEnum)) {throw new InvalidAgreementTypeException(AgreementType.getStringFormatForAgreementTypes(allowedList), regulation);}
-
       this.agreementType = userInputedEnum;
     }
   }
@@ -140,6 +137,6 @@ public class AgreementDetail implements Serializable {
         default:
           return null;
     }
-}
+  }
 
 }
