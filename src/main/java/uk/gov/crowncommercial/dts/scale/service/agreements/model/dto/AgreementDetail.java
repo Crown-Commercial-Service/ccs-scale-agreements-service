@@ -115,34 +115,31 @@ public class AgreementDetail implements Serializable {
 
   public void setAgreementType(String agreementTypeInput) {
 
-    if (agreementTypeInput != null){
-      List<AgreementType> allowList = Arrays.asList();
-      boolean error = false;
-      AgreementType userInputedEnum = AgreementType.getAgreementTypeFromName(agreementTypeInput);
+    if (agreementTypeInput == null) {return;}
 
-      if (userInputedEnum == null) {throw new InvalidAgreementTypeException(agreementTypeInput);};
+    AgreementType userInputedEnum = AgreementType.getAgreementTypeFromName(agreementTypeInput);
+    if (userInputedEnum == null) {throw new InvalidAgreementTypeException(agreementTypeInput);};
 
-      if (this.regulation != null) {
-        switch (this.regulation) {
-          case PA2023:
-            allowList = Arrays.asList(AgreementType.DYNAMIC_MARKET, AgreementType.OPEN_FRAMEWORK, AgreementType.CLOSED_FRAMEWORK);
-            error = !allowList.contains(userInputedEnum);
-            break;
-          case PCR2015:
-            allowList = Arrays.asList(AgreementType.DYNAMIC_PURCHASING_SYSTEM, AgreementType.PCR15_FRAMEWORK);
-            error = !allowList.contains(userInputedEnum);
-            break;
-          case PCR2006:
-            allowList = Arrays.asList(AgreementType.PCR06_FRAMEWORK);
-            error = !allowList.contains(userInputedEnum);
-            break;
-        }
+    if (this.regulation != null) {
+      List<AgreementType> allowedList = getAllowedAgreementTypes(this.regulation);
 
-        if (error) {throw new InvalidAgreementTypeException(AgreementType.getStringFormatForAgreementTypes(allowList), regulation);}
+      if (allowedList == null ||  !allowedList.contains(userInputedEnum)) {throw new InvalidAgreementTypeException(AgreementType.getStringFormatForAgreementTypes(allowedList), regulation);}
 
-        this.agreementType = userInputedEnum;
-      }
+      this.agreementType = userInputedEnum;
     }
   }
+
+  private List<AgreementType> getAllowedAgreementTypes(Regulation regulation) {
+    switch (regulation) {
+        case PA2023:
+            return Arrays.asList(AgreementType.DYNAMIC_MARKET, AgreementType.OPEN_FRAMEWORK, AgreementType.CLOSED_FRAMEWORK);
+        case PCR2015:
+            return Arrays.asList(AgreementType.DYNAMIC_PURCHASING_SYSTEM, AgreementType.PCR15_FRAMEWORK);
+        case PCR2006:
+            return Arrays.asList(AgreementType.PCR06_FRAMEWORK);
+        default:
+          return null;
+    }
+}
 
 }
