@@ -20,7 +20,7 @@
 		<hibernate-types.version>2.21.1</hibernate-types.version>
 		<spring-framework.version>5.3.39</spring-framework.version>
 		<spring-boot.version>2.7.18</spring-boot.version>
-		<mapstruct.version>1.6.2</mapstruct.version>
+		<mapstruct.version>1.6.3</mapstruct.version>
 		<compiler.version>3.13.0</compiler.version>
 		<lombok.version>1.18.34</lombok.version>
 		<tomcat.version>9.0.96</tomcat.version>
