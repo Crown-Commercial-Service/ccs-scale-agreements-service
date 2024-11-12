@@ -1,5 +1,6 @@
 package uk.gov.crowncommercial.dts.scale.service.agreements.model.dto;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
@@ -8,12 +9,42 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public enum SupplierStatus {
 
   @JsonProperty("active")
-  ACTIVE,
+  ACTIVE("active"),
 
   @JsonProperty("suspended")
-  SUSPENDED,
+  SUSPENDED("suspended"),
 
   @JsonProperty("excluded")
-  EXCLUDED;
+  EXCLUDED("excluded");
+
+  private String name;
+
+  private SupplierStatus(String name){
+    this.name = name;
+  }
+
+  public String getName(){
+    return this.name;
+  }
+
+  @JsonCreator
+  public static SupplierStatus getSupplierStatusFromName(String value) {
+
+    for (SupplierStatus ss : SupplierStatus.values()) {
+      if (ss.getName().equalsIgnoreCase(value)) {
+        return ss;
+      }
+    }
+
+    return null;
+  }
+
+  public static char getChar(SupplierStatus ss) {
+    switch(ss) {
+      case SUSPENDED: return 'S';
+      case EXCLUDED:  return 'E';
+      default:        return 'A';
+    }
+  }
 
 }

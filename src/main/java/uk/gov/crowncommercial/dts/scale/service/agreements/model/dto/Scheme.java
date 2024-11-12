@@ -1,5 +1,6 @@
 package uk.gov.crowncommercial.dts.scale.service.agreements.model.dto;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
@@ -8,39 +9,61 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public enum Scheme {
 
   @JsonProperty("GB-COH")
-  GB_COH,
+  GBCOH("GB-COH"),
 
   @JsonProperty("GB-MPR")
-  GB_MPR,
+  GBMPR("GB-MPR"),
 
   @JsonProperty("GB-NIC")
-  GB_NIC,
+  GBNIC("GB-NIC"),
 
   @JsonProperty("GB-CHC")
-  GB_CHC,
+  GBCHC("GB-CHC"),
 
   @JsonProperty("GB-SC")
-  GB_SC,
+  GBSC("GB-SC"),
 
   @JsonProperty("GB-WALEDU")
-  GB_WALEDU,
+  GBWALEDU("GB-WALEDU"),
 
   @JsonProperty("GB-SCOTEDU")
-  GB_SCOTEDU,
+  GBSCOTEDU("GB-SCOTEDU"),
 
   @JsonProperty("GB-GOR")
-  GB_GOR,
+  GBGOR("GB-GOR"),
 
   @JsonProperty("GB-LANI")
-  GB_LANI,
+  GBLANI("GB-LANI"),
 
   @JsonProperty("GB-NHS")
-  GB_NHS,
+  GBNHS("GB-NHS"),
 
   @JsonProperty("GB-SRS")
-  GB_SRS,
+  GBSRS("GB-SRS"),
 
   @JsonProperty("US-DUNS")
-  US_DUNS,
+  USDUNS("US-DUNS");
+
+  private String name;
+
+  private Scheme(String name){
+    this.name = name;
+  }
+
+  public String getName(){
+    return this.name;
+  }
+
+  @JsonCreator
+  public static Scheme getSchemeFromName(String value) {
+
+    for (Scheme scheme : Scheme.values()) {
+      if (scheme.getName().equalsIgnoreCase(value)) {
+        return scheme;
+      }
+    }
+
+    return null;
+  }
 
 }

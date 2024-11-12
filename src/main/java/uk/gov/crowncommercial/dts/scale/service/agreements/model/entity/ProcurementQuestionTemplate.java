@@ -1,11 +1,11 @@
 package uk.gov.crowncommercial.dts.scale.service.agreements.model.entity;
 
+import com.vladmihalcea.hibernate.type.json.JsonBinaryType;
 import jakarta.persistence.*;
 
 import lombok.Getter;
 import lombok.Setter;
 
-import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.Immutable;
 import org.hibernate.annotations.JdbcTypeCode;
 import lombok.AccessLevel;
@@ -21,7 +21,7 @@ import org.hibernate.type.SqlTypes;
 @Getter
 @Setter
 @FieldDefaults(level = AccessLevel.PRIVATE)
-@org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE,region = "procurementQuestionTemplate")
+@Convert(attributeName = "jsonb", converter = JsonBinaryType.class)
 public class ProcurementQuestionTemplate {
 
   @Id
@@ -31,13 +31,13 @@ public class ProcurementQuestionTemplate {
   @Column(name = "template_name")
   String templateName;
 
-  @Column (name= "template_description")
+  @Column(name = "template_description")
   String description;
 
-  @Column (name ="template_parent")
+  @Column(name = "template_parent")
   Integer parent;
 
-  @Column (name = "template_mandatory")
+  @Column(name = "template_mandatory")
   Boolean mandatory;
 
   @Column(name = "template_url")

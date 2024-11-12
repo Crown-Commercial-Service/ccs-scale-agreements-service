@@ -6,7 +6,6 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
-import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.Immutable;
 import lombok.AccessLevel;
 import lombok.Data;
@@ -20,7 +19,6 @@ import lombok.experimental.FieldDefaults;
 @Table(name = "lot_rule_transaction_objects")
 @Data
 @FieldDefaults(level = AccessLevel.PRIVATE)
-@org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE,region = "lotRuleTransactionData")
 public class LotRuleTransactionObject implements Serializable {
 
   private static final long serialVersionUID = 1L;

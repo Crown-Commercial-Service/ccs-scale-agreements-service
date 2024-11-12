@@ -3,7 +3,6 @@ package uk.gov.crowncommercial.dts.scale.service.agreements.model.entity;
 import java.time.LocalDate;
 import jakarta.persistence.*;
 
-import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.Immutable;
 import lombok.AccessLevel;
 import lombok.Data;
@@ -17,7 +16,6 @@ import lombok.experimental.FieldDefaults;
 @Table(name = "contact_point_commercial_agreement_ors")
 @Data
 @FieldDefaults(level = AccessLevel.PRIVATE)
-@org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE,region = "contactPointCommercialAgreementOrgRoles")
 public class ContactPointCommercialAgreementOrgRole {
 
   @Id
@@ -29,12 +27,10 @@ public class ContactPointCommercialAgreementOrgRole {
 
   @ManyToOne
   @JoinColumn(name = "contact_detail_id")
-  @org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE,region = "contactDetail")
   ContactDetail contactDetail;
 
   @ManyToOne
   @JoinColumn(name = "contact_point_reason_id")
-  @org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE,region = "contactPointReason")
   ContactPointReason contactPointReason;
 
   @Column(name = "effective_from")

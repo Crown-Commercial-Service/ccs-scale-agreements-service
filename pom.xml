@@ -6,7 +6,7 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>3.1.0</version>
+		<version>3.3.5</version>
 		<relativePath />
 	</parent>
 	<groupId>uk.gov.crowncommercial.dts</groupId>
@@ -16,15 +16,24 @@
 	<description>SCALE Agreements service</description>
 
 	<properties>
-		<java.version>17</java.version>
-		<modelmapper.version>3.1.1</modelmapper.version>
+		<java.version>21</java.version>
 		<hibernate-types.version>2.21.1</hibernate-types.version>
-		<spring-framework.version>6.0.10</spring-framework.version>
-		<spring-boot.version>3.1.0</spring-boot.version>
+		<spring-framework.version>6.1.14</spring-framework.version>
+		<spring-boot.version>3.3.5</spring-boot.version>
 		<tomcat.version>10.1.9</tomcat.version>
-		<jackson.version>2.15.2</jackson.version>
-		<lombok.version>1.18.28</lombok.version>
 		<hibernate.version>6.2.5.Final</hibernate.version>
+		<mapstruct.version>1.6.3</mapstruct.version>
+		<compiler.version>3.13.0</compiler.version>
+		<lombok.version>1.18.34</lombok.version>
+		<tomcat.version>9.0.96</tomcat.version>
+		<h2.version>2.3.232</h2.version>
+		<jackson.version>2.18.1</jackson.version>
+		<snakeyaml.version>2.3</snakeyaml.version>
+		<json.version>20240303</json.version>
+		<rollbar.version>1.10.3</rollbar.version>
+		<commons.version>3.17.0</commons.version>
+		<ehcache.version>3.10.8</ehcache.version>
+		<postgres.version>42.7.4</postgres.version>
 	</properties>
 
 	<dependencies>
@@ -64,9 +73,14 @@
 			</exclusions>
 		</dependency>
 		<dependency>
+			<groupId>org.mapstruct</groupId>
+			<artifactId>mapstruct</artifactId>
+			<version>${mapstruct.version}</version>
+		</dependency>
+		<dependency>
 			<groupId>org.yaml</groupId>
 			<artifactId>snakeyaml</artifactId>
-			<version>2.0</version>
+			<version>${snakeyaml.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -95,6 +109,12 @@
 			<groupId>com.fasterxml.jackson.core</groupId>
 			<artifactId>jackson-databind</artifactId>
 			<version>${jackson.version}</version>
+			<exclusions>
+				<exclusion>
+					<artifactId>jackson-core</artifactId>
+					<groupId>com.fasterxml.jackson.core</groupId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>org.hibernate.orm</groupId>
@@ -197,17 +217,21 @@
 					<artifactId>jackson-datatype-jsr310</artifactId>
 					<groupId>com.fasterxml.jackson.datatype</groupId>
 				</exclusion>
+				<exclusion>
+					<artifactId>jackson-core</artifactId>
+					<groupId>com.fasterxml.jackson.core</groupId>
+				</exclusion>
 			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>org.json</groupId>
 			<artifactId>json</artifactId>
-			<version>20230227</version>
+			<version>${json.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>com.rollbar</groupId>
 			<artifactId>rollbar-spring-boot-webmvc</artifactId>
-			<version>1.10.0</version>
+			<version>${rollbar.version}</version>
 			<exclusions>
 				<exclusion>
 					<artifactId>spring-core</artifactId>
@@ -222,7 +246,7 @@
 		<dependency>
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-lang3</artifactId>
-			<version>3.12.0</version>
+			<version>${commons.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -280,13 +304,12 @@
 		<dependency>
 			<groupId>org.ehcache</groupId>
 			<artifactId>ehcache</artifactId>
-			<version>3.10.8</version>
-			<scope>runtime</scope>
+			<version>${ehcache.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.postgresql</groupId>
 			<artifactId>postgresql</artifactId>
-			<version>42.6.0</version>
+			<version>${postgres.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>com.fasterxml.jackson.datatype</groupId>
@@ -297,7 +320,16 @@
 					<artifactId>jackson-databind</artifactId>
 					<groupId>com.fasterxml.jackson.core</groupId>
 				</exclusion>
+				<exclusion>
+					<artifactId>jackson-core</artifactId>
+					<groupId>com.fasterxml.jackson.core</groupId>
+				</exclusion>
 			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-core</artifactId>
+			<version>${jackson.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>com.fasterxml.jackson.datatype</groupId>
@@ -306,6 +338,10 @@
 			<exclusions>
 				<exclusion>
 					<artifactId>jackson-databind</artifactId>
+					<groupId>com.fasterxml.jackson.core</groupId>
+				</exclusion>
+				<exclusion>
+					<artifactId>jackson-core</artifactId>
 					<groupId>com.fasterxml.jackson.core</groupId>
 				</exclusion>
 			</exclusions>
@@ -330,11 +366,6 @@
 			<optional>true</optional>
 		</dependency>
 		<dependency>
-			<groupId>org.modelmapper</groupId>
-			<artifactId>modelmapper</artifactId>
-			<version>${modelmapper.version}</version>
-		</dependency>
-		<dependency>
 			<groupId>com.vladmihalcea</groupId>
 			<artifactId>hibernate-types-60</artifactId>
 			<version>${hibernate-types.version}</version>
@@ -342,6 +373,21 @@
 				<exclusion>
 					<artifactId>jackson-databind</artifactId>
 					<groupId>com.fasterxml.jackson.core</groupId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-actuator</artifactId>
+			<version>${spring-boot.version}</version>
+			<exclusions>
+				<exclusion>
+					<artifactId>jackson-databind</artifactId>
+					<groupId>com.fasterxml.jackson.core</groupId>
+				</exclusion>
+				<exclusion>
+					<artifactId>jackson-datatype-jsr310</artifactId>
+					<groupId>com.fasterxml.jackson.datatype</groupId>
 				</exclusion>
 			</exclusions>
 		</dependency>
@@ -368,7 +414,7 @@
 		<dependency>
 			<groupId>com.h2database</groupId>
 			<artifactId>h2</artifactId>
-			<version>2.1.214</version>
+			<version>${h2.version}</version>
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
@@ -378,6 +424,27 @@
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>${compiler.version}</version>
+				<configuration>
+					<source>21</source>
+					<target>21</target>
+					<annotationProcessorPaths>
+						<path>
+							<groupId>org.projectlombok</groupId>
+							<artifactId>lombok</artifactId>
+							<version>${lombok.version}</version>
+						</path>
+						<path>
+							<groupId>org.mapstruct</groupId>
+							<artifactId>mapstruct-processor</artifactId>
+							<version>${mapstruct.version}</version>
+						</path>
+					</annotationProcessorPaths>
+				</configuration>
 			</plugin>
 		</plugins>
 	</build>

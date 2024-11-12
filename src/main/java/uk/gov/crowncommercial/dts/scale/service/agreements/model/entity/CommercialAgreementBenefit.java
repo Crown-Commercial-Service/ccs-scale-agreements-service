@@ -1,12 +1,8 @@
 package uk.gov.crowncommercial.dts.scale.service.agreements.model.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 
-import org.hibernate.annotations.CacheConcurrencyStrategy;
-import org.hibernate.annotations.Immutable;
+import lombok.ToString;
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.experimental.FieldDefaults;
@@ -15,16 +11,20 @@ import lombok.experimental.FieldDefaults;
  * Commercial Agreement Benefit.
  */
 @Entity
-@Immutable
 @Table(name = "commercial_agreement_benefits")
 @Data
 @FieldDefaults(level = AccessLevel.PRIVATE)
-@org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE,region = "benefits")
 public class CommercialAgreementBenefit {
 
   @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
   @Column(name = "commercial_agreement_benefit_id")
   Integer id;
+
+  @ToString.Exclude
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "commercial_agreement_id")
+  CommercialAgreement agreement;
 
   @Column(name = "benefit_name")
   String name;
@@ -37,5 +37,4 @@ public class CommercialAgreementBenefit {
 
   @Column(name = "order_seq")
   Integer sequence;
-
 }

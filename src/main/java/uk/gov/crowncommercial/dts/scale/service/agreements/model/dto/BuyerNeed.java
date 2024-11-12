@@ -2,11 +2,13 @@ package uk.gov.crowncommercial.dts.scale.service.agreements.model.dto;
 
 import lombok.Data;
 
+import java.io.Serializable;
+
 /**
  * Buyer Need.
  */
 @Data
-public class BuyerNeed {
+public class BuyerNeed implements Serializable {
 
   /**
    * Id of the need (to allow alignment with CaT).

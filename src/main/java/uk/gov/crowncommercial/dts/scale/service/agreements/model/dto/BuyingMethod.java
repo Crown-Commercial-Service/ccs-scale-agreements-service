@@ -3,6 +3,10 @@ package uk.gov.crowncommercial.dts.scale.service.agreements.model.dto;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.stream.Collectors;
+
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonEnumDefaultValue;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonValue;
 import lombok.RequiredArgsConstructor;
 
@@ -12,25 +16,36 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public enum BuyingMethod {
 
+  @JsonProperty("DirectAward")
   DIRECT_AWARD("DirectAward"),
 
+  @JsonProperty("FurtherCompetition")
   FURTHER_COMPETITION("FurtherCompetition"),
 
+  @JsonProperty("Marketplace")
   MARKETPLACE("Marketplace"),
 
-  E_AUCTION("EAuction");
+  @JsonProperty("EAuction")
+  E_AUCTION("EAuction"),
 
-  private final String name;
+  @JsonProperty("NotSpecified")
+  NONE("NotSpecified");
 
-  @JsonValue
-  public String getName() {
-    return name;
+  private String name;
+
+  private BuyingMethod(String name){
+    this.name = name;
   }
 
-  public static BuyingMethod fromName(String name) {
-    for (BuyingMethod buyingMethod : values()) {
-      if (buyingMethod.name.equalsIgnoreCase(name)) {
-        return buyingMethod;
+  public String getName(){
+    return this.name;
+  }
+
+  @JsonCreator
+  public static BuyingMethod getBuyingMethodFromName(String name) {
+    for (BuyingMethod bm : values()) {
+      if (bm.getName().equalsIgnoreCase(name)) {
+        return bm;
       }
     }
     return null;

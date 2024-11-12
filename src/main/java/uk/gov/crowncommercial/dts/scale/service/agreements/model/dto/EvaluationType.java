@@ -1,5 +1,6 @@
 package uk.gov.crowncommercial.dts.scale.service.agreements.model.dto;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
@@ -14,17 +15,39 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public enum EvaluationType {
 
   @JsonProperty("equal")
-  EQUAL,
+  EQUAL("equal"),
 
   @JsonProperty("greater")
-  GREATER,
+  GREATER("greater"),
 
   @JsonProperty("less")
-  LESS,
+  LESS("less"),
 
   @JsonProperty("complex")
-  COMPLEX,
+  COMPLEX("complex"),
 
   @JsonProperty("flag")
-  FLAG
+  FLAG("flag");
+
+  private String name;
+
+  private EvaluationType(String name){
+    this.name = name;
+  }
+
+  public String getName(){
+    return this.name;
+  }
+
+  @JsonCreator
+  public static EvaluationType getEvaluationTypeFromName(String value) {
+
+    for (EvaluationType et : EvaluationType.values()) {
+      if (et.getName().equalsIgnoreCase(value)) {
+        return et;
+      }
+    }
+
+    return null;
+  }
 }

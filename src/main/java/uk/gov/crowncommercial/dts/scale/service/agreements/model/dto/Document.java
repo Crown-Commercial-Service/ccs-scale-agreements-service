@@ -1,5 +1,6 @@
 package uk.gov.crowncommercial.dts.scale.service.agreements.model.dto;
 
+import java.io.Serializable;
 import java.time.Instant;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
@@ -8,7 +9,7 @@ import lombok.Data;
  * Document.
  */
 @Data
-public class Document {
+public class Document implements Serializable {
 
   /**
    * URI for the document. Should be a perma-link and can be used as a key for the document.

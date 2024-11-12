@@ -3,28 +3,28 @@ package uk.gov.crowncommercial.dts.scale.service.agreements.model.entity;
 import java.time.LocalDate;
 import java.util.Set;
 import jakarta.persistence.*;
+import java.util.function.Function;
 
-import org.hibernate.annotations.CacheConcurrencyStrategy;
-import org.hibernate.annotations.Immutable;
+
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.FieldDefaults;
+import uk.gov.crowncommercial.dts.scale.service.agreements.exception.InvalidOrganisationException;
 
 /**
  * Organisation
  */
 @Entity
-@Immutable
 @Table(name = "organisations")
 @Data
 @EqualsAndHashCode(exclude = "people")
 @FieldDefaults(level = AccessLevel.PRIVATE)
-@org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE,region = "organisation")
 public class Organisation {
 
   @Id
   @Column(name = "organisation_id")
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
   Integer id;
 
   @Column(name = "entity_id")
@@ -64,7 +64,36 @@ public class Organisation {
   Boolean isActive;
 
   @OneToMany(mappedBy = "organisation")
-  @org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE,region = "people")
   Set<Person> people;
 
+  public Boolean getIsSme() {
+    return isSme != null ? isSme : Boolean.FALSE;
+  }
+
+  public Boolean getIsVcse() {
+    return isVcse != null ? isVcse : Boolean.FALSE;
+  }
+
+  public Boolean getIsActive() {
+    return isActive != null ? isActive : Boolean.FALSE;
+  }
+  public Organisation map(Function<Organisation, Organisation> function) {
+    return function.apply(this);
+  }
+
+  public void isValid(){
+    if (legalName == null || legalName.isEmpty()) {throw new InvalidOrganisationException("legalName");}
+    if (registryCode == null || registryCode.isEmpty()) {throw new InvalidOrganisationException("registryCode");}
+    if (entityId == null || entityId.isEmpty()) {throw new InvalidOrganisationException("entityId");}
+    if (incorporationDate == null) {throw new InvalidOrganisationException("incorporationDate");}
+    if (incorporationCountry == null || incorporationCountry.isEmpty()) {throw new InvalidOrganisationException("incorporationCountry");}
+  }
+
+  public void isValidForPartialUpdate(){
+
+    if (legalName != null && !legalName.isEmpty() || entityId != null && !entityId.isEmpty() && registryCode != null && !registryCode.isEmpty()) {
+    } else {
+      throw new InvalidOrganisationException();
+    }
+  }
 }
