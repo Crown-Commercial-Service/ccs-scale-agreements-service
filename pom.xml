@@ -16,7 +16,7 @@
 	<description>SCALE Agreements service</description>
 
 	<properties>
-		<java.version>21</java.version>
+		<java.version>23</java.version>
 		<hibernate-types.version>2.21.1</hibernate-types.version>
 		<spring-framework.version>6.1.14</spring-framework.version>
 		<spring-boot.version>3.3.5</spring-boot.version>
@@ -210,8 +210,8 @@
 				<artifactId>maven-compiler-plugin</artifactId>
 				<version>${compiler.version}</version>
 				<configuration>
-					<source>21</source>
-					<target>21</target>
+					<source>23</source>
+					<target>23</target>
 					<annotationProcessorPaths>
 						<path>
 							<groupId>org.projectlombok</groupId>
