@@ -1,4 +1,4 @@
-FROM maven:latest as build
+FROM maven:3.9.9-amazoncorretto-23 as build
 
 RUN mkdir -p /tmp/build
 
@@ -12,7 +12,7 @@ RUN mvn clean install
 RUN mvn package
 
 # Use an official OpenJDK runtime as a base image
-FROM openjdk:24-ea-22-oraclelinux8
+FROM amazoncorretto:23
 
 RUN mkdir /app
 
