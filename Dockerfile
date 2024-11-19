@@ -1,4 +1,4 @@
-FROM maven:3.9.9-amazoncorretto-23 as build
+FROM maven:3.9.9-eclipse-temurin-23 as build
 
 RUN mkdir -p /tmp/build
 
@@ -6,13 +6,11 @@ WORKDIR /tmp/build
 
 COPY . /tmp/build
 
-# RUN mvn clean install -Dmaven.test.skip=true
-# RUN mvn package -Dmaven.test.skip=true
 RUN mvn clean install
 RUN mvn package
 
 # Use an official OpenJDK runtime as a base image
-FROM amazoncorretto:23
+FROM eclipse-temurin:23
 
 RUN mkdir /app
 
