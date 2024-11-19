@@ -4,12 +4,12 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 import org.hibernate.annotations.*;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.time.LocalDate;
 import java.util.Set;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
 import java.util.function.Function;
-import javax.persistence.Entity;
-import javax.persistence.Table;
 
 import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
@@ -24,7 +24,7 @@ import uk.gov.crowncommercial.dts.scale.service.agreements.exception.InvalidLotE
 @Getter
 @Setter
 @FieldDefaults(level = AccessLevel.PRIVATE)
-@javax.persistence.Cacheable
+@jakarta.persistence.Cacheable
 public class Lot {
 
   @Id

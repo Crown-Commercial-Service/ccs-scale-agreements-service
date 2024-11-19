@@ -1,6 +1,6 @@
 package uk.gov.crowncommercial.dts.scale.service.agreements.model.entity;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 import lombok.ToString;
 import lombok.AccessLevel;

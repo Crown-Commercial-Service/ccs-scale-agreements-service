@@ -2,7 +2,7 @@ package uk.gov.crowncommercial.dts.scale.service.agreements.model.entity;
 
 import java.time.LocalDate;
 import java.util.Set;
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 import org.hibernate.annotations.Immutable;
 import lombok.AccessLevel;

@@ -3,8 +3,8 @@ package uk.gov.crowncommercial.dts.scale.service.agreements.model.entity;
 import java.time.LocalDate;
 import java.util.LinkedHashSet;
 import java.util.Set;
+import jakarta.persistence.*;
 import java.util.function.Function;
-import javax.persistence.*;
 
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
@@ -12,7 +12,6 @@ import lombok.AccessLevel;
 import lombok.Data;
 import lombok.experimental.FieldDefaults;
 import uk.gov.crowncommercial.dts.scale.service.agreements.exception.InvalidAgreementException;
-import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.*;
 
 /**
  * Commercial Agreement.
