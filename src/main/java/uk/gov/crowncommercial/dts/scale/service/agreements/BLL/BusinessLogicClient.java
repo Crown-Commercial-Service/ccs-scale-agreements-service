@@ -323,4 +323,35 @@ public class BusinessLogicClient {
 
         return new SupplierSummary(LocalDate.now(), lastUpdatedBy, getLotSuppliers(agreementId, lotId).size());        
     }
+
+    /**
+     * Returns a specific Organization object based on a requested name
+    */
+    @Cacheable(value = "getOrganizationIdentifier")
+    public OrganizationIdentifier getOrganisation(String organisationName) {
+        OrganizationIdentifier model = null;
+
+        Organisation organisation = supplierService.findOrganisationByLegalName(organisationName);
+
+        if (organisation != null) {
+            model = mappingService.mapOrganisationToOrganizationIdentifier(organisation);
+        }
+
+        return model;
+    }
+
+    /**
+     * Returns an updated Organization Identifier based on the request body
+     * Clear cache after its being called
+    */
+    @CacheEvict(value = { "getOrganizationIdentifier" }, allEntries = true)
+    public OrganizationIdentifier partialSaveOrganisation(String organisationName, OrganizationIdentifier organizationIdentifier){
+
+        final Organisation organisation = mappingService.mapOrganizationIdentifierToOrganisation(organizationIdentifier);
+        organisation.isValidForPartialUpdate();
+        
+        String orgName = supplierService.partialSaveOrganisation(organisationName, organisation);
+
+        return getOrganisation(orgName);
+    }
 }

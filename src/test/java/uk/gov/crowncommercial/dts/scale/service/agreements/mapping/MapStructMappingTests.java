@@ -4,6 +4,9 @@ import org.junit.jupiter.api.Test;
 import org.mapstruct.factory.Mappers;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
+
+import uk.gov.crowncommercial.dts.scale.service.agreements.exception.InvalidAgreementTypeException;
+import uk.gov.crowncommercial.dts.scale.service.agreements.exception.InvalidRegulationException;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.*;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.*;
 
@@ -16,8 +19,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import static java.lang.String.format;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Note these tests don't cover all aspects of the mapping - they're intended to ensure that mapping functions at a model level, not to cover every possible mapping option
@@ -66,6 +68,11 @@ public class MapStructMappingTests {
     public static final String TEMPLATE_NAME = "Template name";
     public static final Boolean TEMPLATE_MANDATORY = true;
     public static final String TEMPLATE_URL = "http://www.google.com";
+    public static final String INVALID = "SOMETHING_INVALID";
+
+    private static final String INVALID_REGULATION_MESSAGE = "Invalid regulation '%s' passed in. Regulation must be one of the following: [PA2023, PCR2015, PCR2006]";
+    private static final String INVALID_AGREEMENT_TYPE_MESSAGE = "Invalid agreementType '%s' passed in. agreementType must be one of the following: [Dynamic Purchasing System, Dynamic Market, Open Framework, Closed Framework, PCR15 Framework, PCR06 Framework]";
+    private static final String INCOMPATIBLE_AGREEMENT_TYPE_MESSAGE = "agreementType must be one of the following: '%s' for '%s'";
 
     @Test
     public void testCommercialAgreementMapsToAgreementSummary() throws Exception {
@@ -91,6 +98,40 @@ public class MapStructMappingTests {
         assertNotNull(outputModel);
         assertEquals(sourceModel.getName(), outputModel.getName());
         assertEquals(sourceModel.getNumber(), outputModel.getNumber());
+        assertNull(outputModel.getRegulation());
+        assertNull(outputModel.getAgreementType());
+    }
+
+    @Test
+    public void testCommercialAgreementMapsToAgreementDetailWithRegulation() throws Exception {
+        CommercialAgreement sourceModel = new CommercialAgreement();
+        sourceModel.setName(AGREEMENT_NAME);
+        sourceModel.setNumber(AGREEMENT_NUMBER);
+        sourceModel.setRegulation("PA2023");
+
+        AgreementDetail outputModel = agreementDetailMapper.commercialAgreementToAgreementDetail(sourceModel);
+
+        assertNotNull(outputModel);
+        assertEquals(sourceModel.getName(), outputModel.getName());
+        assertEquals(sourceModel.getNumber(), outputModel.getNumber());
+        assertTrue(sourceModel.getRegulation().equalsIgnoreCase(outputModel.getRegulation().getName()));
+    }
+
+    @Test
+    public void testCommercialAgreementMapsToAgreementDetailWithAgreementType() throws Exception {
+        CommercialAgreement sourceModel = new CommercialAgreement();
+        sourceModel.setName(AGREEMENT_NAME);
+        sourceModel.setNumber(AGREEMENT_NUMBER);
+        sourceModel.setRegulation("PA2023");
+        sourceModel.setAgreementType("DYNAMIC_MARKET");
+
+        AgreementDetail outputModel = agreementDetailMapper.commercialAgreementToAgreementDetail(sourceModel);
+
+        assertNotNull(outputModel);
+        assertEquals(sourceModel.getName(), outputModel.getName());
+        assertEquals(sourceModel.getNumber(), outputModel.getNumber());
+        assertTrue(sourceModel.getRegulation().equalsIgnoreCase(outputModel.getRegulation().getName()));
+        assertTrue(sourceModel.getAgreementType().equalsIgnoreCase(outputModel.getAgreementType().toString()));
     }
 
     @Test
@@ -116,12 +157,160 @@ public class MapStructMappingTests {
         assertEquals(sourceModel.getStartDate(), outputModel.getStartDate());
         assertEquals(sourceModel.getEndDate(), outputModel.getEndDate());
         assertEquals(sourceModel.getPreDefinedLotRequired(), outputModel.getPreDefinedLotRequired());
+        assertNull(outputModel.getRegulation());
+        assertNull(outputModel.getAgreementType());
 
         int index = 0;
         for (CommercialAgreementBenefit benefit : outputModel.getBenefits()) {
             assertEquals(benefitArray[index], benefit.getName());
             index++;
         }
+    }
+
+    @Test
+    public void testAgreementDetailMapsToCommercialAgreementWithRegulation() throws Exception {
+        AgreementDetail sourceModel = new AgreementDetail();
+        sourceModel.setName(AGREEMENT_NAME);
+        sourceModel.setNumber(AGREEMENT_NUMBER);
+        sourceModel.setDescription(AGREEMENT_DESCRIPTION);
+        sourceModel.setOwnerName("CCS");
+        sourceModel.setStartDate(java.time.LocalDate.now());
+        sourceModel.setEndDate(java.time.LocalDate.now().plusDays(5));
+        sourceModel.setPreDefinedLotRequired(true);
+        sourceModel.setRegulation("PCR2006");
+
+        CommercialAgreement outputModel = agreementDetailMapper.agreementDetailToCommercialAgreement(sourceModel);
+
+        assertNotNull(outputModel);
+        assertEquals(sourceModel.getName(), outputModel.getName());
+        assertEquals(sourceModel.getNumber(), outputModel.getNumber());
+        assertEquals(sourceModel.getDescription(), outputModel.getDescription());
+        assertEquals(sourceModel.getOwnerName(), outputModel.getOwner());
+        assertEquals(sourceModel.getStartDate(), outputModel.getStartDate());
+        assertEquals(sourceModel.getEndDate(), outputModel.getEndDate());
+        assertEquals(sourceModel.getPreDefinedLotRequired(), outputModel.getPreDefinedLotRequired());
+        assertTrue(outputModel.getRegulation().equalsIgnoreCase(sourceModel.getRegulation().getName()));
+    }
+
+    @Test
+    public void testAgreementDetailMapsToCommercialAgreementWithAgreementType() throws Exception {
+        AgreementDetail sourceModel = new AgreementDetail();
+        sourceModel.setName(AGREEMENT_NAME);
+        sourceModel.setNumber(AGREEMENT_NUMBER);
+        sourceModel.setDescription(AGREEMENT_DESCRIPTION);
+        sourceModel.setOwnerName("CCS");
+        sourceModel.setStartDate(java.time.LocalDate.now());
+        sourceModel.setEndDate(java.time.LocalDate.now().plusDays(5));
+        sourceModel.setPreDefinedLotRequired(true);
+        sourceModel.setRegulation("PCR2006");
+        sourceModel.setAgreementType("PCR06 Framework");
+
+        CommercialAgreement outputModel = agreementDetailMapper.agreementDetailToCommercialAgreement(sourceModel);
+
+        assertNotNull(outputModel);
+        assertEquals(sourceModel.getName(), outputModel.getName());
+        assertEquals(sourceModel.getNumber(), outputModel.getNumber());
+        assertEquals(sourceModel.getDescription(), outputModel.getDescription());
+        assertEquals(sourceModel.getOwnerName(), outputModel.getOwner());
+        assertEquals(sourceModel.getStartDate(), outputModel.getStartDate());
+        assertEquals(sourceModel.getEndDate(), outputModel.getEndDate());
+        assertEquals(sourceModel.getPreDefinedLotRequired(), outputModel.getPreDefinedLotRequired());
+        assertTrue(outputModel.getRegulation().equalsIgnoreCase(sourceModel.getRegulation().getName()));
+        assertTrue(outputModel.getAgreementType().equalsIgnoreCase(sourceModel.getAgreementType().toString()));
+    }
+
+    @Test
+    public void testAgreementDetailMapsToCommercialAgreementWithInvalidRegulation() throws Exception {
+        AgreementDetail sourceModel = new AgreementDetail();
+        sourceModel.setName(AGREEMENT_NAME);
+        sourceModel.setNumber(AGREEMENT_NUMBER);
+        
+        String InvalidRegulation = INVALID;
+
+        Exception exception = assertThrows(InvalidRegulationException.class, () -> {
+            sourceModel.setRegulation(InvalidRegulation);
+        });
+
+        assertEquals(exception.getMessage(), String.format(INVALID_REGULATION_MESSAGE, InvalidRegulation));
+    }
+
+    @Test
+    public void testAgreementDetailMapsToCommercialAgreementWithInvalidAgreementType() throws Exception {
+        AgreementDetail sourceModel = new AgreementDetail();
+        sourceModel.setName(AGREEMENT_NAME);
+        sourceModel.setNumber(AGREEMENT_NUMBER);
+        sourceModel.setRegulation("PCR2006");
+
+        String InvalidAgreementType = INVALID;
+
+        Exception exception = assertThrows(InvalidAgreementTypeException.class, () -> {
+            sourceModel.setAgreementType(InvalidAgreementType);
+        });
+
+        assertEquals(exception.getMessage(), String.format(INVALID_AGREEMENT_TYPE_MESSAGE, InvalidAgreementType));
+    }
+
+    @Test
+    public void testAgreementDetailMapsToCommercialAgreementWithOnlyAgreementType() throws Exception {
+        AgreementDetail sourceModel = new AgreementDetail();
+        sourceModel.setName(AGREEMENT_NAME);
+        sourceModel.setNumber(AGREEMENT_NUMBER);
+        sourceModel.setAgreementType("Dynamic Purchasing System");
+
+        CommercialAgreement outputModel = agreementDetailMapper.agreementDetailToCommercialAgreement(sourceModel);
+
+        assertNotNull(outputModel);
+        assertNull(outputModel.getRegulation());
+        assertNull(outputModel.getAgreementType());
+    }
+
+
+    @Test
+    public void testAgreementDetailMapsToCommercialAgreementWithIncompatibleAgreementType_PCR2006() throws Exception {
+        AgreementDetail sourceModel = new AgreementDetail();
+        String regulation = "PCR2006";
+        
+        sourceModel.setName(AGREEMENT_NAME);
+        sourceModel.setNumber(AGREEMENT_NUMBER);
+        sourceModel.setRegulation(regulation);
+
+        Exception exception = assertThrows(InvalidAgreementTypeException.class, () -> {
+            sourceModel.setAgreementType("Dynamic Purchasing System");
+        });
+
+        assertEquals(exception.getMessage(), String.format(INCOMPATIBLE_AGREEMENT_TYPE_MESSAGE, "[PCR06 Framework]", regulation));
+    }
+
+    @Test
+    public void testAgreementDetailMapsToCommercialAgreementWithIncompatibleAgreementType_PCR2015() throws Exception {
+        AgreementDetail sourceModel = new AgreementDetail();
+        String regulation = "PCR2015";
+        
+        sourceModel.setName(AGREEMENT_NAME);
+        sourceModel.setNumber(AGREEMENT_NUMBER);
+        sourceModel.setRegulation(regulation);
+
+        Exception exception = assertThrows(InvalidAgreementTypeException.class, () -> {
+            sourceModel.setAgreementType("Open Framework");
+        });
+
+        assertEquals(exception.getMessage(), String.format(INCOMPATIBLE_AGREEMENT_TYPE_MESSAGE, "[Dynamic Purchasing System, PCR15 Framework]", regulation));
+    }
+
+    @Test
+    public void testAgreementDetailMapsToCommercialAgreementWithIncompatibleAgreementType_PA2023() throws Exception {
+        AgreementDetail sourceModel = new AgreementDetail();
+        String regulation = "PA2023";
+        
+        sourceModel.setName(AGREEMENT_NAME);
+        sourceModel.setNumber(AGREEMENT_NUMBER);
+        sourceModel.setRegulation(regulation);
+
+        Exception exception = assertThrows(InvalidAgreementTypeException.class, () -> {
+            sourceModel.setAgreementType("Dynamic Purchasing System");
+        });
+
+        assertEquals(exception.getMessage(), String.format(INCOMPATIBLE_AGREEMENT_TYPE_MESSAGE, "[Dynamic Market, Open Framework, Closed Framework]", regulation));
     }
 
     @Test
@@ -365,5 +554,50 @@ public class MapStructMappingTests {
         assertEquals(sourceModel.getOrganization().getContactPoint().getName(), outputModel.getName());
         assertEquals(sourceModel.getOrganization().getContactPoint().getEmail(), outputModel.getEmailAddress());
         assertEquals(sourceModel.getOrganization().getContactPoint().getUrl(), outputModel.getUrl());
+    }
+
+    @Test
+    public void testOrganisationToOrganizationIdentifier() throws Exception {
+        Organisation sourceModel = new Organisation();
+        sourceModel.setLegalName(format(ORG_LEGAL_NAME, 1));
+        sourceModel.setEntityId(format(ORG_ENTITY_ID, 1));
+        sourceModel.setRegistryCode("GB-COH");
+
+        OrganizationIdentifier outputModel = supplierMapper.OrganisationToOrganizationIdentifier(sourceModel);
+
+        assertNotNull(outputModel);
+        assertEquals(sourceModel.getLegalName(), outputModel.getLegalName());
+        assertEquals(sourceModel.getEntityId(), outputModel.getId());
+        assertEquals(sourceModel.getRegistryCode(), outputModel.getScheme().getName());
+    }
+
+    @Test
+    public void testOrganisationToOrganizationIdentifierWithoutScheme() throws Exception {
+        Organisation sourceModel = new Organisation();
+        sourceModel.setLegalName(format(ORG_LEGAL_NAME, 1));
+        sourceModel.setEntityId(format(ORG_ENTITY_ID, 1));
+
+        OrganizationIdentifier outputModel = supplierMapper.OrganisationToOrganizationIdentifier(sourceModel);
+
+        assertNotNull(outputModel);
+        assertEquals(sourceModel.getLegalName(), outputModel.getLegalName());
+        assertEquals(sourceModel.getEntityId(), outputModel.getId());
+        assertEquals(sourceModel.getRegistryCode(), null);
+    }
+
+    @Test
+    public void testOrganizationIdentifierToOrganisation() throws Exception {
+
+        OrganizationIdentifier sourceModel = new OrganizationIdentifier();
+        sourceModel.setLegalName(format(ORG_LEGAL_NAME, 1));
+        sourceModel.setId(format(ORG_ENTITY_ID, 1));
+        sourceModel.setScheme(Scheme.GBCHC);
+
+        Organisation outputModel = supplierMapper.OrganizationIdentifierToOrganisation(sourceModel);
+
+        assertNotNull(outputModel);
+        assertEquals(sourceModel.getLegalName(), outputModel.getLegalName());
+        assertEquals(sourceModel.getId(), outputModel.getEntityId());
+        assertEquals(sourceModel.getScheme().getName(), outputModel.getRegistryCode());
     }
 }

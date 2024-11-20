@@ -88,4 +88,12 @@ public class Organisation {
     if (incorporationDate == null) {throw new InvalidOrganisationException("incorporationDate");}
     if (incorporationCountry == null || incorporationCountry.isEmpty()) {throw new InvalidOrganisationException("incorporationCountry");}
   }
+
+  public void isValidForPartialUpdate(){
+
+    if (legalName != null && !legalName.isEmpty() || entityId != null && !entityId.isEmpty() && registryCode != null && !registryCode.isEmpty()) {
+    } else {
+      throw new InvalidOrganisationException();
+    }
+  }
 }

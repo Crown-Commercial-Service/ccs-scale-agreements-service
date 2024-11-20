@@ -18,6 +18,8 @@ import uk.gov.crowncommercial.dts.scale.service.agreements.config.EhcacheConfig;
 import uk.gov.crowncommercial.dts.scale.service.agreements.exception.AgreementNotFoundException;
 import uk.gov.crowncommercial.dts.scale.service.agreements.exception.LotNotFoundException;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.AgreementDetail;
+import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.AgreementType;
+import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.Regulation;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.CommercialAgreement;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.CommercialAgreementBenefit;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.Lot;
@@ -175,6 +177,34 @@ class AgreementServiceTest {
   }
 
   @Test
+  void testUpdateAgreementWithRegulationAndAgreementType() throws Exception {
+
+    CommercialAgreement result = new CommercialAgreement(AGREEMENT_NUMBER,"Technology Products 2", "CCS", "Short textual description of the commercial agreement", LocalDate.of(2012, 11, 25), java.time.LocalDate.now().plusDays(5), "URL", true);
+    result.setRegulation("PCR2006");
+    result.setAgreementType("PCR06 Framework");
+
+    when(mockCommercialAgreementRepo.findByNumber(AGREEMENT_NUMBER))
+            .thenReturn(Optional.ofNullable(result));
+
+    CommercialAgreement saveAgreement = service.createOrUpdateAgreement(result);
+
+    assertEquals(saveAgreement.getName(), result.getName());
+    assertEquals(saveAgreement.getNumber(), result.getNumber());
+    assertEquals(saveAgreement.getOwner(), result.getOwner());
+    assertEquals(saveAgreement.getDescription(), result.getDescription());
+    assertEquals(saveAgreement.getStartDate(), result.getStartDate());
+    assertEquals(saveAgreement.getEndDate(), result.getEndDate());
+    assertEquals(saveAgreement.getDetailUrl(), result.getDetailUrl());
+    assertEquals(saveAgreement.getBenefits(), result.getBenefits());
+    assertEquals(saveAgreement.getRegulation(), result.getRegulation());
+    assertEquals(saveAgreement.getAgreementType(), result.getAgreementType());
+
+    for (CommercialAgreementBenefit benefit : saveAgreement.getBenefits()) {
+      assertEquals(benefit.getAgreement(), result);
+    }
+  }
+
+  @Test
   void testCreateAgreementWithoutBenefits() throws Exception {
 
     CommercialAgreement input = new CommercialAgreement(AGREEMENT_NUMBER,"Technology Products 2", "CCS", "Short textual description of the commercial agreement", LocalDate.of(2012, 11, 25), java.time.LocalDate.now().plusDays(5), "URL", true);
@@ -192,6 +222,56 @@ class AgreementServiceTest {
     assertEquals(saveAgreement.getEndDate(), result.getEndDate());
     assertEquals(saveAgreement.getDetailUrl(), result.getDetailUrl());
     assertEquals(saveAgreement.getBenefits(), result.getBenefits());
+  }
+
+  @Test
+  void testCreateAgreementWithRegulation() throws Exception {
+
+    CommercialAgreement input = new CommercialAgreement(AGREEMENT_NUMBER,"Technology Products 2", "CCS", "Short textual description of the commercial agreement", LocalDate.of(2012, 11, 25), java.time.LocalDate.now().plusDays(5), "URL", true);
+    CommercialAgreement result = new CommercialAgreement(AGREEMENT_NUMBER,"Technology Products 2", "CCS", "Short textual description of the commercial agreement", LocalDate.of(2012, 11, 25), java.time.LocalDate.now().plusDays(5), "URL", true);
+    input.setRegulation("PCR2015");
+    result.setRegulation("PCR2015");
+
+    when(mockCommercialAgreementRepo.findByNumber(AGREEMENT_NUMBER)).thenReturn(Optional.ofNullable(null)).thenReturn(Optional.of(result));;
+
+    CommercialAgreement saveAgreement = service.createOrUpdateAgreement(input);
+
+    assertEquals(saveAgreement.getName(), result.getName());
+    assertEquals(saveAgreement.getNumber(), result.getNumber());
+    assertEquals(saveAgreement.getOwner(), result.getOwner());
+    assertEquals(saveAgreement.getDescription(), result.getDescription());
+    assertEquals(saveAgreement.getStartDate(), result.getStartDate());
+    assertEquals(saveAgreement.getEndDate(), result.getEndDate());
+    assertEquals(saveAgreement.getDetailUrl(), result.getDetailUrl());
+    assertEquals(saveAgreement.getBenefits(), result.getBenefits());
+    assertEquals(saveAgreement.getRegulation(), result.getRegulation());
+  }
+
+  @Test
+  void testCreateAgreementWithRegulationAndAgreementType() throws Exception {
+
+    CommercialAgreement input = new CommercialAgreement(AGREEMENT_NUMBER,"Technology Products 2", "CCS", "Short textual description of the commercial agreement", LocalDate.of(2012, 11, 25), java.time.LocalDate.now().plusDays(5), "URL", true);
+    CommercialAgreement result = new CommercialAgreement(AGREEMENT_NUMBER,"Technology Products 2", "CCS", "Short textual description of the commercial agreement", LocalDate.of(2012, 11, 25), java.time.LocalDate.now().plusDays(5), "URL", true);
+    input.setRegulation("PCR2015");
+    input.setAgreementType("Closed Framework");
+    result.setRegulation("PCR2015");
+    result.setAgreementType("Closed Framework");
+
+
+    when(mockCommercialAgreementRepo.findByNumber(AGREEMENT_NUMBER)).thenReturn(Optional.ofNullable(null)).thenReturn(Optional.of(result));;
+
+    CommercialAgreement saveAgreement = service.createOrUpdateAgreement(input);
+
+    assertEquals(saveAgreement.getName(), result.getName());
+    assertEquals(saveAgreement.getNumber(), result.getNumber());
+    assertEquals(saveAgreement.getOwner(), result.getOwner());
+    assertEquals(saveAgreement.getDescription(), result.getDescription());
+    assertEquals(saveAgreement.getStartDate(), result.getStartDate());
+    assertEquals(saveAgreement.getEndDate(), result.getEndDate());
+    assertEquals(saveAgreement.getDetailUrl(), result.getDetailUrl());
+    assertEquals(saveAgreement.getBenefits(), result.getBenefits());
+    assertEquals(saveAgreement.getRegulation(), result.getRegulation());
+    assertEquals(saveAgreement.getAgreementType(), result.getAgreementType());
   }
 
   @Test
