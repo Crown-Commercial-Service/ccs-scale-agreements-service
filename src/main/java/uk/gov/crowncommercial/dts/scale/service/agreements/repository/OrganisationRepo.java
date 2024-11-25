@@ -9,4 +9,5 @@ public interface OrganisationRepo extends JpaRepository<Organisation, Integer> {
 
     Optional<Organisation> findByLegalName(String legalName);
 
+    Optional<Organisation> findByRegistryCodeAndEntityId(String Scheme, String entityId);
 }

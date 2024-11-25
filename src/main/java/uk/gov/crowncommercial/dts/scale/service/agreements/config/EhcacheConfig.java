@@ -51,6 +51,7 @@ public class EhcacheConfig {
         cacheManager.createCache("getLotEventTypes", primaryCacheConfig);
         cacheManager.createCache("getEventDataTemplates", primaryCacheConfig);
         cacheManager.createCache("getEventDocumentTemplates", primaryCacheConfig);
+        cacheManager.createCache("getOrganizationIdentifier", primaryCacheConfig);
 
         // Establish secondary caches
         cacheManager.createCache("getLotSuppliers", secondaryCacheConfig);

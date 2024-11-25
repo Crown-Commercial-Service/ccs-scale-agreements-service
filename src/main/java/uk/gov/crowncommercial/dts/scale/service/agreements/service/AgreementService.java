@@ -73,6 +73,8 @@ public class AgreementService {
             existingModel.setEndDate(model.getEndDate());
             existingModel.setDetailUrl(model.getDetailUrl());
             existingModel.setPreDefinedLotRequired(model.getPreDefinedLotRequired());
+            existingModel.setRegulation(model.getRegulation());
+            existingModel.setAgreementType(model.getAgreementType());
 
             if (model.getBenefits() != null && !model.getBenefits().isEmpty() ){
                 commercialAgreementBenefitService.removeBenefits(existingModel);

@@ -12,6 +12,7 @@ import lombok.AccessLevel;
 import lombok.Data;
 import lombok.experimental.FieldDefaults;
 import uk.gov.crowncommercial.dts.scale.service.agreements.exception.InvalidAgreementException;
+import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.*;
 
 /**
  * Commercial Agreement.
@@ -48,6 +49,12 @@ public class CommercialAgreement {
 
   @Column(name = "agreement_url")
   String detailUrl;
+
+  @Column(name = "regulation")
+  String regulation;
+
+  @Column(name = "agreement_type")
+  String agreementType;
 
   @OneToMany(mappedBy = "agreement")
   Set<Lot> lots;
@@ -104,8 +111,7 @@ public class CommercialAgreement {
     if (endDate == null) {throw new InvalidAgreementException("endDate");}
     if (detailUrl == null || detailUrl.isEmpty()) {throw new InvalidAgreementException("detailUrl");}
     if (preDefinedLotRequired == null) {throw new InvalidAgreementException("preDefinedLotRequired");}
-  }
-
+    }
   public CommercialAgreementBenefit addBenefit(CommercialAgreementBenefit benefit){
     this.benefits.add(benefit);
     benefit.setAgreement(this);

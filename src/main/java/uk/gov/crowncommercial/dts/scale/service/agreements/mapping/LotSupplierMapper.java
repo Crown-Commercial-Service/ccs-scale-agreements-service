@@ -33,7 +33,14 @@ public abstract class LotSupplierMapper {
     @Mapping(source = "isActive", target = "active")
     public abstract OrganizationDetail organisationToOrganizationDetail(Organisation orgModel);
 
+    @Mapping(source = "registryCode", target = "scheme", qualifiedByName = "registryCodeToOrgScheme")
+    @Mapping(source = "entityId", target = "id")
+    public abstract OrganizationIdentifier OrganisationToOrganizationIdentifier(Organisation orgModel);
 
+    @Mapping(source = "scheme", target = "registryCode", qualifiedByName = "schemeToRegistryCodeWithoutError")
+    @Mapping(source = "id", target = "entityId")
+    @Mapping(ignore = true, target = "id")
+    public abstract Organisation OrganizationIdentifierToOrganisation(OrganizationIdentifier orgModel);
 
     @Mapping(source = "organization.address.streetAddress", target = "streetAddress")
     @Mapping(source = "organization.address.locality", target = "locality")
@@ -85,6 +92,15 @@ public abstract class LotSupplierMapper {
             throw new InvalidSchemeExpection();
         }
 
+    }
+
+    @Named("schemeToRegistryCodeWithoutError")
+    public static String schemeToRegistryCodeStringWithoutError(Scheme scheme) {
+
+        if (scheme != null){
+            return scheme.getName();
+        }
+        return null;
     }
 
     @Mapping(target="id", source="orgModel.entityId")

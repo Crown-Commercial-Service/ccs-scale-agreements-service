@@ -23,6 +23,8 @@ public interface AgreementDetailMapper {
     @Mapping(source = "benefits", target = "benefits", qualifiedByName = "commercialAgreementBenefitsToStrings")
     @Mapping(source = "lots", target = "lots", qualifiedByName = "lotsToLotSummaries")
     @Mapping(source = "organisationRoles", target = "owner", qualifiedByName = "orgRolesToOrganization")
+    @Mapping(source = "regulation", target = "regulation")
+    @Mapping(source = "agreementType", target = "agreementType", qualifiedByName = "agreementTypeEnumToString")
     AgreementDetail commercialAgreementToAgreementDetail(CommercialAgreement dbModel);
 
     @Mapping(source = "benefits", target = "benefits", qualifiedByName = "stringsToCommercialAgreementBenefits")
@@ -156,6 +158,15 @@ public interface AgreementDetailMapper {
 
                 return model;
             }
+        }
+
+        return null;
+    }
+
+    @Named("agreementTypeEnumToString")
+    public static String agreementTypeEnumToString(AgreementType agreementType) {
+        if (agreementType != null) {
+            return agreementType.getName();
         }
 
         return null;

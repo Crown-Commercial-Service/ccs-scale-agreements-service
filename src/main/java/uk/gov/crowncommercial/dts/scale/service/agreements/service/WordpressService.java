@@ -7,6 +7,8 @@ import org.json.JSONTokener;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.AgreementType;
+import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.Regulation;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.CommercialAgreement;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.Lot;
 
@@ -85,11 +87,15 @@ public class WordpressService {
             // We have the data response, so now use it to populate our expansion data
             String agreementDesc = validateWordpressData("summary", jsonData, agreementId);
             String agreementEndDate = validateWordpressData("end_date", jsonData, agreementId);
+            String agreementRegulation = validateWordpressData("regulation", jsonData, agreementId);
+            String agreementType = validateWordpressData("regulation_type", jsonData, agreementId);
 
             if(agreementDesc != null) model.setDescription(agreementDesc);
 
-            // Only override the end date if the service doesn't have one configured - our data is the master data here
+            // Only override if the service doesn't have one configured - our data is the master data here
             if(agreementEndDate != null && model.getEndDate() == null) model.setEndDate(LocalDate.parse(agreementEndDate));
+            if(agreementRegulation != null && model.getRegulation() == null) model.setRegulation(Regulation.getRegulationFromName(agreementRegulation).toString());
+            if(agreementType != null && model.getAgreementType() == null) model.setAgreementType(AgreementType.getAgreementTypeFromName(agreementType).toString());
         }
 
         return model;

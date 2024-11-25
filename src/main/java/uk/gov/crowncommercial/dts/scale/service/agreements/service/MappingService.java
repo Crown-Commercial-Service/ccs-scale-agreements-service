@@ -124,4 +124,20 @@ public class MappingService {
 
         return supplierMapper.lotSupplierToContactDetail(lotSupplier);
     }
+
+    /**
+     * Map a Organisation to a Organization Identifier
+     */
+    public OrganizationIdentifier mapOrganisationToOrganizationIdentifier(Organisation organisation) {
+
+        return supplierMapper.OrganisationToOrganizationIdentifier(organisation);
+    }
+
+    /**
+     * Map a Organization Identifier to a Organisation
+     */
+    public Organisation mapOrganizationIdentifierToOrganisation(OrganizationIdentifier organizationIdentifier) {
+
+        return supplierMapper.OrganizationIdentifierToOrganisation(organizationIdentifier);
+    }
 }

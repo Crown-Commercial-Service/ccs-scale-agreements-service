@@ -5,6 +5,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentMatchers;
 
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.core.AutoConfigureCache;
@@ -12,6 +14,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
 import uk.gov.crowncommercial.dts.scale.service.agreements.config.EhcacheConfig;
+import uk.gov.crowncommercial.dts.scale.service.agreements.exception.InvalidOrganisationException;
 import uk.gov.crowncommercial.dts.scale.service.agreements.exception.OrganisationNotFoundException;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.*;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.*;
@@ -34,6 +37,8 @@ public class SupplierServiceTest {
     private static final String AGREEMENT_NUMBER = "RM1000";
     private static final String LOT_NUMBER = "Lot 1";
     private static final String COMPANY_NAME = "A Company Name";
+    private static final Scheme ENTITY = Scheme.GBCHC;
+    private static final String ID = "123456789";
 
     @Autowired
     SupplierService supplierService;
@@ -70,6 +75,25 @@ public class SupplierServiceTest {
                 OrganisationNotFoundException.class,
                 () -> supplierService.findOrganisationByLegalName(COMPANY_NAME),
                 "Organisation with legal name of 'A Company Name' not found"
+        );
+
+        assertTrue(thrown.getMessage().contains("not found"));
+    }
+
+    @Test
+    void testGetOrganisationBySchemeAndEntityId() throws Exception {
+        when(mockOrganisationRepo.findByRegistryCodeAndEntityId(ENTITY.getName(),ID)).thenReturn(Optional.ofNullable(mockOrganisation));
+        assertEquals(mockOrganisation, supplierService.findOrganisationBySchemeAndEntityId(ENTITY.getName(),ID));
+    }
+
+    @Test
+    void testGetOrganisationBySchemeAndEntityIdNotFound() throws Exception {
+        when(mockOrganisationRepo.findByRegistryCodeAndEntityId(ENTITY.getName(),ID)).thenReturn(Optional.ofNullable(null));
+
+        OrganisationNotFoundException thrown = Assertions.assertThrows(
+                OrganisationNotFoundException.class,
+                () -> supplierService.findOrganisationBySchemeAndEntityId(ENTITY.getName(),ID),
+                "Organisation with GB-CHC:123456789 not found"
         );
 
         assertTrue(thrown.getMessage().contains("not found"));
@@ -200,4 +224,79 @@ public class SupplierServiceTest {
 
         verify(mockContactPointLotOrgRoleRepo, times(1)).saveAndFlush(ArgumentMatchers.any(ContactPointLotOrgRole.class));
     }
+
+    @Test
+    void testUpdateSupplierWithName() throws Exception {
+
+        Organisation org = new Organisation();
+        org.setLegalName(COMPANY_NAME);
+
+        String existingCompanyName = "old Name";
+
+        when(mockOrganisationRepo.findByLegalName(existingCompanyName)).thenReturn(Optional.ofNullable(mockOrganisation));
+        when(mockOrganisationRepo.findByLegalName(COMPANY_NAME)).thenReturn(Optional.ofNullable(null));
+
+        String resultCompanyName = supplierService.partialSaveOrganisation(existingCompanyName, org);
+
+        assertNotNull(resultCompanyName);
+        assertEquals(COMPANY_NAME, resultCompanyName);
+    }
+
+    @Test
+    void testUpdateSupplierWithNameButAnotherSupplierHasThatName() throws Exception {
+
+        Organisation org = new Organisation();
+        org.setLegalName(COMPANY_NAME);
+
+        String existingCompanyName = "old Name";
+
+        when(mockOrganisationRepo.findByLegalName(existingCompanyName)).thenReturn(Optional.ofNullable(mockOrganisation));
+        when(mockOrganisationRepo.findByLegalName(COMPANY_NAME)).thenReturn(Optional.ofNullable(mockOrganisation));
+
+        InvalidOrganisationException thrown = Assertions.assertThrows(
+            InvalidOrganisationException.class,
+            () -> supplierService.partialSaveOrganisation(existingCompanyName, org),
+            "Organisation with legal name:"+COMPANY_NAME+", already exist"
+        );
+
+        assertTrue(thrown.getMessage().contains("already exist"));
+    }
+
+    @Test
+    void testUpdateSupplierWithSchemeAndId() throws Exception {
+        
+        Organisation org = new Organisation();
+        org.setRegistryCode(Scheme.GBCHC.getName());
+        org.setEntityId(ID);
+
+        when(mockOrganisationRepo.findByLegalName(COMPANY_NAME)).thenReturn(Optional.ofNullable(setupOrg()));
+        when(mockOrganisationRepo.findByRegistryCodeAndEntityId(Scheme.GBCHC.getName(), ID)).thenReturn(Optional.ofNullable(null));
+
+        String resultCompanyName = supplierService.partialSaveOrganisation(COMPANY_NAME, org);
+        
+        assertNotNull(resultCompanyName);
+        assertEquals(COMPANY_NAME, resultCompanyName);
+
+    }
+
+    @Test
+    void testUpdateSupplierWithSchemeAndIdButAnotherSupplierHasThatSchemeAndId() throws Exception {
+
+        Organisation org = new Organisation();
+        org.setRegistryCode(Scheme.GBCHC.getName());
+        org.setEntityId(ID);
+
+
+        when(mockOrganisationRepo.findByLegalName(COMPANY_NAME)).thenReturn(Optional.ofNullable(mockOrganisation));
+        when(mockOrganisationRepo.findByRegistryCodeAndEntityId(Scheme.GBCHC.getName(), ID)).thenReturn(Optional.ofNullable(mockOrganisation));
+
+        InvalidOrganisationException thrown = Assertions.assertThrows(
+            InvalidOrganisationException.class,
+            () -> supplierService.partialSaveOrganisation(COMPANY_NAME, org),
+            "Organisation with scheme:id:"+Scheme.GBCHC.getName() + ":"+ ID+", already exist"
+        );
+
+        assertTrue(thrown.getMessage().contains("already exist"));
+    }
+
 }
