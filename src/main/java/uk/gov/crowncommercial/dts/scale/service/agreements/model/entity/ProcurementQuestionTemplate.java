@@ -7,8 +7,8 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import java.time.LocalDateTime;
 
-import org.hibernate.annotations.Immutable;
 import org.hibernate.annotations.Type;
 import org.hibernate.annotations.TypeDef;
 import com.vladmihalcea.hibernate.type.json.JsonBinaryType;
@@ -19,7 +19,6 @@ import lombok.experimental.FieldDefaults;
  * Procurement Question Template.
  */
 @Entity
-@Immutable
 @Table(name = "procurement_question_templates")
 @Getter
 @Setter
@@ -42,6 +41,15 @@ public class ProcurementQuestionTemplate {
 
   @Column (name = "template_mandatory")
   Boolean mandatory;
+
+  @Column(name = "created_by")
+  String createdBy;
+
+  @Column(name = "created_at")
+  LocalDateTime createdAt;
+
+  @Column(name = "updated_at")
+  LocalDateTime updatedAt;
 
   @Column(name = "template_url")
   String templateUrl;

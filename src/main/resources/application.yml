@@ -69,6 +69,8 @@ spring:
   datasource:
     # Credentials via environment variables ONLY.
     url: jdbc:postgresql://localhost:5432/agreements?currentSchema=ccs_agreements
+    username: tom
+    password: newPass
   jpa:
     show-sql: false
     

@@ -88,4 +88,13 @@ public class AgreementController {
 
         return businessLogicClient.saveLots(lotDetailSet, agreementNumber);
     }
+
+    @PutMapping("/data-templates")
+    public ProcurementDataTemplate updateDataTemplates(@RequestBody final ProcurementDataTemplate updatePayload) {
+        log.debug("updateDataTemplates called for procurement question template id: {}", updatePayload.getId());
+
+        ProcurementDataTemplate model = businessLogicClient.updateEventDataTemplates(updatePayload);
+
+        return model;
+    }
 }

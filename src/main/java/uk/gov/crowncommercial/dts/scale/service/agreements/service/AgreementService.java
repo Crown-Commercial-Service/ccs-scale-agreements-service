@@ -1,5 +1,6 @@
 package uk.gov.crowncommercial.dts.scale.service.agreements.service;
 
+import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
@@ -10,9 +11,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.transaction.annotation.Transactional;
 import uk.gov.crowncommercial.dts.scale.service.agreements.exception.AgreementNotFoundException;
 import uk.gov.crowncommercial.dts.scale.service.agreements.exception.LotNotFoundException;
+import uk.gov.crowncommercial.dts.scale.service.agreements.exception.ProcurementQuestionTemplateNotFoundException;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.*;
 import uk.gov.crowncommercial.dts.scale.service.agreements.repository.CommercialAgreementRepo;
 import uk.gov.crowncommercial.dts.scale.service.agreements.repository.LotRepo;
+import uk.gov.crowncommercial.dts.scale.service.agreements.repository.ProcurementQuestionTemplateRepo;
 import uk.gov.crowncommercial.dts.scale.service.agreements.repository.SimpleLotRepo;
 
 /**
@@ -26,6 +29,7 @@ public class AgreementService {
 
   private final CommercialAgreementRepo commercialAgreementRepo;
   private final LotRepo lotRepo;
+  private final ProcurementQuestionTemplateRepo procurementQuestionTemplateRepo;
   private final SimpleLotRepo simpleLotRepo;
   private final CommercialAgreementBenefitService commercialAgreementBenefitService;
 
@@ -165,4 +169,44 @@ public class AgreementService {
 
     return lot.getActiveOrganisationRoles();
   }
+
+  /**
+   * Create or update the procurement data template that is passed in
+   *
+   * @param updateProcurementDataTemplate ProcurementQuestionTemplate
+   * @return ProcurementQuestionTemplate
+   */
+  public ProcurementQuestionTemplate createOrUpdateProcurementDataTemplate(final ProcurementQuestionTemplate updateProcurementDataTemplate) {
+      return procurementQuestionTemplateRepo.findById(updateProcurementDataTemplate.getId())
+          .map(procurementDataTemplate -> {
+              procurementDataTemplate.setTemplateName(updateProcurementDataTemplate.getTemplateName());
+              procurementDataTemplate.setTemplatePayload(updateProcurementDataTemplate.getTemplatePayload());
+              procurementDataTemplate.setDescription(updateProcurementDataTemplate.getDescription());
+              procurementDataTemplate.setParent(updateProcurementDataTemplate.getParent());
+              procurementDataTemplate.setTemplateUrl(updateProcurementDataTemplate.getTemplateUrl());
+              procurementDataTemplate.setMandatory(updateProcurementDataTemplate.getMandatory());
+              procurementDataTemplate.setUpdatedAt(LocalDateTime.now());
+
+              procurementQuestionTemplateRepo.saveAndFlush(procurementDataTemplate);
+              return findByTemplateId(procurementDataTemplate.getId());
+          }).orElseGet(() -> {
+              updateProcurementDataTemplate.setCreatedBy("agreement service");
+              updateProcurementDataTemplate.setCreatedAt(LocalDateTime.now());
+              updateProcurementDataTemplate.setUpdatedAt(LocalDateTime.now());
+              procurementQuestionTemplateRepo.saveAndFlush(updateProcurementDataTemplate);
+              return findByTemplateId(updateProcurementDataTemplate.getId());
+          });
+  }
+
+    /**
+     * Find a specific procurement questions template using Template ID.
+     *
+     * @param templateId Database ID of the procurement questions template
+     * @return ProcurementQuestionTemplate
+     */
+    public ProcurementQuestionTemplate findByTemplateId(final Integer templateId) {
+        log.debug("findByTemplateId: templateId={}", templateId);
+
+        return procurementQuestionTemplateRepo.findById(templateId).orElseThrow(() -> new ProcurementQuestionTemplateNotFoundException(templateId) );
+    }
 }
