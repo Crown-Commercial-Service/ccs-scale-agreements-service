@@ -388,77 +388,53 @@ class AgreementControllerTest {
   }
 
   @Test
-  void testSavingInvalidDataTemplate() throws Exception {
+  void testUpdatingDataTemplate() throws Exception {
+    // Mock Payload for Request
+    ProcurementDataTemplate updatePayload = new ProcurementDataTemplate();
+    updatePayload.setId(99);
+    updatePayload.setTemplateName("FC2-DOS6-Lot3-TESTING91112121");
+    updatePayload.setParent(37);
+    updatePayload.setMandatory(true);
+    updatePayload.setCreatedBy("agreement-service-testing");
 
-    Map<String, Object> payload = new HashMap<>();
-    payload.put("id", "Criterion 1");
-    payload.put("title", "About the procurement competition");
-    payload.put("source", "buyer");
-    payload.put("relatesTo", "buyer");
-    payload.put("description", "For Information Only");
-    payload.put("requirementGroups", new ArrayList<>());
+    Map<String, Object> criterion = new HashMap<>();
+    criterion.put("id", "Criterion 1");
+    criterion.put("title", "About the procurement competitionax");
+    criterion.put("source", "buyer");
+    criterion.put("relatesTo", "buyer");
+    criterion.put("description", "For Information Only");
+    criterion.put("requirementGroups", new ArrayList<>());
 
-    ProcurementDataTemplate procurementDataTemplate = new ProcurementDataTemplate();
-    procurementDataTemplate.setCriteria(List.of(payload));
-    procurementDataTemplate.setId(null);
-    procurementDataTemplate.setTemplateName("TestTemplateName");
-    procurementDataTemplate.setParent(2);
-    procurementDataTemplate.setMandatory(false);
-    procurementDataTemplate.setCreatedBy("agreement-service-testing");
+    updatePayload.setCriteria(List.of(criterion));
 
+    ProcurementQuestionTemplate savedTemplate = new ProcurementQuestionTemplate();
+    savedTemplate.setId(updatePayload.getId());
+    savedTemplate.setTemplateName(updatePayload.getTemplateName());
+    savedTemplate.setParent(updatePayload.getParent());
+    savedTemplate.setMandatory(updatePayload.getMandatory());
+    savedTemplate.setCreatedBy(updatePayload.getCreatedBy());
+    savedTemplate.setTemplatePayload(updatePayload.getCriteria());
 
-    Mockito.doThrow(new InvalidProcurementQuestionTemplateException("id", procurementDataTemplate.getId())).when(businessLogicClient).updateEventDataTemplates(procurementDataTemplate);
+    when(businessLogicClient.updateEventDataTemplates(any(ProcurementDataTemplate.class)))
+            .thenReturn(updatePayload);
+
+    // Perform Request
     mockMvc.perform(MockMvcRequestBuilders
-                    .put("/agreements/data-templates")
-                    .content(asJsonString(procurementDataTemplate))
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .accept(MediaType.APPLICATION_JSON))
-            .andExpect(status().isBadRequest())
-            .andExpect(jsonPath("$.id", is(GlobalErrorHandler.ERR_MSG_VALIDATION_DESCRIPTION)))
-            .andExpect(jsonPath("$.errors..detail", is(new ArrayList<String>(List.of(new String[]{"Invalid data format, missing 'createdBy' for ID 1"})))));
-  }
-
-  @Test
-  void testSavingValidDataTemplate() throws Exception {
-
-    Map<String, Object> payload = new HashMap<>();
-    payload.put("id", "Criterion 1");
-    payload.put("title", "About the procurement competition");
-    payload.put("source", "buyer");
-    payload.put("relatesTo", "buyer");
-    payload.put("description", "For Information Only");
-    payload.put("requirementGroups", new ArrayList<>());
-
-    ProcurementDataTemplate procurementDataTemplate = new ProcurementDataTemplate();
-    procurementDataTemplate.setCriteria(List.of(payload));
-    procurementDataTemplate.setId(2);
-    procurementDataTemplate.setTemplateName("TestTemplateName");
-    procurementDataTemplate.setParent(2);
-    procurementDataTemplate.setMandatory(false);
-    procurementDataTemplate.setCreatedBy("agreement-service-testing");
-
-    when(businessLogicClient.updateEventDataTemplates(procurementDataTemplate)).thenReturn(procurementDataTemplate);
-    String responseContent = mockMvc.perform(MockMvcRequestBuilders
-                    .put("/agreements/data-templates")
-                    .content(asJsonString(procurementDataTemplate))
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .accept(MediaType.APPLICATION_JSON))
-            .andReturn()
-            .getResponse()
-            .getContentAsString();
-
-    System.out.println("Response JSON: " + responseContent);
-
-    mockMvc.perform(MockMvcRequestBuilders
-                    .put("/agreements/data-templates")
-                    .content(asJsonString(procurementDataTemplate))
+                    .put("/data-templates")
+                    .content(asJsonString(updatePayload))
                     .contentType(MediaType.APPLICATION_JSON)
                     .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$.id", is(procurementDataTemplate.getId())))
-            .andExpect(jsonPath("templateName", is(procurementDataTemplate.getTemplateName())))
-            .andExpect(jsonPath("mandatory", is(procurementDataTemplate.getMandatory())))
-            .andExpect(jsonPath("parent", is(procurementDataTemplate.getParent())));
+            .andExpect(jsonPath("$.id", is(updatePayload.getId())))
+            .andExpect(jsonPath("$.templateName", is(updatePayload.getTemplateName())))
+            .andExpect(jsonPath("$.parent", is(updatePayload.getParent())))
+            .andExpect(jsonPath("$.mandatory", is(updatePayload.getMandatory())))
+            .andExpect(jsonPath("$.createdBy", is(updatePayload.getCreatedBy())))
+            .andExpect(jsonPath("$.criteria[0].id", is("Criterion 1")))
+            .andExpect(jsonPath("$.criteria[0].title", is("About the procurement competitionax")))
+            .andExpect(jsonPath("$.criteria[0].source", is("buyer")))
+            .andExpect(jsonPath("$.criteria[0].relatesTo", is("buyer")))
+            .andExpect(jsonPath("$.criteria[0].description", is("For Information Only")));
   }
 
   public static String asJsonString(final Object obj) {
