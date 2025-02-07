@@ -388,10 +388,10 @@ class AgreementControllerTest {
   }
 
   @Test
-  void testUpdateInvalidDataTemplate() throws Exception {
+  void testUpdateDataTemplate() throws Exception {
     // Mock Payload for Request
     ProcurementDataTemplate updatePayload = new ProcurementDataTemplate();
-    updatePayload.setId(99);
+    updatePayload.setId(5);
     updatePayload.setTemplateName("Testing");
     updatePayload.setParent(37);
     updatePayload.setMandatory(true);
@@ -407,24 +407,26 @@ class AgreementControllerTest {
 
     updatePayload.setCriteria(List.of(criterion));
 
-    ProcurementQuestionTemplate savedTemplate = new ProcurementQuestionTemplate();
-    savedTemplate.setId(updatePayload.getId());
-    savedTemplate.setTemplateName(updatePayload.getTemplateName());
-    savedTemplate.setParent(updatePayload.getParent());
-    savedTemplate.setMandatory(updatePayload.getMandatory());
-    savedTemplate.setCreatedBy(updatePayload.getCreatedBy());
-    savedTemplate.setTemplatePayload(updatePayload.getCriteria());
-
     when(businessLogicClient.updateEventDataTemplates(any(ProcurementDataTemplate.class)))
             .thenReturn(updatePayload);
 
     // Perform Request
     mockMvc.perform(MockMvcRequestBuilders
-                    .put("/data-templates")
+                    .put("/agreements/data-templates")
                     .content(asJsonString(updatePayload))
                     .contentType(MediaType.APPLICATION_JSON)
                     .accept(MediaType.APPLICATION_JSON))
-            .andExpect(status().isNotFound());
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.id", is(updatePayload.getId())))
+            .andExpect(jsonPath("$.templateName", is(updatePayload.getTemplateName())))
+            .andExpect(jsonPath("$.parent", is(updatePayload.getParent())))
+            .andExpect(jsonPath("$.mandatory", is(updatePayload.getMandatory())))
+            .andExpect(jsonPath("$.createdBy", is(updatePayload.getCreatedBy())))
+            .andExpect(jsonPath("$.criteria[0].id", is("Criterion 1")))
+            .andExpect(jsonPath("$.criteria[0].title", is("About the procurement competition")))
+            .andExpect(jsonPath("$.criteria[0].source", is("buyer")))
+            .andExpect(jsonPath("$.criteria[0].relatesTo", is("buyer")))
+            .andExpect(jsonPath("$.criteria[0].description", is("For Information Only")));
   }
 
   public static String asJsonString(final Object obj) {
