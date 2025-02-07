@@ -13,4 +13,5 @@ public class ProcurementDataTemplate implements Serializable {
     private Integer parent;
     private Boolean mandatory;
     private Object criteria;
+    private String createdBy;
 }

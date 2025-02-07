@@ -252,6 +252,24 @@ public class BusinessLogicClient {
     }
 
     /**
+     * Updates and then returns the ProcurementDataTemplate objects which relate to a specified event
+     */
+    @CacheEvict(value = "getEventDataTemplates", allEntries = true)
+    public ProcurementDataTemplate updateEventDataTemplates(ProcurementDataTemplate updatePayload) {
+        ProcurementQuestionTemplate procurementQuestionTemplate = new ProcurementQuestionTemplate();
+
+        // Gathers and sets update data to the required model for mapping and saving
+        procurementQuestionTemplate.setId(updatePayload.getId());
+        procurementQuestionTemplate.setTemplateName(updatePayload.getTemplateName());
+        procurementQuestionTemplate.setMandatory(updatePayload.getMandatory());
+        procurementQuestionTemplate.setParent(updatePayload.getParent());
+        procurementQuestionTemplate.setTemplatePayload(updatePayload.getCriteria());
+        procurementQuestionTemplate.setCreatedBy(updatePayload.getCreatedBy());
+
+        return mappingService.mapProcurementQuestionTemplateToProcurementDataTemplate(agreementService.createOrUpdateProcurementDataTemplate(procurementQuestionTemplate));
+    }
+
+    /**
      * Returns the new agreement or updated agreement from the api call
      * Clear cache after its being called
      */

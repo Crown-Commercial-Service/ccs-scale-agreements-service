@@ -20,13 +20,11 @@ import uk.gov.crowncommercial.dts.scale.service.agreements.exception.LotNotFound
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.AgreementDetail;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.AgreementType;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.Regulation;
-import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.CommercialAgreement;
-import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.CommercialAgreementBenefit;
-import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.Lot;
-import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.LotProcurementQuestionTemplate;
+import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.*;
 import uk.gov.crowncommercial.dts.scale.service.agreements.repository.CommercialAgreementBenefitRepo;
 import uk.gov.crowncommercial.dts.scale.service.agreements.repository.CommercialAgreementRepo;
 import uk.gov.crowncommercial.dts.scale.service.agreements.repository.LotRepo;
+import uk.gov.crowncommercial.dts.scale.service.agreements.repository.ProcurementQuestionTemplateRepo;
 
 @SpringBootTest
 @ActiveProfiles("test")
@@ -37,6 +35,7 @@ class AgreementServiceTest {
 
   private static final String AGREEMENT_NUMBER = "RM1000";
   private static final String LOT_NUMBER = "Lot 1";
+  private static final Integer TEMPLATE_ID = 1;
 
   @MockBean
   private CommercialAgreementRepo mockCommercialAgreementRepo;
@@ -51,10 +50,16 @@ class AgreementServiceTest {
   private CommercialAgreement mockCommercialAgreement;
 
   @MockBean
+  private ProcurementQuestionTemplate mockProcurementQuestionTemplate;
+
+  @MockBean
   private List<CommercialAgreement> mockCommercialAgreements;
 
   @MockBean
   private LotRepo mockLotRepo;
+
+  @MockBean
+  private ProcurementQuestionTemplateRepo mockProcurementQuestionTemplateRepo;
 
   @MockBean
   private Lot mockLot;
@@ -337,5 +342,75 @@ class AgreementServiceTest {
     assertEquals(lot.getStartDate(), result.getStartDate());
     assertEquals(lot.getEndDate(), result.getEndDate());
     assertEquals(lot.getLotType(), result.getLotType());
+  }
+
+  @Test
+  void testCreateQuestionDataTemplate() throws Exception {
+
+    Map<String, Object> payload = new HashMap<>();
+    payload.put("id", "Criterion 1");
+    payload.put("title", "About the procurement competition");
+    payload.put("source", "buyer");
+    payload.put("relatesTo", "buyer");
+    payload.put("description", "For Information Only");
+    payload.put("requirementGroups", new ArrayList<>());
+
+    ProcurementQuestionTemplate procurementQuestionTemplate = new ProcurementQuestionTemplate();
+    procurementQuestionTemplate.setTemplatePayload(List.of(payload));
+    procurementQuestionTemplate.setId(1);
+    procurementQuestionTemplate.setTemplateName("TestTemplateName");
+    procurementQuestionTemplate.setDescription("Some description");
+    procurementQuestionTemplate.setParent(2);
+    procurementQuestionTemplate.setMandatory(false);
+    procurementQuestionTemplate.setCreatedBy("agreements-service-testing");
+    procurementQuestionTemplate.setTemplateUrl("https//www.test.com/");
+    procurementQuestionTemplate.setCreatedAt(java.time.LocalDateTime.now());
+    procurementQuestionTemplate.setUpdatedAt(java.time.LocalDateTime.now());
+
+    when(mockProcurementQuestionTemplateRepo.findById(TEMPLATE_ID)).thenReturn(Optional.ofNullable(null)).thenReturn(Optional.of(procurementQuestionTemplate));
+    ProcurementQuestionTemplate result = service.createOrUpdateProcurementDataTemplate(procurementQuestionTemplate);
+
+    assertEquals(procurementQuestionTemplate.getTemplateName(), result.getTemplateName());
+    assertEquals(procurementQuestionTemplate.getId(), result.getId());
+    assertEquals(procurementQuestionTemplate.getDescription(), result.getDescription());
+    assertEquals(procurementQuestionTemplate.getMandatory(), result.getMandatory());
+    assertEquals(procurementQuestionTemplate.getCreatedBy(), result.getCreatedBy());
+    assertEquals(procurementQuestionTemplate.getCreatedAt(), result.getCreatedAt());
+    assertEquals(procurementQuestionTemplate.getUpdatedAt(), result.getUpdatedAt());
+  }
+
+  @Test
+  void testUpdateQuestionDataTemplate() throws Exception {
+
+    Map<String, Object> payload = new HashMap<>();
+    payload.put("id", "Criterion 2");
+    payload.put("title", "New Criterion Update");
+    payload.put("source", "buyer");
+    payload.put("relatesTo", "buyer");
+    payload.put("description", "For Information Only");
+    payload.put("requirementGroups", new ArrayList<>());
+
+    ProcurementQuestionTemplate procurementQuestionTemplate = new ProcurementQuestionTemplate();
+    procurementQuestionTemplate.setTemplatePayload(List.of(payload));
+    procurementQuestionTemplate.setId(1); //Same ID for update instead of create
+    procurementQuestionTemplate.setTemplateName("UpdatedTemplateName");
+    procurementQuestionTemplate.setDescription("New Updated description");
+    procurementQuestionTemplate.setParent(3);
+    procurementQuestionTemplate.setMandatory(true);
+    procurementQuestionTemplate.setCreatedBy("agreements-service-testing");
+    procurementQuestionTemplate.setTemplateUrl("https//www.test-updated.com/");
+    procurementQuestionTemplate.setCreatedAt(java.time.LocalDateTime.now());
+    procurementQuestionTemplate.setUpdatedAt(java.time.LocalDateTime.now());
+
+    when(mockProcurementQuestionTemplateRepo.findById(TEMPLATE_ID)).thenReturn(Optional.ofNullable(procurementQuestionTemplate));
+    ProcurementQuestionTemplate result = service.createOrUpdateProcurementDataTemplate(procurementQuestionTemplate);
+
+    assertEquals(procurementQuestionTemplate.getTemplateName(), result.getTemplateName());
+    assertEquals(procurementQuestionTemplate.getId(), result.getId());
+    assertEquals(procurementQuestionTemplate.getDescription(), result.getDescription());
+    assertEquals(procurementQuestionTemplate.getMandatory(), result.getMandatory());
+    assertEquals(procurementQuestionTemplate.getCreatedBy(), result.getCreatedBy());
+    assertEquals(procurementQuestionTemplate.getCreatedAt(), result.getCreatedAt());
+    assertEquals(procurementQuestionTemplate.getUpdatedAt(), result.getUpdatedAt());
   }
 }
