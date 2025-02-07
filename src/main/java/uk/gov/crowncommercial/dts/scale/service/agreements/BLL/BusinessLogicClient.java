@@ -264,6 +264,7 @@ public class BusinessLogicClient {
         procurementQuestionTemplate.setMandatory(updatePayload.getMandatory());
         procurementQuestionTemplate.setParent(updatePayload.getParent());
         procurementQuestionTemplate.setTemplatePayload(updatePayload.getCriteria());
+        procurementQuestionTemplate.setCreatedBy(updatePayload.getCreatedBy());
 
         return mappingService.mapProcurementQuestionTemplateToProcurementDataTemplate(agreementService.createOrUpdateProcurementDataTemplate(procurementQuestionTemplate));
     }

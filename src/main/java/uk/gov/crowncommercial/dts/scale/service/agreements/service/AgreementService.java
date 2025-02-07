@@ -190,7 +190,6 @@ public class AgreementService {
               procurementQuestionTemplateRepo.saveAndFlush(procurementDataTemplate);
               return findByTemplateId(procurementDataTemplate.getId());
           }).orElseGet(() -> {
-              updateProcurementDataTemplate.setCreatedBy("agreement service");
               updateProcurementDataTemplate.setCreatedAt(LocalDateTime.now());
               updateProcurementDataTemplate.setUpdatedAt(LocalDateTime.now());
               procurementQuestionTemplateRepo.saveAndFlush(updateProcurementDataTemplate);

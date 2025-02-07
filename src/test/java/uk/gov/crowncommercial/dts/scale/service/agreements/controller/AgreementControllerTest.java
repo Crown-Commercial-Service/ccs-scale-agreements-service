@@ -31,6 +31,7 @@ import uk.gov.crowncommercial.dts.scale.service.agreements.BLL.BusinessLogicClie
 import uk.gov.crowncommercial.dts.scale.service.agreements.exception.AgreementNotFoundException;
 import uk.gov.crowncommercial.dts.scale.service.agreements.exception.InvalidAgreementException;
 import uk.gov.crowncommercial.dts.scale.service.agreements.exception.InvalidLotException;
+import uk.gov.crowncommercial.dts.scale.service.agreements.exception.InvalidProcurementQuestionTemplateException;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.*;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.*;
 import uk.gov.crowncommercial.dts.scale.service.agreements.service.AgreementService;
@@ -384,6 +385,69 @@ class AgreementControllerTest {
             .andExpect(status().isBadRequest())
             .andExpect(jsonPath("$.description", is(GlobalErrorHandler.ERR_MSG_VALIDATION_DESCRIPTION)))
             .andExpect(jsonPath("$.errors..detail", is(new ArrayList<String>(List.of(new String[]{"Invalid lot format, missing 'description' for Lot 1"})))));
+  }
+
+  @Test
+  void testSavingInvalidDataTemplate() throws Exception {
+
+    Map<String, Object> payload = new HashMap<>();
+    payload.put("id", "Criterion 1");
+    payload.put("title", "About the procurement competition");
+    payload.put("source", "buyer");
+    payload.put("relatesTo", "buyer");
+    payload.put("description", "For Information Only");
+    payload.put("requirementGroups", new ArrayList<>());
+
+    ProcurementDataTemplate procurementDataTemplate = new ProcurementDataTemplate();
+    procurementDataTemplate.setCriteria(payload);
+    procurementDataTemplate.setId(1);
+    procurementDataTemplate.setTemplateName("TestTemplateName");
+    procurementDataTemplate.setParent(2);
+    procurementDataTemplate.setMandatory(false);
+    procurementDataTemplate.setCreatedBy(null);
+
+
+    Mockito.doThrow(new InvalidProcurementQuestionTemplateException("createdBy", procurementDataTemplate.getId())).when(businessLogicClient).updateEventDataTemplates(procurementDataTemplate);
+    mockMvc.perform(MockMvcRequestBuilders
+                    .put("/agreements/data-templates")
+                    .content(asJsonString(procurementDataTemplate))
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isBadRequest())
+            .andExpect(jsonPath("$.createdBy", is(GlobalErrorHandler.ERR_MSG_VALIDATION_DESCRIPTION)))
+            .andExpect(jsonPath("$.errors..detail", is(new ArrayList<String>(List.of(new String[]{"Invalid data format, missing 'createdBy' for ID 1"})))));
+  }
+
+  @Test
+  void testSavingValidDataTemplate() throws Exception {
+
+    Map<String, Object> payload = new HashMap<>();
+    payload.put("id", "Criterion 1");
+    payload.put("title", "About the procurement competition");
+    payload.put("source", "buyer");
+    payload.put("relatesTo", "buyer");
+    payload.put("description", "For Information Only");
+    payload.put("requirementGroups", new ArrayList<>());
+
+    ProcurementDataTemplate procurementDataTemplate = new ProcurementDataTemplate();
+    procurementDataTemplate.setCriteria(payload);
+    procurementDataTemplate.setId(1);
+    procurementDataTemplate.setTemplateName("TestTemplateName");
+    procurementDataTemplate.setParent(2);
+    procurementDataTemplate.setMandatory(false);
+    procurementDataTemplate.setCreatedBy("agreement-service-testing");
+
+    when(businessLogicClient.updateEventDataTemplates(procurementDataTemplate)).thenReturn(procurementDataTemplate);
+    mockMvc.perform(MockMvcRequestBuilders
+                    .put("/agreements/data-templates")
+                    .content(asJsonString(procurementDataTemplate))
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("id", is(procurementDataTemplate.getId())))
+            .andExpect(jsonPath("templateName", is(procurementDataTemplate.getTemplateName())))
+            .andExpect(jsonPath("mandatory", is(procurementDataTemplate.getMandatory())))
+            .andExpect(jsonPath("parent", is(procurementDataTemplate.getParent())));
   }
 
   public static String asJsonString(final Object obj) {
