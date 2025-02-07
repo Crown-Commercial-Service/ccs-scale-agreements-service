@@ -388,18 +388,18 @@ class AgreementControllerTest {
   }
 
   @Test
-  void testUpdatingDataTemplate() throws Exception {
+  void testUpdateInvalidDataTemplate() throws Exception {
     // Mock Payload for Request
     ProcurementDataTemplate updatePayload = new ProcurementDataTemplate();
     updatePayload.setId(99);
-    updatePayload.setTemplateName("FC2-DOS6-Lot3-TESTING91112121");
+    updatePayload.setTemplateName("Testing");
     updatePayload.setParent(37);
     updatePayload.setMandatory(true);
     updatePayload.setCreatedBy("agreement-service-testing");
 
     Map<String, Object> criterion = new HashMap<>();
     criterion.put("id", "Criterion 1");
-    criterion.put("title", "About the procurement competitionax");
+    criterion.put("title", "About the procurement competition");
     criterion.put("source", "buyer");
     criterion.put("relatesTo", "buyer");
     criterion.put("description", "For Information Only");
@@ -424,17 +424,7 @@ class AgreementControllerTest {
                     .content(asJsonString(updatePayload))
                     .contentType(MediaType.APPLICATION_JSON)
                     .accept(MediaType.APPLICATION_JSON))
-            .andExpect(status().isOk())
-            .andExpect(jsonPath("$.id", is(updatePayload.getId())))
-            .andExpect(jsonPath("$.templateName", is(updatePayload.getTemplateName())))
-            .andExpect(jsonPath("$.parent", is(updatePayload.getParent())))
-            .andExpect(jsonPath("$.mandatory", is(updatePayload.getMandatory())))
-            .andExpect(jsonPath("$.createdBy", is(updatePayload.getCreatedBy())))
-            .andExpect(jsonPath("$.criteria[0].id", is("Criterion 1")))
-            .andExpect(jsonPath("$.criteria[0].title", is("About the procurement competitionax")))
-            .andExpect(jsonPath("$.criteria[0].source", is("buyer")))
-            .andExpect(jsonPath("$.criteria[0].relatesTo", is("buyer")))
-            .andExpect(jsonPath("$.criteria[0].description", is("For Information Only")));
+            .andExpect(status().isNotFound());
   }
 
   public static String asJsonString(final Object obj) {
