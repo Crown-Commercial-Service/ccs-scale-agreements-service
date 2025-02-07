@@ -399,22 +399,22 @@ class AgreementControllerTest {
     payload.put("requirementGroups", new ArrayList<>());
 
     ProcurementDataTemplate procurementDataTemplate = new ProcurementDataTemplate();
-    procurementDataTemplate.setCriteria(payload);
-    procurementDataTemplate.setId(1);
+    procurementDataTemplate.setCriteria(List.of(payload));
+    procurementDataTemplate.setId(null);
     procurementDataTemplate.setTemplateName("TestTemplateName");
     procurementDataTemplate.setParent(2);
     procurementDataTemplate.setMandatory(false);
-    procurementDataTemplate.setCreatedBy(null);
+    procurementDataTemplate.setCreatedBy("agreement-service-testing");
 
 
-    Mockito.doThrow(new InvalidProcurementQuestionTemplateException("createdBy", procurementDataTemplate.getId())).when(businessLogicClient).updateEventDataTemplates(procurementDataTemplate);
+    Mockito.doThrow(new InvalidProcurementQuestionTemplateException("id", procurementDataTemplate.getId())).when(businessLogicClient).updateEventDataTemplates(procurementDataTemplate);
     mockMvc.perform(MockMvcRequestBuilders
                     .put("/agreements/data-templates")
                     .content(asJsonString(procurementDataTemplate))
                     .contentType(MediaType.APPLICATION_JSON)
                     .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isBadRequest())
-            .andExpect(jsonPath("$.createdBy", is(GlobalErrorHandler.ERR_MSG_VALIDATION_DESCRIPTION)))
+            .andExpect(jsonPath("$.id", is(GlobalErrorHandler.ERR_MSG_VALIDATION_DESCRIPTION)))
             .andExpect(jsonPath("$.errors..detail", is(new ArrayList<String>(List.of(new String[]{"Invalid data format, missing 'createdBy' for ID 1"})))));
   }
 
@@ -430,21 +430,32 @@ class AgreementControllerTest {
     payload.put("requirementGroups", new ArrayList<>());
 
     ProcurementDataTemplate procurementDataTemplate = new ProcurementDataTemplate();
-    procurementDataTemplate.setCriteria(payload);
-    procurementDataTemplate.setId(1);
+    procurementDataTemplate.setCriteria(List.of(payload));
+    procurementDataTemplate.setId(2);
     procurementDataTemplate.setTemplateName("TestTemplateName");
     procurementDataTemplate.setParent(2);
     procurementDataTemplate.setMandatory(false);
     procurementDataTemplate.setCreatedBy("agreement-service-testing");
 
     when(businessLogicClient.updateEventDataTemplates(procurementDataTemplate)).thenReturn(procurementDataTemplate);
+    String responseContent = mockMvc.perform(MockMvcRequestBuilders
+                    .put("/agreements/data-templates")
+                    .content(asJsonString(procurementDataTemplate))
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .accept(MediaType.APPLICATION_JSON))
+            .andReturn()
+            .getResponse()
+            .getContentAsString();
+
+    System.out.println("Response JSON: " + responseContent);
+
     mockMvc.perform(MockMvcRequestBuilders
                     .put("/agreements/data-templates")
                     .content(asJsonString(procurementDataTemplate))
                     .contentType(MediaType.APPLICATION_JSON)
                     .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
-            .andExpect(jsonPath("id", is(procurementDataTemplate.getId())))
+            .andExpect(jsonPath("$.id", is(procurementDataTemplate.getId())))
             .andExpect(jsonPath("templateName", is(procurementDataTemplate.getTemplateName())))
             .andExpect(jsonPath("mandatory", is(procurementDataTemplate.getMandatory())))
             .andExpect(jsonPath("parent", is(procurementDataTemplate.getParent())));

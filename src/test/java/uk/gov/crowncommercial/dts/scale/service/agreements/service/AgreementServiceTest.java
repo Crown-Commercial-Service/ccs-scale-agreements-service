@@ -356,7 +356,7 @@ class AgreementServiceTest {
     payload.put("requirementGroups", new ArrayList<>());
 
     ProcurementQuestionTemplate procurementQuestionTemplate = new ProcurementQuestionTemplate();
-    procurementQuestionTemplate.setTemplatePayload(payload);
+    procurementQuestionTemplate.setTemplatePayload(List.of(payload));
     procurementQuestionTemplate.setId(1);
     procurementQuestionTemplate.setTemplateName("TestTemplateName");
     procurementQuestionTemplate.setDescription("Some description");
@@ -391,7 +391,7 @@ class AgreementServiceTest {
     payload.put("requirementGroups", new ArrayList<>());
 
     ProcurementQuestionTemplate procurementQuestionTemplate = new ProcurementQuestionTemplate();
-    procurementQuestionTemplate.setTemplatePayload(payload);
+    procurementQuestionTemplate.setTemplatePayload(List.of(payload));
     procurementQuestionTemplate.setId(1); //Same ID for update instead of create
     procurementQuestionTemplate.setTemplateName("UpdatedTemplateName");
     procurementQuestionTemplate.setDescription("New Updated description");
