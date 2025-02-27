@@ -2,6 +2,7 @@ package uk.gov.crowncommercial.dts.scale.service.agreements.controller;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -465,7 +466,7 @@ class LotControllerTest {
     lotEventTypeUpdate.setAssessmentToolId("FCA_TOOL_1");
     lotEventTypeUpdate.setMaxRepeats(1);
 
-    when(businessLogicClient.updateLotEventTypes(AGREEMENT_NUMBER, LOT_NUMBER, any(LotEventTypeUpdate.class))).thenReturn(businessLogicClient.getLotEventTypes(AGREEMENT_NUMBER, LOT_NUMBER));
+    when(businessLogicClient.updateLotEventTypes(eq(AGREEMENT_NUMBER), eq(LOT_NUMBER), any(LotEventTypeUpdate.class))).thenReturn(businessLogicClient.getLotEventTypes(AGREEMENT_NUMBER, LOT_NUMBER));
 
     mockMvc.perform(MockMvcRequestBuilders
                     .put(String.format("/agreements/%s/lots/%s/event-types", AGREEMENT_NUMBER, LOT_NUMBER))
