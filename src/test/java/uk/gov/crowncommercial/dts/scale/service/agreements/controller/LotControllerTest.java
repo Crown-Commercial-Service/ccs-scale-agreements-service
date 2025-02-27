@@ -10,10 +10,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
@@ -457,7 +454,7 @@ class LotControllerTest {
   void testUpdateLotEventTypes() throws Exception {
 
     final String AGREEMENT_NUMBER = "RM1045";
-    final String LOT_NUMBER= "LOT1_NUMBER";
+    final String LOT_NUMBER = "LOT1_NUMBER";
 
     LotEventTypeUpdate lotEventTypeUpdate = new LotEventTypeUpdate();
     lotEventTypeUpdate.setType("PA");
@@ -466,7 +463,25 @@ class LotControllerTest {
     lotEventTypeUpdate.setAssessmentToolId("FCA_TOOL_1");
     lotEventTypeUpdate.setMaxRepeats(1);
 
-    when(businessLogicClient.updateLotEventTypes(eq(AGREEMENT_NUMBER), eq(LOT_NUMBER), any(LotEventTypeUpdate.class))).thenReturn(businessLogicClient.getLotEventTypes(AGREEMENT_NUMBER, LOT_NUMBER));
+    QuestionTemplate questionTemplate = new QuestionTemplate();
+    questionTemplate.setDescription("Testing");
+    questionTemplate.setMandatoryTemplate(false);
+    questionTemplate.setTemplateId(1);
+    questionTemplate.setName("Test");
+    questionTemplate.setTemplateGroupId(1);
+    questionTemplate.setInheritsFrom(1);
+
+    EventType eventType = new EventType();
+    eventType.setMandatoryEventInd(false);
+    eventType.setPreMarketActivity(true);
+    eventType.setDescription("Testing");
+    eventType.setType("PA");
+    eventType.setAssessmentToolId("FCA_TOOL_1");
+    eventType.setTemplateGroups(List.of(questionTemplate));
+
+    Collection<EventType> mockEventTypes = List.of(eventType);
+
+    when(businessLogicClient.updateLotEventTypes(eq(AGREEMENT_NUMBER), eq(LOT_NUMBER), any(LotEventTypeUpdate.class))).thenReturn(mockEventTypes);
 
     mockMvc.perform(MockMvcRequestBuilders
                     .put(String.format("/agreements/%s/lots/%s/event-types", AGREEMENT_NUMBER, LOT_NUMBER))
@@ -474,7 +489,7 @@ class LotControllerTest {
                     .contentType(MediaType.APPLICATION_JSON)
                     .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
-            .andExpect(content().json(asJsonString(businessLogicClient.getLotEventTypes(AGREEMENT_NUMBER, LOT_NUMBER))));
+            .andExpect(content().json(asJsonString(mockEventTypes)));
   }
 
   public static String asJsonString(final Object obj) {
