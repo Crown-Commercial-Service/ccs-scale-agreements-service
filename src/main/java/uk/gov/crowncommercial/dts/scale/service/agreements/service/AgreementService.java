@@ -197,36 +197,20 @@ public class AgreementService {
       lotProcurementEventType.setLot(lotModel);
       lotProcurementEventType.setProcurementEventType(eventType);
 
-      if (lotEventTypeUpdate != null && lotEventTypeUpdate.getMandatoryEvent() != null) {
-          lotProcurementEventType.setIsMandatoryEvent(lotEventTypeUpdate.getMandatoryEvent());
-      } else {
-          // Set to the correct default value, as fallback.
-          lotProcurementEventType.setIsMandatoryEvent(false);
-      }
+      // Apply updates with defaults
+      lotProcurementEventType.setIsMandatoryEvent(
+              Optional.ofNullable(lotEventTypeUpdate).map(LotEventTypeUpdate::getMandatoryEvent).orElse(false));
 
-      if (lotEventTypeUpdate != null && lotEventTypeUpdate.getRepeatableEvent() != null) {
-          lotProcurementEventType.setIsRepeatableEvent(lotEventTypeUpdate.getRepeatableEvent());
-      } else {
-          // Set to the correct default value, as fallback.
-          lotProcurementEventType.setIsRepeatableEvent(true);
-      }
+      lotProcurementEventType.setIsRepeatableEvent(
+              Optional.ofNullable(lotEventTypeUpdate).map(LotEventTypeUpdate::getRepeatableEvent).orElse(true));
 
-      if (lotEventTypeUpdate != null && lotEventTypeUpdate.getMaxRepeats() != null) {
-          lotProcurementEventType.setMaxRepeats(lotEventTypeUpdate.getMaxRepeats());
-      } else {
-          // Set to the correct default value, as fallback.
-          lotProcurementEventType.setMaxRepeats(5);
-      }
+      lotProcurementEventType.setMaxRepeats(
+              Optional.ofNullable(lotEventTypeUpdate).map(LotEventTypeUpdate::getMaxRepeats).orElse(5));
 
-      if (lotEventTypeUpdate != null && lotEventTypeUpdate.getAssessmentToolId() != null) {
-          lotProcurementEventType.setAssessmentToolId(lotEventTypeUpdate.getAssessmentToolId());
-      } else {
-          // Set to the correct default value, as fallback.
-          lotProcurementEventType.setAssessmentToolId(null);
-      }
+      lotProcurementEventType.setAssessmentToolId(
+              Optional.ofNullable(lotEventTypeUpdate).map(LotEventTypeUpdate::getAssessmentToolId).orElse(null));
 
       lotProcurementEventTypeRepo.saveAndFlush(lotProcurementEventType);
-
       return lotProcurementEventType;
   }
 
