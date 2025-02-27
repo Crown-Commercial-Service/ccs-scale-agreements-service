@@ -1,6 +1,7 @@
 package uk.gov.crowncommercial.dts.scale.service.agreements.controller;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -449,6 +450,30 @@ class LotControllerTest {
             .andExpect(status().isBadRequest())
             .andExpect(jsonPath("$.description", is(GlobalErrorHandler.ERR_MSG_VALIDATION_DESCRIPTION)))
             .andExpect(jsonPath("$.errors..detail", is(new ArrayList<String>(List.of(new String[]{"Invalid organisation format, missing 'legalName'"})))));
+  }
+
+  @Test
+  void testUpdateLotEventTypes() throws Exception {
+
+    final String AGREEMENT_NUMBER = "RM1045";
+    final String LOT_NUMBER= "LOT1_NUMBER";
+
+    LotEventTypeUpdate lotEventTypeUpdate = new LotEventTypeUpdate();
+    lotEventTypeUpdate.setType("PA");
+    lotEventTypeUpdate.setMandatoryEvent(false);
+    lotEventTypeUpdate.setRepeatableEvent(true);
+    lotEventTypeUpdate.setAssessmentToolId("FCA_TOOL_1");
+    lotEventTypeUpdate.setMaxRepeats(1);
+
+    when(businessLogicClient.updateLotEventTypes(AGREEMENT_NUMBER, LOT_NUMBER, any(LotEventTypeUpdate.class))).thenReturn(businessLogicClient.getLotEventTypes(AGREEMENT_NUMBER, LOT_NUMBER));
+
+    mockMvc.perform(MockMvcRequestBuilders
+                    .put(String.format("/agreements/%s/lots/%s/event-types", AGREEMENT_NUMBER, LOT_NUMBER))
+                    .content(asJsonString(lotEventTypeUpdate))
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andExpect(content().json(asJsonString(businessLogicClient.getLotEventTypes(AGREEMENT_NUMBER, LOT_NUMBER))));
   }
 
   public static String asJsonString(final Object obj) {

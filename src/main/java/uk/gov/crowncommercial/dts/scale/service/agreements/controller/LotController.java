@@ -48,6 +48,15 @@ public class LotController {
     return model;
   }
 
+  @PutMapping("/event-types")
+  public Collection<EventType> putLotEventTypes(@PathVariable(value = "agreement-id") final String agreementNumber, @PathVariable(value = "lot-id") final String lotNumber, @RequestBody final LotEventTypeUpdate lotEventTypeUpdate) {
+    log.debug("putLotEventTypes called with values: agreementNumber={}, lotNumber={}, eventType={}", agreementNumber, lotNumber, lotEventTypeUpdate.getType());
+
+    Collection<EventType> model = businessLogicClient.updateLotEventTypes(agreementNumber, lotNumber, lotEventTypeUpdate);
+
+    return model;
+  }
+
   @GetMapping("/event-types/{event-type}/data-templates")
   public Collection<ProcurementDataTemplate> getDataTemplates(@PathVariable(value = "agreement-id") final String agreementNumber, @PathVariable(value = "lot-id") final String lotNumber, @PathVariable(value = "event-type") final String eventType) {
     log.debug("getDataTemplates called with values: agreementNumber={}, lotNumber={}, eventType={}", agreementNumber, lotNumber, eventType);

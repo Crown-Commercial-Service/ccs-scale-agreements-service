@@ -12,11 +12,9 @@ import org.springframework.transaction.annotation.Transactional;
 import uk.gov.crowncommercial.dts.scale.service.agreements.exception.AgreementNotFoundException;
 import uk.gov.crowncommercial.dts.scale.service.agreements.exception.LotNotFoundException;
 import uk.gov.crowncommercial.dts.scale.service.agreements.exception.ProcurementQuestionTemplateNotFoundException;
+import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.LotEventTypeUpdate;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.*;
-import uk.gov.crowncommercial.dts.scale.service.agreements.repository.CommercialAgreementRepo;
-import uk.gov.crowncommercial.dts.scale.service.agreements.repository.LotRepo;
-import uk.gov.crowncommercial.dts.scale.service.agreements.repository.ProcurementQuestionTemplateRepo;
-import uk.gov.crowncommercial.dts.scale.service.agreements.repository.SimpleLotRepo;
+import uk.gov.crowncommercial.dts.scale.service.agreements.repository.*;
 
 /**
  * Agreement Service.
@@ -29,6 +27,8 @@ public class AgreementService {
 
   private final CommercialAgreementRepo commercialAgreementRepo;
   private final LotRepo lotRepo;
+  private final ProcurementEventTypeRepo procurementEventTypeRepo;
+  private final LotProcurementEventTypeRepo lotProcurementEventTypeRepo;
   private final ProcurementQuestionTemplateRepo procurementQuestionTemplateRepo;
   private final SimpleLotRepo simpleLotRepo;
   private final CommercialAgreementBenefitService commercialAgreementBenefitService;
@@ -152,6 +152,16 @@ public class AgreementService {
   }
 
   /**
+   * Find Event Type by Name.
+   *
+   * @return ProcurementEventType
+  */
+  public ProcurementEventType findEventTypeByName(final String procurementEventTypeName) {
+    log.debug("findEventTypeByName by name: {}", procurementEventTypeName);
+    return procurementEventTypeRepo.findByName(procurementEventTypeName);
+  }
+
+  /**
    * Find all lot supplier organisation roles
    *
    * @param agreementNumber Commercial Agreement number
@@ -168,6 +178,56 @@ public class AgreementService {
     }
 
     return lot.getActiveOrganisationRoles();
+  }
+
+  /**
+   * Update the event types for the given lot.
+   *
+   * @param lotModel                    Lot
+   * @param eventType                   ProcurementEventType
+   * @param lotEventTypeUpdate          LotEventTypeUpdate
+  */
+  public LotProcurementEventType updateLotEventTypes(final Lot lotModel, final ProcurementEventType eventType, LotEventTypeUpdate lotEventTypeUpdate) {
+      LotProcurementEventTypeKey lotProcurementEventTypeKey = new LotProcurementEventTypeKey();
+      lotProcurementEventTypeKey.setLotId(lotModel.getId());
+      lotProcurementEventTypeKey.setProcurementEventTypeId(eventType.getId());
+
+      LotProcurementEventType lotProcurementEventType = new LotProcurementEventType();
+      lotProcurementEventType.setKey(lotProcurementEventTypeKey);
+      lotProcurementEventType.setLot(lotModel);
+      lotProcurementEventType.setProcurementEventType(eventType);
+
+      if (lotEventTypeUpdate != null && lotEventTypeUpdate.getMandatoryEvent() != null) {
+          lotProcurementEventType.setIsMandatoryEvent(lotEventTypeUpdate.getMandatoryEvent());
+      } else {
+          // Set to the correct default value, as fallback.
+          lotProcurementEventType.setIsMandatoryEvent(false);
+      }
+
+      if (lotEventTypeUpdate != null && lotEventTypeUpdate.getRepeatableEvent() != null) {
+          lotProcurementEventType.setIsRepeatableEvent(lotEventTypeUpdate.getRepeatableEvent());
+      } else {
+          // Set to the correct default value, as fallback.
+          lotProcurementEventType.setIsRepeatableEvent(true);
+      }
+
+      if (lotEventTypeUpdate != null && lotEventTypeUpdate.getMaxRepeats() != null) {
+          lotProcurementEventType.setMaxRepeats(lotEventTypeUpdate.getMaxRepeats());
+      } else {
+          // Set to the correct default value, as fallback.
+          lotProcurementEventType.setMaxRepeats(5);
+      }
+
+      if (lotEventTypeUpdate != null && lotEventTypeUpdate.getAssessmentToolId() != null) {
+          lotProcurementEventType.setAssessmentToolId(lotEventTypeUpdate.getAssessmentToolId());
+      } else {
+          // Set to the correct default value, as fallback.
+          lotProcurementEventType.setAssessmentToolId(null);
+      }
+
+      lotProcurementEventTypeRepo.saveAndFlush(lotProcurementEventType);
+
+      return lotProcurementEventType;
   }
 
   /**

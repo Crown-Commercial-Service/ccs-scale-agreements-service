@@ -19,7 +19,7 @@ import uk.gov.crowncommercial.dts.scale.service.agreements.exception.InvalidLotE
  * Lot.
  */
 @Entity
-@EqualsAndHashCode(exclude = "agreement")
+@EqualsAndHashCode(exclude = {"agreement", "procurementEventTypes"})
 @Table(name = "lots")
 @Getter
 @Setter
