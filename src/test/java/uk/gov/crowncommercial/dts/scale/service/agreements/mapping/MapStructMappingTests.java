@@ -441,6 +441,7 @@ public class MapStructMappingTests {
         LotProcurementEventType lotEventType = new LotProcurementEventType();
         lotEventType.setProcurementEventType(procurementEventType);
         lotEventType.setAssessmentToolId("FCA_TOOL_1");
+        lotEventType.setMaxRepeats(1);
 
         EventType outputModel = eventTypeMapper.lotProcurementEventTypeToEventType(lotEventType, sourceModel);
 

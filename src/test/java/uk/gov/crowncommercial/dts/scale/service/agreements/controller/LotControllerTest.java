@@ -1,6 +1,8 @@
 package uk.gov.crowncommercial.dts.scale.service.agreements.controller;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -8,10 +10,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
@@ -449,6 +448,48 @@ class LotControllerTest {
             .andExpect(status().isBadRequest())
             .andExpect(jsonPath("$.description", is(GlobalErrorHandler.ERR_MSG_VALIDATION_DESCRIPTION)))
             .andExpect(jsonPath("$.errors..detail", is(new ArrayList<String>(List.of(new String[]{"Invalid organisation format, missing 'legalName'"})))));
+  }
+
+  @Test
+  void testUpdateLotEventTypes() throws Exception {
+
+    final String AGREEMENT_NUMBER = "RM1045";
+    final String LOT_NUMBER = "LOT1_NUMBER";
+
+    LotEventTypeUpdate lotEventTypeUpdate = new LotEventTypeUpdate();
+    lotEventTypeUpdate.setType("PA");
+    lotEventTypeUpdate.setMandatoryEvent(false);
+    lotEventTypeUpdate.setRepeatableEvent(true);
+    lotEventTypeUpdate.setAssessmentToolId("FCA_TOOL_1");
+    lotEventTypeUpdate.setMaxRepeats(1);
+
+    QuestionTemplate questionTemplate = new QuestionTemplate();
+    questionTemplate.setDescription("Testing");
+    questionTemplate.setMandatoryTemplate(false);
+    questionTemplate.setTemplateId(1);
+    questionTemplate.setName("Test");
+    questionTemplate.setTemplateGroupId(1);
+    questionTemplate.setInheritsFrom(1);
+
+    EventType eventType = new EventType();
+    eventType.setMandatoryEventInd(false);
+    eventType.setPreMarketActivity(true);
+    eventType.setDescription("Testing");
+    eventType.setType("PA");
+    eventType.setAssessmentToolId("FCA_TOOL_1");
+    eventType.setTemplateGroups(List.of(questionTemplate));
+
+    Collection<EventType> mockEventTypes = List.of(eventType);
+
+    when(businessLogicClient.updateLotEventTypes(eq(AGREEMENT_NUMBER), eq(LOT_NUMBER), any(LotEventTypeUpdate.class))).thenReturn(mockEventTypes);
+
+    mockMvc.perform(MockMvcRequestBuilders
+                    .put(String.format("/agreements/%s/lots/%s/event-types", AGREEMENT_NUMBER, LOT_NUMBER))
+                    .content(asJsonString(lotEventTypeUpdate))
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andExpect(content().json(asJsonString(mockEventTypes)));
   }
 
   public static String asJsonString(final Object obj) {

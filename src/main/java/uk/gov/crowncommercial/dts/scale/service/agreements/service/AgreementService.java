@@ -12,11 +12,9 @@ import org.springframework.transaction.annotation.Transactional;
 import uk.gov.crowncommercial.dts.scale.service.agreements.exception.AgreementNotFoundException;
 import uk.gov.crowncommercial.dts.scale.service.agreements.exception.LotNotFoundException;
 import uk.gov.crowncommercial.dts.scale.service.agreements.exception.ProcurementQuestionTemplateNotFoundException;
+import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.LotEventTypeUpdate;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.*;
-import uk.gov.crowncommercial.dts.scale.service.agreements.repository.CommercialAgreementRepo;
-import uk.gov.crowncommercial.dts.scale.service.agreements.repository.LotRepo;
-import uk.gov.crowncommercial.dts.scale.service.agreements.repository.ProcurementQuestionTemplateRepo;
-import uk.gov.crowncommercial.dts.scale.service.agreements.repository.SimpleLotRepo;
+import uk.gov.crowncommercial.dts.scale.service.agreements.repository.*;
 
 /**
  * Agreement Service.
@@ -29,6 +27,8 @@ public class AgreementService {
 
   private final CommercialAgreementRepo commercialAgreementRepo;
   private final LotRepo lotRepo;
+  private final ProcurementEventTypeRepo procurementEventTypeRepo;
+  private final LotProcurementEventTypeRepo lotProcurementEventTypeRepo;
   private final ProcurementQuestionTemplateRepo procurementQuestionTemplateRepo;
   private final SimpleLotRepo simpleLotRepo;
   private final CommercialAgreementBenefitService commercialAgreementBenefitService;
@@ -152,6 +152,16 @@ public class AgreementService {
   }
 
   /**
+   * Find Event Type by Name.
+   *
+   * @return ProcurementEventType
+  */
+  public ProcurementEventType findEventTypeByName(final String procurementEventTypeName) {
+    log.debug("findEventTypeByName by name: {}", procurementEventTypeName);
+    return procurementEventTypeRepo.findByName(procurementEventTypeName);
+  }
+
+  /**
    * Find all lot supplier organisation roles
    *
    * @param agreementNumber Commercial Agreement number
@@ -168,6 +178,40 @@ public class AgreementService {
     }
 
     return lot.getActiveOrganisationRoles();
+  }
+
+  /**
+   * Update the event types for the given lot.
+   *
+   * @param lotModel                    Lot
+   * @param eventType                   ProcurementEventType
+   * @param lotEventTypeUpdate          LotEventTypeUpdate
+  */
+  public LotProcurementEventType updateLotEventTypes(final Lot lotModel, final ProcurementEventType eventType, LotEventTypeUpdate lotEventTypeUpdate) {
+      LotProcurementEventTypeKey lotProcurementEventTypeKey = new LotProcurementEventTypeKey();
+      lotProcurementEventTypeKey.setLotId(lotModel.getId());
+      lotProcurementEventTypeKey.setProcurementEventTypeId(eventType.getId());
+
+      LotProcurementEventType lotProcurementEventType = new LotProcurementEventType();
+      lotProcurementEventType.setKey(lotProcurementEventTypeKey);
+      lotProcurementEventType.setLot(lotModel);
+      lotProcurementEventType.setProcurementEventType(eventType);
+
+      // Apply updates with defaults
+      lotProcurementEventType.setIsMandatoryEvent(
+              Optional.ofNullable(lotEventTypeUpdate).map(LotEventTypeUpdate::getMandatoryEvent).orElse(false));
+
+      lotProcurementEventType.setIsRepeatableEvent(
+              Optional.ofNullable(lotEventTypeUpdate).map(LotEventTypeUpdate::getRepeatableEvent).orElse(true));
+
+      lotProcurementEventType.setMaxRepeats(
+              Optional.ofNullable(lotEventTypeUpdate).map(LotEventTypeUpdate::getMaxRepeats).orElse(5));
+
+      lotProcurementEventType.setAssessmentToolId(
+              Optional.ofNullable(lotEventTypeUpdate).map(LotEventTypeUpdate::getAssessmentToolId).orElse(null));
+
+      lotProcurementEventTypeRepo.saveAndFlush(lotProcurementEventType);
+      return lotProcurementEventType;
   }
 
   /**

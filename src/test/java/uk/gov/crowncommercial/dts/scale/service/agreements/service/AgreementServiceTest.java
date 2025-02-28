@@ -17,14 +17,9 @@ import org.springframework.test.context.ActiveProfiles;
 import uk.gov.crowncommercial.dts.scale.service.agreements.config.EhcacheConfig;
 import uk.gov.crowncommercial.dts.scale.service.agreements.exception.AgreementNotFoundException;
 import uk.gov.crowncommercial.dts.scale.service.agreements.exception.LotNotFoundException;
-import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.AgreementDetail;
-import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.AgreementType;
-import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.Regulation;
+import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.LotEventTypeUpdate;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.*;
-import uk.gov.crowncommercial.dts.scale.service.agreements.repository.CommercialAgreementBenefitRepo;
-import uk.gov.crowncommercial.dts.scale.service.agreements.repository.CommercialAgreementRepo;
-import uk.gov.crowncommercial.dts.scale.service.agreements.repository.LotRepo;
-import uk.gov.crowncommercial.dts.scale.service.agreements.repository.ProcurementQuestionTemplateRepo;
+import uk.gov.crowncommercial.dts.scale.service.agreements.repository.*;
 
 @SpringBootTest
 @ActiveProfiles("test")
@@ -35,6 +30,8 @@ class AgreementServiceTest {
 
   private static final String AGREEMENT_NUMBER = "RM1000";
   private static final String LOT_NUMBER = "Lot 1";
+  private static final String LOT_NAME = "Name of Lot";
+  private static final String EVENT_TYPE = "PA";
   private static final Integer TEMPLATE_ID = 1;
 
   @MockBean
@@ -69,6 +66,9 @@ class AgreementServiceTest {
 
   @MockBean
   private Set<CommercialAgreementBenefit> mockCommercialAgreementBenefitCollection;
+
+  @MockBean
+  private LotProcurementEventTypeRepo mockLotProcurementEventTypeRepo;
 
   @Autowired
   AgreementService service;
@@ -412,5 +412,50 @@ class AgreementServiceTest {
     assertEquals(procurementQuestionTemplate.getCreatedBy(), result.getCreatedBy());
     assertEquals(procurementQuestionTemplate.getCreatedAt(), result.getCreatedAt());
     assertEquals(procurementQuestionTemplate.getUpdatedAt(), result.getUpdatedAt());
+  }
+
+  @Test
+  void testUpdateLotEventTypes() throws Exception {
+
+    Lot lot = new Lot();
+    lot.setNumber(LOT_NUMBER);
+    lot.setName(LOT_NAME);
+    lot.setLotType("service");
+
+    ProcurementEventType procurementEventType = new ProcurementEventType();
+    procurementEventType.setId(1);
+    procurementEventType.setDescription("Testing");
+    procurementEventType.setName("PA");
+    procurementEventType.setPreMarketActivity(true);
+
+    LotProcurementEventTypeKey lotProcurementEventTypeKey = new LotProcurementEventTypeKey();
+    lotProcurementEventTypeKey.setLotId(lot.getId());
+    lotProcurementEventTypeKey.setProcurementEventTypeId(procurementEventType.getId());
+
+    LotProcurementEventType lotProcurementEventType = new LotProcurementEventType();
+    lotProcurementEventType.setKey(lotProcurementEventTypeKey);
+    lotProcurementEventType.setLot(lot);
+    lotProcurementEventType.setProcurementEventType(procurementEventType);
+    lotProcurementEventType.setIsMandatoryEvent(false);
+    lotProcurementEventType.setIsRepeatableEvent(true);
+    lotProcurementEventType.setMaxRepeats(1);
+    lotProcurementEventType.setAssessmentToolId("FCA_TOOL_1");
+
+    LotEventTypeUpdate lotEventTypeUpdate = new LotEventTypeUpdate();
+    lotEventTypeUpdate.setType("PA");
+    lotEventTypeUpdate.setMandatoryEvent(false);
+    lotEventTypeUpdate.setRepeatableEvent(true);
+    lotEventTypeUpdate.setMaxRepeats(1);
+    lotEventTypeUpdate.setAssessmentToolId("FCA_TOOL_1");
+
+    when(mockLotProcurementEventTypeRepo.findById(TEMPLATE_ID)).thenReturn(Optional.of(lotProcurementEventType));
+    LotProcurementEventType result = service.updateLotEventTypes(lot, procurementEventType, lotEventTypeUpdate);
+
+    assertEquals(lotProcurementEventType.getLot(), result.getLot());
+    assertEquals(lotProcurementEventType.getProcurementEventType(), result.getProcurementEventType());
+    assertEquals(lotProcurementEventType.getIsMandatoryEvent(), result.getIsMandatoryEvent());
+    assertEquals(lotProcurementEventType.getIsRepeatableEvent(), result.getIsRepeatableEvent());
+    assertEquals(lotProcurementEventType.getMaxRepeats(), result.getMaxRepeats());
+    assertEquals(lotProcurementEventType.getAssessmentToolId(), result.getAssessmentToolId());
   }
 }
