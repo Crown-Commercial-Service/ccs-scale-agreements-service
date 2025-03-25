@@ -5,17 +5,17 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
-import org.hibernate.annotations.Immutable;
 import org.hibernate.annotations.JdbcTypeCode;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 import org.hibernate.type.SqlTypes;
 
+import java.time.LocalDateTime;
+
 /**
  * Procurement Question Template.
  */
 @Entity
-@Immutable
 @Table(name = "procurement_question_templates")
 @Getter
 @Setter
@@ -37,6 +37,15 @@ public class ProcurementQuestionTemplate {
 
   @Column(name = "template_mandatory")
   Boolean mandatory;
+
+  @Column(name = "created_by")
+  String createdBy;
+
+  @Column(name = "created_at")
+  LocalDateTime createdAt;
+
+  @Column(name = "updated_at")
+  LocalDateTime updatedAt;
 
   @Column(name = "template_url")
   String templateUrl;

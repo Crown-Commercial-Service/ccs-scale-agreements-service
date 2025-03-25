@@ -214,6 +214,48 @@ public class BusinessLogicClient {
     }
 
     /**
+     * Updates an EventType object for a specified lot / agreement
+     */
+    @CacheEvict(value = "getLotEventTypes", allEntries = true)
+    public Collection<EventType> updateLotEventTypes(String agreementId, String lotId, LotEventTypeUpdate lotEventTypeUpdate) {
+        // Initialise the model we're using and ultimately preparing to return after the update request.
+        Collection<EventType> model;
+
+        // Fetch the lot from the agreement service.
+        Lot lotModel = agreementService.findLotByAgreementNumberAndLotNumber(agreementId, lotId);
+
+        if (lotModel != null && lotModel.getProcurementEventTypes() != null) {
+            // Lot found in the DB, so extract the list of already attached event types for the found lot.
+            Collection<LotProcurementEventType> lotProcurementEventTypes = lotModel.getProcurementEventTypes();
+
+            // Prepare the return model, by using the lot object to generate our list of EventType to return the current data state.
+            model = lotProcurementEventTypes.stream().map(lotEventType -> mappingService.mapLotProcurementEventTypeToEventType(lotEventType, lotModel)).collect(Collectors.toList());
+
+            // Next fetch the event type by name from the agreement service.
+            ProcurementEventType procurementEventType = agreementService.findEventTypeByName(lotEventTypeUpdate.getType().trim().toUpperCase());
+
+            if (procurementEventType != null) {
+                // Event Type found in DB, so now check if the lot already has this event type attached.
+                boolean isEventAttachedToLot = lotProcurementEventTypes.stream().map(lotEventType -> lotEventType.getProcurementEventType().getName()).anyMatch(name -> name.trim().toUpperCase().equals(procurementEventType.getName()));
+
+                if (!isEventAttachedToLot) {
+                    // Event Type is not attached to lot, so we can proceed to add the event type. Prepare the data to be updated and perform update.
+                    LotProcurementEventType lotProcurementEventType = agreementService.updateLotEventTypes(lotModel, procurementEventType, lotEventTypeUpdate);
+
+                    // Finally, map and return the updated data set.
+                    model.add(mappingService.mapLotProcurementEventTypeToEventType(lotProcurementEventType, lotModel));
+                }
+            }
+
+        } else {
+            // Lot not found in the DB, so cannot process request and prepare the return model as null.
+            model = null;
+        }
+
+        return model;
+    }
+
+    /**
      * Returns a list of ProcurementDataTemplate objects which relate to a specified event
      */
     @Cacheable(value = "getEventDataTemplates", key="#agreementId + #lotId + #eventType")
@@ -249,6 +291,24 @@ public class BusinessLogicClient {
         }
 
         return model;
+    }
+
+    /**
+     * Updates and then returns the ProcurementDataTemplate objects which relate to a specified event
+     */
+    @CacheEvict(value = "getEventDataTemplates", allEntries = true)
+    public ProcurementDataTemplate updateEventDataTemplates(ProcurementDataTemplate updatePayload) {
+        ProcurementQuestionTemplate procurementQuestionTemplate = new ProcurementQuestionTemplate();
+
+        // Gathers and sets update data to the required model for mapping and saving
+        procurementQuestionTemplate.setId(updatePayload.getId());
+        procurementQuestionTemplate.setTemplateName(updatePayload.getTemplateName());
+        procurementQuestionTemplate.setMandatory(updatePayload.getMandatory());
+        procurementQuestionTemplate.setParent(updatePayload.getParent());
+        procurementQuestionTemplate.setTemplatePayload(updatePayload.getCriteria());
+        procurementQuestionTemplate.setCreatedBy(updatePayload.getCreatedBy());
+
+        return mappingService.mapProcurementQuestionTemplateToProcurementDataTemplate(agreementService.createOrUpdateProcurementDataTemplate(procurementQuestionTemplate));
     }
 
     /**

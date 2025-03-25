@@ -31,6 +31,7 @@ import uk.gov.crowncommercial.dts.scale.service.agreements.BLL.BusinessLogicClie
 import uk.gov.crowncommercial.dts.scale.service.agreements.exception.AgreementNotFoundException;
 import uk.gov.crowncommercial.dts.scale.service.agreements.exception.InvalidAgreementException;
 import uk.gov.crowncommercial.dts.scale.service.agreements.exception.InvalidLotException;
+import uk.gov.crowncommercial.dts.scale.service.agreements.exception.InvalidProcurementQuestionTemplateException;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.*;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.*;
 import uk.gov.crowncommercial.dts.scale.service.agreements.service.AgreementService;
@@ -384,6 +385,48 @@ class AgreementControllerTest {
             .andExpect(status().isBadRequest())
             .andExpect(jsonPath("$.description", is(GlobalErrorHandler.ERR_MSG_VALIDATION_DESCRIPTION)))
             .andExpect(jsonPath("$.errors..detail", is(new ArrayList<String>(List.of(new String[]{"Invalid lot format, missing 'description' for Lot 1"})))));
+  }
+
+  @Test
+  void testUpdateDataTemplate() throws Exception {
+    // Mock Payload for Request
+    ProcurementDataTemplate updatePayload = new ProcurementDataTemplate();
+    updatePayload.setId(5);
+    updatePayload.setTemplateName("Testing");
+    updatePayload.setParent(37);
+    updatePayload.setMandatory(true);
+    updatePayload.setCreatedBy("agreement-service-testing");
+
+    Map<String, Object> criterion = new HashMap<>();
+    criterion.put("id", "Criterion 1");
+    criterion.put("title", "About the procurement competition");
+    criterion.put("source", "buyer");
+    criterion.put("relatesTo", "buyer");
+    criterion.put("description", "For Information Only");
+    criterion.put("requirementGroups", new ArrayList<>());
+
+    updatePayload.setCriteria(List.of(criterion));
+
+    when(businessLogicClient.updateEventDataTemplates(any(ProcurementDataTemplate.class)))
+            .thenReturn(updatePayload);
+
+    // Perform Request
+    mockMvc.perform(MockMvcRequestBuilders
+                    .put("/agreements/data-templates")
+                    .content(asJsonString(updatePayload))
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.id", is(updatePayload.getId())))
+            .andExpect(jsonPath("$.templateName", is(updatePayload.getTemplateName())))
+            .andExpect(jsonPath("$.parent", is(updatePayload.getParent())))
+            .andExpect(jsonPath("$.mandatory", is(updatePayload.getMandatory())))
+            .andExpect(jsonPath("$.createdBy", is(updatePayload.getCreatedBy())))
+            .andExpect(jsonPath("$.criteria[0].id", is("Criterion 1")))
+            .andExpect(jsonPath("$.criteria[0].title", is("About the procurement competition")))
+            .andExpect(jsonPath("$.criteria[0].source", is("buyer")))
+            .andExpect(jsonPath("$.criteria[0].relatesTo", is("buyer")))
+            .andExpect(jsonPath("$.criteria[0].description", is("For Information Only")));
   }
 
   public static String asJsonString(final Object obj) {
