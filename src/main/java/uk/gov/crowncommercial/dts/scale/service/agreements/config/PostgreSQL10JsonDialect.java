@@ -1,6 +1,6 @@
 package uk.gov.crowncommercial.dts.scale.service.agreements.config;
 
-import org.hibernate.dialect.PostgreSQL10Dialect;
+import org.hibernate.dialect.PostgreSQLDialect;
 
 /**
  * Custom PostgreSQL10 class definition for Hibernate to use
@@ -8,7 +8,7 @@ import org.hibernate.dialect.PostgreSQL10Dialect;
  * See: https://vladmihalcea.com/hibernate-no-dialect-mapping-for-jdbc-type/
  *
  */
-public class PostgreSQL10JsonDialect extends PostgreSQL10Dialect {
+public class PostgreSQL10JsonDialect extends PostgreSQLDialect {
 
   public PostgreSQL10JsonDialect() {
     super();
