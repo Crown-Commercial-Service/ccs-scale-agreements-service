@@ -17,8 +17,8 @@ import uk.gov.crowncommercial.dts.scale.service.agreements.exception.*;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.ApiError;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.ApiErrors;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 /**
  * Centralised error handling for application and container derived error conditions.

@@ -34,7 +34,7 @@ WORKDIR /app
 ENV SPRING_PROFILES_ACTIVE=prod
 
 # Expose the port your application will run on
-EXPOSE 8080
+EXPOSE 9010
 
 # Command to run your application
 ENTRYPOINT ["java", "-jar", "ccs-scale-agreements-service.jar"]
