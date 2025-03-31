@@ -1,9 +1,8 @@
 package uk.gov.crowncommercial.dts.scale.service.agreements.controller;
 
 import java.util.Arrays;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.xml.bind.ValidationException;
+
+import jakarta.xml.bind.ValidationException;
 
 import com.rollbar.notifier.Rollbar;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +16,9 @@ import lombok.extern.slf4j.Slf4j;
 import uk.gov.crowncommercial.dts.scale.service.agreements.exception.*;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.ApiError;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.ApiErrors;
+
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 /**
  * Centralised error handling for application and container derived error conditions.
@@ -88,7 +90,7 @@ public class GlobalErrorHandler implements ErrorController {
   public ResponseEntity<ApiErrors> handleError(final HttpServletRequest request,
       final HttpServletResponse response) {
 
-    final Object exception = request.getAttribute("javax.servlet.error.exception");
+    final Object exception = request.getAttribute("jakarta.servlet.error.exception");
 
     rollbar.error("Unknown container or filter exception");
     log.error("Unknown container/filter exception", exception);

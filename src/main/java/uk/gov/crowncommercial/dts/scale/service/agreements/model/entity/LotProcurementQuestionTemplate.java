@@ -1,6 +1,6 @@
 package uk.gov.crowncommercial.dts.scale.service.agreements.model.entity;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 import org.hibernate.annotations.Immutable;
 import lombok.AccessLevel;
@@ -20,13 +20,11 @@ public class LotProcurementQuestionTemplate {
   @EmbeddedId
   LotProcurementQuestionTemplateKey key;
 
-  @MapsId("templateId")
   @ManyToOne
-  @JoinColumn(name = "template_id")
+  @JoinColumn(name = "template_id", insertable = false, updatable = false)
   ProcurementQuestionTemplate procurementQuestionTemplate;
 
-  @MapsId("procurementEventId")
   @ManyToOne
-  @JoinColumn(name = "procurement_event_type_id")
+  @JoinColumn(name = "procurement_event_type_id", insertable = false, updatable = false)
   ProcurementEventType procurementEventType;
 }
