@@ -1,5 +1,7 @@
 package uk.gov.crowncommercial.dts.scale.service.agreements.BLL;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
@@ -299,13 +301,20 @@ public class BusinessLogicClient {
     @CacheEvict(value = "getEventDataTemplates", allEntries = true)
     public ProcurementDataTemplate updateEventDataTemplates(ProcurementDataTemplate updatePayload) {
         ProcurementQuestionTemplate procurementQuestionTemplate = new ProcurementQuestionTemplate();
+        ObjectMapper objectMapper = new ObjectMapper();
+
+        try {
+            String jsonString = objectMapper.writeValueAsString(updatePayload.getCriteria());
+            procurementQuestionTemplate.setTemplatePayload(jsonString);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException("Failed to serialize criteria to JSON", e);
+        }
 
         // Gathers and sets update data to the required model for mapping and saving
         procurementQuestionTemplate.setId(updatePayload.getId());
         procurementQuestionTemplate.setTemplateName(updatePayload.getTemplateName());
         procurementQuestionTemplate.setMandatory(updatePayload.getMandatory());
         procurementQuestionTemplate.setParent(updatePayload.getParent());
-        procurementQuestionTemplate.setTemplatePayload(updatePayload.getCriteria());
         procurementQuestionTemplate.setCreatedBy(updatePayload.getCreatedBy());
 
         return mappingService.mapProcurementQuestionTemplateToProcurementDataTemplate(agreementService.createOrUpdateProcurementDataTemplate(procurementQuestionTemplate));
