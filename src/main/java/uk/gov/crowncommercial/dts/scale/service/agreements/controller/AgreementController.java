@@ -25,7 +25,7 @@ public class AgreementController {
     @Autowired
     private BusinessLogicClient businessLogicClient;
 
-    @GetMapping
+    @GetMapping(value={"", "/"})
     public Collection<AgreementSummary> getAgreements() {
         log.debug("getAgreements called");
 

@@ -2,8 +2,8 @@ package uk.gov.crowncommercial.dts.scale.service.agreements.model.entity;
 
 import java.time.LocalDate;
 import java.util.Set;
+import jakarta.persistence.*;
 import java.util.function.Function;
-import javax.persistence.*;
 
 
 import lombok.AccessLevel;
