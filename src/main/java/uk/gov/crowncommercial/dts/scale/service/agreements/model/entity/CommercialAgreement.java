@@ -3,8 +3,8 @@ package uk.gov.crowncommercial.dts.scale.service.agreements.model.entity;
 import java.time.LocalDate;
 import java.util.LinkedHashSet;
 import java.util.Set;
+import jakarta.persistence.*;
 import java.util.function.Function;
-import javax.persistence.*;
 
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
@@ -48,6 +48,12 @@ public class CommercialAgreement {
 
   @Column(name = "agreement_url")
   String detailUrl;
+
+  @Column(name = "regulation")
+  String regulation;
+
+  @Column(name = "agreement_type")
+  String agreementType;
 
   @OneToMany(mappedBy = "agreement")
   Set<Lot> lots;
@@ -104,8 +110,7 @@ public class CommercialAgreement {
     if (endDate == null) {throw new InvalidAgreementException("endDate");}
     if (detailUrl == null || detailUrl.isEmpty()) {throw new InvalidAgreementException("detailUrl");}
     if (preDefinedLotRequired == null) {throw new InvalidAgreementException("preDefinedLotRequired");}
-  }
-
+    }
   public CommercialAgreementBenefit addBenefit(CommercialAgreementBenefit benefit){
     this.benefits.add(benefit);
     benefit.setAgreement(this);

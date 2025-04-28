@@ -25,7 +25,7 @@ public class AgreementController {
     @Autowired
     private BusinessLogicClient businessLogicClient;
 
-    @GetMapping
+    @GetMapping(value={"", "/"})
     public Collection<AgreementSummary> getAgreements() {
         log.debug("getAgreements called");
 
@@ -87,5 +87,14 @@ public class AgreementController {
         log.debug("updateLots called with ID: {}", agreementNumber);
 
         return businessLogicClient.saveLots(lotDetailSet, agreementNumber);
+    }
+
+    @PutMapping("/data-templates")
+    public ProcurementDataTemplate updateDataTemplates(@RequestBody final ProcurementDataTemplate updatePayload) {
+        log.debug("updateDataTemplates called for procurement question template id: {}", updatePayload.getId());
+
+        ProcurementDataTemplate model = businessLogicClient.updateEventDataTemplates(updatePayload);
+
+        return model;
     }
 }

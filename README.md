@@ -1,37 +1,55 @@
-# CCS Agreements Service (API)
+CCS Agreements Service API
+===========
 
-## Overview
+Overview
+--------
+This is the code for the implementation of Crown Commercial Service's (_CCS_)
+Agreements Service API, used by various downstream applications.
 
-This is the Java 17 SpringBoot implementation of the Agreement Service API [Open API specification](https://github.com/Crown-Commercial-Service/ccs-scale-api-definitions/blob/master/agreements/agreements-service.yaml).
+The specification for the API can be found in the [Open API Specification][].
 
-It is deployed via AWS & Terraform to the AWS environments.
+Technology Overview
+---------
+The project is implemented as a Spring Boot 3 web application, implemented using Maven.
 
-## Prerequisites
+The core technologies for the project are:
 
-The Agreements Service scripts located in the following two repos [CCS Scale DB Scripts](https://github.com/Crown-Commercial-Service/ccs-scale-db-scripts) and [CCS Scale DB Scripts Data](https://github.com/Crown-Commercial-Service/ccs-scale-db-scripts-data) should have been provisioned against a database for the target environment(s), to ensure the necessary basic level of data is present for the service to use when running.
+* Java 23
+* [Spring Boot][]
+* [Spring Security][]
+* [Ehcache][] for caching
+* [MapStruct][] for entity mapping
+* [JUnit][] for unit testing
 
-## Running the service locally
+Building and Running Locally
+----------------------------
+To run the application locally, you simply need to run the core ccs-scale-agreements-service module.
 
-In order to run the application locally, the database must be setup on the local machine.  In order to do this:
+You will need to be supplied with a several environment variables to enable the project to run, which can be supplied by any member of the development team.
 
-1. PGAdmin must be installed on the desired machine.
+You will also need to setup a local database named "agreements" in order to run the service locally.  Scripts to setup the database for you are located in the following two repos [CCS Scale DB Scripts][] and [CCS Scale DB Scripts Data][].
 
-2. A database named "agreements" must be setup within PGAdmin.
+Once the application has started it can be accessed via Postman using the URL http://localhost:9010/agreements-service.
 
-3. The scripts referenced in the Prerequisites section above must be run against that local database, to populate it with initial data.
+Branches
+--------
+When picking up tickets, branches should be created using the **_feature/*_** format.
 
-4. Environment variables must be amended in your run configuration to reflect your database access credentials.
+When completed, these branches should be pull requested against _**develop**_ for review and approval.  _**develop**_ is then built out onto the **Development** environment.
 
-Following these steps the application should successfully run.  Postman scripts to run against and test the service can be found in the private Postman API scripts repository.
+The **Pre-Production** environment is controlled via means of release and hotfix branches.
 
-## Deploying the service
+Release branches should be created from _**develop**_ using the **_release/*_** format, whilst hotfixes should be created from _**main**_ using the **_hotfix/*_** format.  These branches can then be built out to **Pre-Production** as appropriate.
 
-The service will automatically trigger builds when commits are detected to the following branches:
+When releases/hotfixes are ready for deployment to **Production**, the **_release/*_** or **_hotfix/*_** branch in question should be pull requested against the _**main**_ branch for review and approval.  This branch should then be built out to **Production**.
 
-- `develop` branch -> DEV(TST) environment
-- `staging` branch -> PRE-PRODUCTION environment
-- `main` branch -> PRODUCTION environment
+Once a release/hotfix has been completed you should be sure to merge _**main**_ back down into _**develop**_.
 
-Once builds have completed, manual approval for the deployment is required.  This can be made by an authorised user within the relevant AWS account.
-
-When deploying the service an additional step is currently required, whereby the ECR Image Variable in [ccs-scale-infra-services-shared](https://github.com/Crown-Commercial-Service/ccs-scale-infra-services-shared) needs to be updated to reflect the build version being deployed.  This should currently be done manually.
+[Spring Boot]: https://spring.io/projects/spring-boot
+[Spring Security]: https://spring.io/projects/spring-security
+[JUnit]: https://junit.org/junit5/
+[Ehcache]: https://www.ehcache.org/
+[MapStruct]: https://mapstruct.org/
+[Open API Specification]: https://github.com/Crown-Commercial-Service/ccs-scale-api-definitions/blob/master/agreements/agreements-service.yaml
+[CCS Scale DB Scripts]: https://github.com/Crown-Commercial-Service/ccs-scale-db-scripts
+[CCS Scale DB Scripts Data]: https://github.com/Crown-Commercial-Service/ccs-scale-db-scripts-data
