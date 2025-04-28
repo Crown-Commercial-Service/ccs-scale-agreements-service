@@ -2,8 +2,8 @@ package uk.gov.crowncommercial.dts.scale.service.agreements.model.entity;
 
 import java.time.LocalDate;
 import java.util.Set;
+import jakarta.persistence.*;
 import java.util.function.Function;
-import javax.persistence.*;
 
 
 import lombok.AccessLevel;
@@ -87,5 +87,13 @@ public class Organisation {
     if (entityId == null || entityId.isEmpty()) {throw new InvalidOrganisationException("entityId");}
     if (incorporationDate == null) {throw new InvalidOrganisationException("incorporationDate");}
     if (incorporationCountry == null || incorporationCountry.isEmpty()) {throw new InvalidOrganisationException("incorporationCountry");}
+  }
+
+  public void isValidForPartialUpdate(){
+
+    if (legalName != null && !legalName.isEmpty() || entityId != null && !entityId.isEmpty() && registryCode != null && !registryCode.isEmpty()) {
+    } else {
+      throw new InvalidOrganisationException();
+    }
   }
 }

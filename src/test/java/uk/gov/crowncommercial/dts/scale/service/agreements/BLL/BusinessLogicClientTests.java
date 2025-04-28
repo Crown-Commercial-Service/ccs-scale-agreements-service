@@ -45,6 +45,12 @@ public class BusinessLogicClientTests {
     private Lot mockLot;
 
     @MockBean
+    private Organisation mockOrganisation;
+    
+    @MockBean
+    private OrganizationIdentifier mockOrganizationIdentifier;
+
+    @MockBean
     private LotOrganisationRole lotOrganisationRole;
 
     @MockBean
@@ -74,6 +80,7 @@ public class BusinessLogicClientTests {
     private static final Instant DOCUMENT_MODIFIED_DATE = Instant.now();
     private static final String EXCEPTION_FAILED_AGREEMENT_TEXT = "Agreement Not Found exception was not thrown";
     private static final String EXCEPTION_FAILED_LOT_TEXT = "Lot Not Found exception was not thrown";
+    private static final String EXCEPTION_EMPTY_ORGANISATION_NAME_OR_SCHEME_WITH_ID = "Organisation body must have either legalName or a valid scheme with id in the body";
     private static final String EXCEPTION_CHECK_TEXT = "not found";
     private static final String AGREEMENT_UPDATE_TEXT = "Update Text";
     private static final String EVENT_TYPE_RFI = "RFI";
@@ -87,6 +94,7 @@ public class BusinessLogicClientTests {
     private static final BigDecimal LRTM_MIN_VALUE = new BigDecimal(3);
     private static final BigDecimal LRTM_MAX_VALUE = new BigDecimal(4);
     private static final String LOCATION = "Mordor";
+    private static final String LEGAL_NAME = "New Company";
 
     @Test
     void testGetAgreementsList() throws Exception {
@@ -580,5 +588,58 @@ public class BusinessLogicClientTests {
 
         System.out.println(thrown.getMessage());
         assertTrue(thrown.getMessage().contains("organisation format, missing 'legalName'"));
+    }
+
+    @Test
+    void testGetOrganisationWithValidName() throws Exception {
+        final OrganizationIdentifier organizationIdentifier = new OrganizationIdentifier();
+        organizationIdentifier.setLegalName(LEGAL_NAME);
+
+        when(supplierService.findOrganisationByLegalName(LEGAL_NAME)).thenReturn(mockOrganisation);
+
+        OrganizationIdentifier result = businessLogicClient.getOrganisation(LEGAL_NAME);
+
+        assertNotNull(result);
+    }
+
+    @Test
+    void testGetOrganisationWithInvalidName() throws Exception {
+        when(supplierService.findOrganisationByLegalName(LEGAL_NAME)).thenThrow(new OrganisationNotFoundException(LEGAL_NAME));
+
+        OrganisationNotFoundException thrown = Assertions.assertThrows(
+                OrganisationNotFoundException.class,
+                () -> businessLogicClient.getOrganisation(LEGAL_NAME),
+                EXCEPTION_FAILED_AGREEMENT_TEXT
+        );
+
+        assertTrue(thrown.getMessage().contains(EXCEPTION_CHECK_TEXT));
+    }
+
+    @Test
+    void testUpdateOrganisationAllValid() throws Exception {
+
+        OrganizationIdentifier output = new OrganizationIdentifier();
+        output.setLegalName(LEGAL_NAME);
+        output.setScheme(Scheme.GBCHC);
+        output.setId("123456");
+
+        when(supplierService.partialSaveOrganisation(eq(LEGAL_NAME), any(Organisation.class))).thenReturn(LEGAL_NAME);
+        when(supplierService.findOrganisationByLegalName(LEGAL_NAME)).thenReturn(mockOrganisation);
+
+        OrganizationIdentifier result = businessLogicClient.partialSaveOrganisation(LEGAL_NAME, output);
+
+        assertNotNull(result);
+    }
+
+    @Test
+    void testUpdateOrganisationWithInvalidName() throws Exception {
+   
+        InvalidOrganisationException thrown = Assertions.assertThrows(
+            InvalidOrganisationException.class,
+                () -> businessLogicClient.partialSaveOrganisation(LEGAL_NAME, mockOrganizationIdentifier),
+                EXCEPTION_EMPTY_ORGANISATION_NAME_OR_SCHEME_WITH_ID
+        );
+        
+        assertTrue(thrown.getMessage().contains(EXCEPTION_EMPTY_ORGANISATION_NAME_OR_SCHEME_WITH_ID));
     }
 }
