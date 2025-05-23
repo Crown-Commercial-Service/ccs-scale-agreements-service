@@ -6,7 +6,7 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>3.4.4</version>
+		<version>3.5.0</version>
 		<relativePath/>
 	</parent>
 	<groupId>uk.gov.crowncommercial.dts</groupId>
@@ -19,7 +19,7 @@
 		<java.version>23</java.version>
 		<hibernate-types.version>2.21.1</hibernate-types.version>
 		<spring-framework.version>6.2.7</spring-framework.version>
-		<spring-boot.version>3.4.5</spring-boot.version>
+		<spring-boot.version>3.5.0</spring-boot.version>
 		<hibernate.version>6.6.15.Final</hibernate.version>
 		<mapstruct.version>1.6.3</mapstruct.version>
 		<compiler.version>3.14.0</compiler.version>
