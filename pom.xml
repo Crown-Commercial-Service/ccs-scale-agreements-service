@@ -28,7 +28,7 @@
 		<rollbar.version>2.0.0</rollbar.version>
 		<commons.version>3.17.0</commons.version>
 		<ehcache.version>3.10.8</ehcache.version>
-		<postgres.version>42.7.6</postgres.version>
+		<postgres.version>42.7.7</postgres.version>
 		<jakarta.version>6.1.0</jakarta.version>
 		<lombok.version>1.18.38</lombok.version>
 		<h2.version>2.3.232</h2.version>
