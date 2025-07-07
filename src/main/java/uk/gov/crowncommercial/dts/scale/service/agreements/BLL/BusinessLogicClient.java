@@ -423,4 +423,9 @@ public class BusinessLogicClient {
 
         return getOrganisation(orgName);
     }
+
+    public Organisation updateSupplierByDuns(String dunsNumber, SupplierUpdateRequest updateRequest) {
+        Organisation organisation = supplierService.updateSupplierByDuns(dunsNumber, updateRequest);
+        return organisation;
+    }
 }

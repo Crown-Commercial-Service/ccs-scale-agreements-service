@@ -5,7 +5,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.crowncommercial.dts.scale.service.agreements.exception.*;
+import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.Scheme;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.SupplierStatus;
+import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.SupplierUpdateRequest;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.*;
 import uk.gov.crowncommercial.dts.scale.service.agreements.repository.*;
 
@@ -91,9 +93,6 @@ public class SupplierService {
                     return findOrganisationByLegalName(newOrganisation.getLegalName());
                 });
     }
-
-
-
 
     /**
      * Assign relation between lot and organisation (supplier relationship)
@@ -204,5 +203,18 @@ public class SupplierService {
 
         organisationRepo.saveAndFlush(existingOrganisation);
         return newName == null ? existingOrganisation.getLegalName() : newName;
+    }
+
+    public Organisation updateSupplierByDuns(String dunsNumber, SupplierUpdateRequest updateRequest) {
+        Organisation org = organisationRepo.findByRegistryCodeAndEntityId(Scheme.USDUNS.getName(), dunsNumber)
+            .orElseThrow(() -> new OrganisationNotFoundException(Scheme.USDUNS.getName(), dunsNumber));
+        org.setEmailAddress(updateRequest.getEmailAddress());
+        org.setContactPointName(updateRequest.getContactPointName());
+        org.setTelephoneNumber(updateRequest.getTelephoneNumber());
+        org.setStreetAddress(updateRequest.getStreetAddress());
+        org.setLocality(updateRequest.getLocality());
+        org.setPostalCode(updateRequest.getPostalCode());
+        organisationRepo.save(org);
+        return org;
     }
 }
