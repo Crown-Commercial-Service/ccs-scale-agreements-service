@@ -8,6 +8,7 @@ import java.io.Serializable;
  */
 @Data
 public class SupplierUpdateRequest implements Serializable {
+    private String supplierName;
     private String emailAddress;
     private String contactPointName;
     private String telephoneNumber;

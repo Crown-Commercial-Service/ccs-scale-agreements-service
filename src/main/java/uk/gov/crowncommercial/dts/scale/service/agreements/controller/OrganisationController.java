@@ -36,10 +36,10 @@ public class OrganisationController {
   }
 
   @PatchMapping("/duns/{dunsNumber}")
-  public Organisation updateSupplier(
+  public void updateSupplier(
       @PathVariable String dunsNumber,
       @RequestBody SupplierUpdateRequest updateRequest) {
       log.debug("updateSupplier called with values: dunsNumber={}", dunsNumber);
-      return businessLogicClient.updateSupplierByDuns(dunsNumber, updateRequest);
+      businessLogicClient.updateSupplierByDuns(dunsNumber, updateRequest);
   }
 }
