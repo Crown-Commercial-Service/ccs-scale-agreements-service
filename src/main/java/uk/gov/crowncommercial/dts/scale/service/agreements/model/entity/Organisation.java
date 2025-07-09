@@ -63,24 +63,6 @@ public class Organisation {
   @Column(name = "active")
   Boolean isActive;
 
-  @Column(name = "email_address")
-  String emailAddress;
-
-  @Column(name = "contact_point_name")
-  String contactPointName;
-
-  @Column(name = "telephone_number")
-  String telephoneNumber;
-
-  @Column(name = "street_address")
-  String streetAddress;
-
-  @Column(name = "locality")
-  String locality;
-
-  @Column(name = "postal_code")
-  String postalCode;
-
   @OneToMany(mappedBy = "organisation")
   Set<Person> people;
 
