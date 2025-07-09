@@ -16,6 +16,7 @@ import org.springframework.test.context.ActiveProfiles;
 import uk.gov.crowncommercial.dts.scale.service.agreements.config.EhcacheConfig;
 import uk.gov.crowncommercial.dts.scale.service.agreements.exception.InvalidOrganisationException;
 import uk.gov.crowncommercial.dts.scale.service.agreements.exception.OrganisationNotFoundException;
+import uk.gov.crowncommercial.dts.scale.service.agreements.exception.ContactDetailNotFoundException;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.*;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.*;
 import uk.gov.crowncommercial.dts.scale.service.agreements.repository.*;
@@ -60,6 +61,9 @@ public class SupplierServiceTest {
 
     @MockBean
     private Lot mockLot;
+
+    @MockBean
+    private ContactDetailRepo mockContactDetailRepo;
 
     @Test
     void testGetOrganisation() throws Exception {
@@ -297,6 +301,55 @@ public class SupplierServiceTest {
         );
 
         assertTrue(thrown.getMessage().contains("already exist"));
+    }
+
+    @Test
+    void testUpdateSupplierAndContactByDuns_success() {
+        String dunsNumber = "123456789";
+        Organisation org = setupOrg();
+        org.setRegistryCode("US-DUNS");
+        org.setEntityId(dunsNumber);
+        SupplierUpdateRequest updateRequest = new SupplierUpdateRequest();
+        updateRequest.setSupplierName("Updated Supplier");
+        updateRequest.setEmailAddress("updated@email.com");
+        updateRequest.setContactPointName("Updated Name");
+        updateRequest.setTelephoneNumber("9876543210");
+        updateRequest.setStreetAddress("New St");
+        updateRequest.setLocality("New City");
+        updateRequest.setPostalCode("NEW123");
+
+        ContactDetail contact = setupCd();
+        contact.setId(1);
+        java.util.List<ContactDetail> contacts = java.util.Collections.singletonList(contact);
+
+        when(mockOrganisationRepo.findByRegistryCodeAndEntityId("US-DUNS", dunsNumber)).thenReturn(java.util.Optional.of(org));
+        when(mockContactPointLotOrgRoleRepo.findPrimaryContactDetailsByDuns("US-DUNS", dunsNumber)).thenReturn(contacts);
+        when(mockContactDetailRepo.save(any(ContactDetail.class))).thenReturn(contact);
+        when(mockOrganisationRepo.save(any(Organisation.class))).thenReturn(org);
+
+        assertDoesNotThrow(() -> supplierService.updateSupplierAndContactByDuns(dunsNumber, updateRequest));
+        verify(mockOrganisationRepo).save(org);
+        verify(mockContactDetailRepo).save(contact);
+    }
+
+    @Test
+    void testUpdateSupplierAndContactByDuns_organisationNotFound() {
+        String dunsNumber = "123456789";
+        SupplierUpdateRequest updateRequest = new SupplierUpdateRequest();
+        when(mockOrganisationRepo.findByRegistryCodeAndEntityId("US-DUNS", dunsNumber)).thenReturn(java.util.Optional.empty());
+        assertThrows(OrganisationNotFoundException.class, () -> supplierService.updateSupplierAndContactByDuns(dunsNumber, updateRequest));
+    }
+
+    @Test
+    void testUpdateSupplierAndContactByDuns_contactNotFound() {
+        String dunsNumber = "123456789";
+        Organisation org = setupOrg();
+        org.setRegistryCode("US-DUNS");
+        org.setEntityId(dunsNumber);
+        SupplierUpdateRequest updateRequest = new SupplierUpdateRequest();
+        when(mockOrganisationRepo.findByRegistryCodeAndEntityId("US-DUNS", dunsNumber)).thenReturn(java.util.Optional.of(org));
+        when(mockContactPointLotOrgRoleRepo.findPrimaryContactDetailsByDuns("US-DUNS", dunsNumber)).thenReturn(java.util.Collections.emptyList());
+        assertThrows(ContactDetailNotFoundException.class, () -> supplierService.updateSupplierAndContactByDuns(dunsNumber, updateRequest));
     }
 
 }

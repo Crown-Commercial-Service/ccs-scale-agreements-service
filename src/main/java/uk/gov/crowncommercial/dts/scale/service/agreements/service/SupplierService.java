@@ -5,12 +5,15 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.crowncommercial.dts.scale.service.agreements.exception.*;
+import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.Scheme;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.SupplierStatus;
+import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.SupplierUpdateRequest;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.*;
 import uk.gov.crowncommercial.dts.scale.service.agreements.repository.*;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * Supplier Service.
@@ -36,6 +39,9 @@ public class SupplierService {
 
     @Autowired
     private final ContactPointReasonRepo contactPointReasonRepo;
+
+    @Autowired
+    private final ContactDetailRepo contactDetailRepo;
 
     /**
      * Find a organisation by its legal name.
@@ -91,9 +97,6 @@ public class SupplierService {
                     return findOrganisationByLegalName(newOrganisation.getLegalName());
                 });
     }
-
-
-
 
     /**
      * Assign relation between lot and organisation (supplier relationship)
@@ -204,5 +207,32 @@ public class SupplierService {
 
         organisationRepo.saveAndFlush(existingOrganisation);
         return newName == null ? existingOrganisation.getLegalName() : newName;
+    }
+
+    public void updateSupplierAndContactByDuns(String dunsNumber, SupplierUpdateRequest updateRequest) {
+
+        Organisation org = organisationRepo.findByRegistryCodeAndEntityId("US-DUNS", dunsNumber)
+            .orElseThrow(() -> new OrganisationNotFoundException("US-DUNS", dunsNumber));
+
+
+        if (updateRequest.getSupplierName() != null) {
+            org.setLegalName(updateRequest.getSupplierName());
+            organisationRepo.save(org);
+        }
+
+        List<ContactDetail> contacts = contactPointLotOrgRoleRepo.findPrimaryContactDetailsByDuns("US-DUNS", dunsNumber);
+        if (contacts.isEmpty()) {
+            throw new ContactDetailNotFoundException(org.getId());
+        }
+
+        for (ContactDetail contact : contacts) {
+            contact.setEmailAddress(updateRequest.getEmailAddress());
+            contact.setName(updateRequest.getContactPointName());
+            contact.setTelephoneNumber(updateRequest.getTelephoneNumber());
+            contact.setStreetAddress(updateRequest.getStreetAddress());
+            contact.setLocality(updateRequest.getLocality());
+            contact.setPostalCode(updateRequest.getPostalCode());
+            contactDetailRepo.save(contact);
+        }
     }
 }

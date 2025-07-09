@@ -20,6 +20,7 @@ import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.Organizatio
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.Scheme;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.Organisation;
 import uk.gov.crowncommercial.dts.scale.service.agreements.service.SupplierService;
+import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.SupplierUpdateRequest;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.mockito.Mockito.when;
@@ -218,6 +219,56 @@ public class OrganisationControllerTest {
                 .andExpect(jsonPath("$.errors[0].detail",
                         is(String.format(InvalidOrganisationException.ERROR_MSG_TEMPLATE_EXISTED, "scheme:id",
                                 errorString))))
+                .andExpect(jsonPath("$.description", is(GlobalErrorHandler.ERR_MSG_VALIDATION_DESCRIPTION)));
+    }
+
+    @Test
+    void testUpdateSupplierSuccess() throws Exception {
+        String dunsNumber = "123456789";
+        SupplierUpdateRequest updateRequest = new SupplierUpdateRequest();
+        updateRequest.setSupplierName("Test Supplier");
+        updateRequest.setEmailAddress("test@supplier.com");
+        updateRequest.setContactPointName("John Doe");
+        updateRequest.setTelephoneNumber("0123456789");
+        updateRequest.setStreetAddress("123 Test St");
+        updateRequest.setLocality("Testville");
+        updateRequest.setPostalCode("TST123");
+
+        org.mockito.Mockito.doNothing().when(businessLogicClient).updateSupplierByDuns(dunsNumber, updateRequest);
+
+        mockMvc.perform(MockMvcRequestBuilders
+                .patch("/organisation/duns/" + dunsNumber)
+                .content(asJsonString(updateRequest))
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    void testUpdateSupplierThrowsException() throws Exception {
+        String dunsNumber = "123456789";
+        SupplierUpdateRequest updateRequest = new SupplierUpdateRequest();
+        updateRequest.setSupplierName("Test Supplier");
+        updateRequest.setEmailAddress("test@supplier.com");
+        updateRequest.setContactPointName("John Doe");
+        updateRequest.setTelephoneNumber("0123456789");
+        updateRequest.setStreetAddress("123 Test St");
+        updateRequest.setLocality("Testville");
+        updateRequest.setPostalCode("TST123");
+
+        org.mockito.Mockito.doThrow(new InvalidOrganisationException("dunsNumber", dunsNumber))
+                .when(businessLogicClient).updateSupplierByDuns(dunsNumber, updateRequest);
+
+        mockMvc.perform(MockMvcRequestBuilders
+                .patch("/organisation/duns/" + dunsNumber)
+                .content(asJsonString(updateRequest))
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().is4xxClientError())
+                .andExpect(jsonPath("$.errors[0].status", is(HttpStatus.BAD_REQUEST.toString())))
+                .andExpect(jsonPath("$.errors[0].title", is(GlobalErrorHandler.ERR_MSG_VALIDATION_TITLE)))
+                .andExpect(jsonPath("$.errors[0].detail",
+                        is(String.format(InvalidOrganisationException.ERROR_MSG_TEMPLATE_EXISTED, "dunsNumber", dunsNumber))))
                 .andExpect(jsonPath("$.description", is(GlobalErrorHandler.ERR_MSG_VALIDATION_DESCRIPTION)));
     }
 

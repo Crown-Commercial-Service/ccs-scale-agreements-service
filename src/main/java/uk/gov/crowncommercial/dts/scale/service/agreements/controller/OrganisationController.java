@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import uk.gov.crowncommercial.dts.scale.service.agreements.BLL.BusinessLogicClient;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.*;
+import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.Organisation;
 
 /**
  * Organisation Controller
@@ -32,5 +33,13 @@ public class OrganisationController {
     log.debug("partialUpdateOrganisation called with values: OrganisationName={}", OrganisationName);
 
     return businessLogicClient.partialSaveOrganisation(OrganisationName, organizationIdentifier);
+  }
+
+  @PatchMapping("/duns/{dunsNumber}")
+  public void updateSupplier(
+      @PathVariable String dunsNumber,
+      @RequestBody SupplierUpdateRequest updateRequest) {
+      log.debug("updateSupplier called with values: dunsNumber={}", dunsNumber);
+      businessLogicClient.updateSupplierByDuns(dunsNumber, updateRequest);
   }
 }
