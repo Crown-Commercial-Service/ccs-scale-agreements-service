@@ -89,4 +89,12 @@ public class LotController {
     return businessLogicClient.saveLotSuppliers(agreementNumber, lotNumber, lotSuppliersSet);
   }
 
+  @PostMapping("/suppliers/duns/{dunsNumber}")
+  public SupplierSummary addSupplierToLotByDuns(
+      @PathVariable(value = "agreement-id") final String agreementNumber,
+      @PathVariable(value = "lot-id") final String lotNumber,
+      @PathVariable String dunsNumber) {
+    log.debug("addSupplierToLotByDuns called with values: agreementNumber={}, lotNumber={}, dunsNumber={}", agreementNumber, lotNumber, dunsNumber);
+    return businessLogicClient.addSupplierToLotByDuns(agreementNumber, lotNumber, dunsNumber);
+  }
 }

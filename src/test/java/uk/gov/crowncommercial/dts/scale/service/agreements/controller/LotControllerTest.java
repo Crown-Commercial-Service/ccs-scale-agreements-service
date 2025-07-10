@@ -492,6 +492,54 @@ class LotControllerTest {
             .andExpect(content().json(asJsonString(mockEventTypes)));
   }
 
+  @Test
+  void testAddSupplierToLotByDunsSuccess() throws Exception {
+    String dunsNumber = "123456789";
+    SupplierSummary summary = setupSupplierSummary();
+    when(businessLogicClient.addSupplierToLotByDuns(AGREEMENT_NUMBER, LOT1_NUMBER, dunsNumber)).thenReturn(summary);
+
+    mockMvc.perform(MockMvcRequestBuilders
+            .post("/agreements/" + AGREEMENT_NUMBER + "/lots/" + LOT1_NUMBER + "/suppliers/duns/" + dunsNumber)
+            .contentType(MediaType.APPLICATION_JSON)
+            .accept(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.lastUpdatedDate", is(summary.getLastUpdatedDate().toString())))
+        .andExpect(jsonPath("$.lastUpdatedBy", is(summary.getLastUpdatedBy())))
+        .andExpect(jsonPath("$.supplierCount", is(summary.getSupplierCount())));
+  }
+
+  @Test
+  void testAddSupplierToLotByDunsOrganisationNotFound() throws Exception {
+    String dunsNumber = "123456789";
+    when(businessLogicClient.addSupplierToLotByDuns(AGREEMENT_NUMBER, LOT1_NUMBER, dunsNumber))
+        .thenThrow(new uk.gov.crowncommercial.dts.scale.service.agreements.exception.OrganisationNotFoundException("US-DUNS", dunsNumber));
+
+    mockMvc.perform(MockMvcRequestBuilders
+            .post("/agreements/" + AGREEMENT_NUMBER + "/lots/" + LOT1_NUMBER + "/suppliers/duns/" + dunsNumber)
+            .contentType(MediaType.APPLICATION_JSON)
+            .accept(MediaType.APPLICATION_JSON))
+        .andExpect(status().isNotFound())
+        .andExpect(jsonPath("$.errors[0].status", is(HttpStatus.NOT_FOUND.toString())))
+        .andExpect(jsonPath("$.errors[0].title", is(GlobalErrorHandler.ERR_MSG_NOT_FOUND_TITLE)))
+        .andExpect(jsonPath("$.description", is(GlobalErrorHandler.ERR_MSG_NOT_FOUND_DESCRIPTION)));
+  }
+
+  @Test
+  void testAddSupplierToLotByDunsLotNotFound() throws Exception {
+    String dunsNumber = "123456789";
+    when(businessLogicClient.addSupplierToLotByDuns(AGREEMENT_NUMBER, LOT1_NUMBER, dunsNumber))
+        .thenThrow(new uk.gov.crowncommercial.dts.scale.service.agreements.exception.LotNotFoundException(LOT1_NUMBER, AGREEMENT_NUMBER));
+
+    mockMvc.perform(MockMvcRequestBuilders
+            .post("/agreements/" + AGREEMENT_NUMBER + "/lots/" + LOT1_NUMBER + "/suppliers/duns/" + dunsNumber)
+            .contentType(MediaType.APPLICATION_JSON)
+            .accept(MediaType.APPLICATION_JSON))
+        .andExpect(status().isNotFound())
+        .andExpect(jsonPath("$.errors[0].status", is(HttpStatus.NOT_FOUND.toString())))
+        .andExpect(jsonPath("$.errors[0].title", is(GlobalErrorHandler.ERR_MSG_NOT_FOUND_TITLE)))
+        .andExpect(jsonPath("$.description", is(GlobalErrorHandler.ERR_MSG_NOT_FOUND_DESCRIPTION)));
+  }
+
   public static String asJsonString(final Object obj) {
     try {
       ObjectMapper objectMapper = new ObjectMapper();
