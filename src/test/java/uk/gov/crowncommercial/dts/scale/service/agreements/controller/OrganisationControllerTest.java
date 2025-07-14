@@ -50,6 +50,7 @@ public class OrganisationControllerTest {
     @MockBean
     private Rollbar rollbar;
 
+
     private static final Scheme ENTITY = Scheme.GBCHC;
     private static final String ID = "123456789";
     private static final String LEGAL_NAME = "New Company";

@@ -15,7 +15,6 @@ import java.util.Set;
 
 import org.springframework.http.ResponseEntity;
 
-import jakarta.validation.Valid;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.SupplierStatusRequest;
 
 /**
@@ -110,13 +109,16 @@ public class LotController {
   }
 
   @PatchMapping("/suppliers/duns/{dunsNumber}/status")
-  public ResponseEntity<Void> updateSupplierStatus(
+  public ResponseEntity<?> updateSupplierStatus(
       @PathVariable(value = "agreement-id") String agreementNumber,
       @PathVariable(value = "lot-id") String lotNumber,
       @PathVariable String dunsNumber,
-      @Valid @RequestBody SupplierStatusRequest request) {
+      @RequestBody SupplierStatusRequest statusRequest) {
+    if (statusRequest.getOperation() == null || statusRequest.getOperation().trim().isEmpty()) {
+        return ResponseEntity.badRequest().body("Operation must not be blank");
+    }
     supplierLogicClient.updateSupplierStatusForLot(
-        agreementNumber, lotNumber, dunsNumber, request.getOperation());
+        agreementNumber, lotNumber, dunsNumber, statusRequest.getOperation());
     return ResponseEntity.ok().build();
   }
 }
