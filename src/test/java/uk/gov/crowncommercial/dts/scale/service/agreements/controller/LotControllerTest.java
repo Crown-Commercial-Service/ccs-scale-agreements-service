@@ -584,9 +584,7 @@ class LotControllerTest {
             .contentType(MediaType.APPLICATION_JSON)
             .accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isBadRequest())
-        .andExpect(jsonPath("$.errors[0].status", is(HttpStatus.BAD_REQUEST.toString())))
-        .andExpect(jsonPath("$.errors[0].title", is(GlobalErrorHandler.ERR_MSG_VALIDATION_TITLE)))
-        .andExpect(jsonPath("$.description", is(GlobalErrorHandler.ERR_MSG_VALIDATION_DESCRIPTION)));
+        .andExpect(content().string("Operation must not be blank"));
   }
 
   @Test

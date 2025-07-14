@@ -21,6 +21,7 @@ import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.Scheme;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.Organisation;
 import uk.gov.crowncommercial.dts.scale.service.agreements.service.SupplierService;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.SupplierUpdateRequest;
+import uk.gov.crowncommercial.dts.scale.service.agreements.BLL.BusinessLogicClient;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.mockito.Mockito.when;
@@ -49,6 +50,9 @@ public class OrganisationControllerTest {
 
     @MockBean
     private Rollbar rollbar;
+
+    @MockBean
+    private BusinessLogicClient businessLogicClient;
 
 
     private static final Scheme ENTITY = Scheme.GBCHC;
