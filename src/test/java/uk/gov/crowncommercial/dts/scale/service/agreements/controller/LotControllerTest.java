@@ -540,6 +540,70 @@ class LotControllerTest {
         .andExpect(jsonPath("$.description", is(GlobalErrorHandler.ERR_MSG_NOT_FOUND_DESCRIPTION)));
   }
 
+  @Test
+  void testUpdateSupplierStatus_suspend_success() throws Exception {
+    String dunsNumber = "123456789";
+    String operation = "suspend";
+    // No exception means success
+    org.mockito.Mockito.doNothing().when(businessLogicClient)
+        .updateSupplierStatusForLot(AGREEMENT_NUMBER, LOT1_NUMBER, dunsNumber, operation);
+
+    mockMvc.perform(MockMvcRequestBuilders
+            .patch("/agreements/" + AGREEMENT_NUMBER + "/lots/" + LOT1_NUMBER + "/suppliers/duns/" + dunsNumber + "/status")
+            .content(asJsonString(Map.of("operation", operation)))
+            .contentType(MediaType.APPLICATION_JSON)
+            .accept(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk());
+  }
+
+  @Test
+  void testUpdateSupplierStatus_unsuspend_success() throws Exception {
+    String dunsNumber = "123456789";
+    String operation = "unsuspend";
+    org.mockito.Mockito.doNothing().when(businessLogicClient)
+        .updateSupplierStatusForLot(AGREEMENT_NUMBER, LOT1_NUMBER, dunsNumber, operation);
+
+    mockMvc.perform(MockMvcRequestBuilders
+            .patch("/agreements/" + AGREEMENT_NUMBER + "/lots/" + LOT1_NUMBER + "/suppliers/duns/" + dunsNumber + "/status")
+            .content(asJsonString(Map.of("operation", operation)))
+            .contentType(MediaType.APPLICATION_JSON)
+            .accept(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk());
+  }
+
+  @Test
+  void testUpdateSupplierStatus_validationError() throws Exception {
+    String dunsNumber = "123456789";
+    // Missing operation field
+    mockMvc.perform(MockMvcRequestBuilders
+            .patch("/agreements/" + AGREEMENT_NUMBER + "/lots/" + LOT1_NUMBER + "/suppliers/duns/" + dunsNumber + "/status")
+            .content(asJsonString(Map.of()))
+            .contentType(MediaType.APPLICATION_JSON)
+            .accept(MediaType.APPLICATION_JSON))
+        .andExpect(status().isBadRequest())
+        .andExpect(jsonPath("$.errors[0].status", is(HttpStatus.BAD_REQUEST.toString())))
+        .andExpect(jsonPath("$.errors[0].title", is(GlobalErrorHandler.ERR_MSG_VALIDATION_TITLE)))
+        .andExpect(jsonPath("$.description", is(GlobalErrorHandler.ERR_MSG_VALIDATION_DESCRIPTION)));
+  }
+
+  @Test
+  void testUpdateSupplierStatus_notFound() throws Exception {
+    String dunsNumber = "123456789";
+    String operation = "suspend";
+    org.mockito.Mockito.doThrow(new uk.gov.crowncommercial.dts.scale.service.agreements.exception.OrganisationNotFoundException("US-DUNS", dunsNumber))
+        .when(businessLogicClient).updateSupplierStatusForLot(AGREEMENT_NUMBER, LOT1_NUMBER, dunsNumber, operation);
+
+    mockMvc.perform(MockMvcRequestBuilders
+            .patch("/agreements/" + AGREEMENT_NUMBER + "/lots/" + LOT1_NUMBER + "/suppliers/duns/" + dunsNumber + "/status")
+            .content(asJsonString(Map.of("operation", operation)))
+            .contentType(MediaType.APPLICATION_JSON)
+            .accept(MediaType.APPLICATION_JSON))
+        .andExpect(status().isNotFound())
+        .andExpect(jsonPath("$.errors[0].status", is(HttpStatus.NOT_FOUND.toString())))
+        .andExpect(jsonPath("$.errors[0].title", is(GlobalErrorHandler.ERR_MSG_NOT_FOUND_TITLE)))
+        .andExpect(jsonPath("$.description", is(GlobalErrorHandler.ERR_MSG_NOT_FOUND_DESCRIPTION)));
+  }
+
   public static String asJsonString(final Object obj) {
     try {
       ObjectMapper objectMapper = new ObjectMapper();

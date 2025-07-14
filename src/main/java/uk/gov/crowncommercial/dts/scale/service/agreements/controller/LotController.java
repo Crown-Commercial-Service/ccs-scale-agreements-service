@@ -2,13 +2,20 @@ package uk.gov.crowncommercial.dts.scale.service.agreements.controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+
 import uk.gov.crowncommercial.dts.scale.service.agreements.BLL.BusinessLogicClient;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.*;
 
 import java.util.Collection;
 import java.util.Set;
+
+import org.springframework.http.ResponseEntity;
+
+import jakarta.validation.Valid;
+import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.SupplierStatusRequest;
 
 /**
  * Lot Controller
@@ -96,5 +103,16 @@ public class LotController {
       @PathVariable String dunsNumber) {
     log.debug("addSupplierToLotByDuns called with values: agreementNumber={}, lotNumber={}, dunsNumber={}", agreementNumber, lotNumber, dunsNumber);
     return businessLogicClient.addSupplierToLotByDuns(agreementNumber, lotNumber, dunsNumber);
+  }
+
+  @PatchMapping("/suppliers/duns/{dunsNumber}/status")
+  public ResponseEntity<Void> updateSupplierStatus(
+      @PathVariable(value = "agreement-id") String agreementNumber,
+      @PathVariable(value = "lot-id") String lotNumber,
+      @PathVariable String dunsNumber,
+      @Valid @RequestBody SupplierStatusRequest request) {
+    businessLogicClient.updateSupplierStatusForLot(
+        agreementNumber, lotNumber, dunsNumber, request.getOperation());
+    return ResponseEntity.ok().build();
   }
 }
