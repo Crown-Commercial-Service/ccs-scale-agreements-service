@@ -14,7 +14,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.rollbar.notifier.Rollbar;
 
-import uk.gov.crowncommercial.dts.scale.service.agreements.BLL.BusinessLogicClient;
+import uk.gov.crowncommercial.dts.scale.service.agreements.BLL.SupplierLogicClient;
 import uk.gov.crowncommercial.dts.scale.service.agreements.exception.*;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.OrganizationIdentifier;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.Scheme;
@@ -42,7 +42,7 @@ public class OrganisationControllerTest {
     private OrganisationController controller;
 
     @MockBean
-    private BusinessLogicClient businessLogicClient;
+    private SupplierLogicClient supplierLogicClient;
 
     @MockBean
     private Organisation mockOrganisation;
@@ -234,7 +234,7 @@ public class OrganisationControllerTest {
         updateRequest.setLocality("Testville");
         updateRequest.setPostalCode("TST123");
 
-        org.mockito.Mockito.doNothing().when(businessLogicClient).updateSupplierByDuns(dunsNumber, updateRequest);
+        org.mockito.Mockito.doNothing().when(supplierLogicClient).updateSupplierByDuns(dunsNumber, updateRequest);
 
         mockMvc.perform(MockMvcRequestBuilders
                 .patch("/organisation/duns/" + dunsNumber)
@@ -257,7 +257,7 @@ public class OrganisationControllerTest {
         updateRequest.setPostalCode("TST123");
 
         org.mockito.Mockito.doThrow(new InvalidOrganisationException("dunsNumber", dunsNumber))
-                .when(businessLogicClient).updateSupplierByDuns(dunsNumber, updateRequest);
+                .when(supplierLogicClient).updateSupplierByDuns(dunsNumber, updateRequest);
 
         mockMvc.perform(MockMvcRequestBuilders
                 .patch("/organisation/duns/" + dunsNumber)

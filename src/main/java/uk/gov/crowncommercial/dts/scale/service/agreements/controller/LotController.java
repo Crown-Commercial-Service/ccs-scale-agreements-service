@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import uk.gov.crowncommercial.dts.scale.service.agreements.BLL.BusinessLogicClient;
+import uk.gov.crowncommercial.dts.scale.service.agreements.BLL.SupplierLogicClient;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.*;
 
 import java.util.Collection;
@@ -27,6 +28,9 @@ import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.SupplierSta
 public class LotController {
   @Autowired
   private BusinessLogicClient businessLogicClient;
+
+  @Autowired
+  private SupplierLogicClient supplierLogicClient;
 
   @GetMapping
   public LotDetail getLot(@PathVariable(value = "agreement-id") final String agreementNumber, @PathVariable(value = "lot-id") final String lotNumber) {
@@ -102,7 +106,7 @@ public class LotController {
       @PathVariable(value = "lot-id") final String lotNumber,
       @PathVariable String dunsNumber) {
     log.debug("addSupplierToLotByDuns called with values: agreementNumber={}, lotNumber={}, dunsNumber={}", agreementNumber, lotNumber, dunsNumber);
-    return businessLogicClient.addSupplierToLotByDuns(agreementNumber, lotNumber, dunsNumber);
+    return supplierLogicClient.addSupplierToLotByDuns(agreementNumber, lotNumber, dunsNumber);
   }
 
   @PatchMapping("/suppliers/duns/{dunsNumber}/status")
@@ -111,7 +115,7 @@ public class LotController {
       @PathVariable(value = "lot-id") String lotNumber,
       @PathVariable String dunsNumber,
       @Valid @RequestBody SupplierStatusRequest request) {
-    businessLogicClient.updateSupplierStatusForLot(
+    supplierLogicClient.updateSupplierStatusForLot(
         agreementNumber, lotNumber, dunsNumber, request.getOperation());
     return ResponseEntity.ok().build();
   }

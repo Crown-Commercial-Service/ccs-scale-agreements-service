@@ -25,6 +25,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import uk.gov.crowncommercial.dts.scale.service.agreements.BLL.BusinessLogicClient;
+import uk.gov.crowncommercial.dts.scale.service.agreements.BLL.SupplierLogicClient;
 import uk.gov.crowncommercial.dts.scale.service.agreements.exception.InvalidLotException;
 import uk.gov.crowncommercial.dts.scale.service.agreements.exception.InvalidOrganisationException;
 import uk.gov.crowncommercial.dts.scale.service.agreements.exception.LotNotFoundException;
@@ -60,6 +61,9 @@ class LotControllerTest {
 
   @MockBean
   private BusinessLogicClient businessLogicClient;
+
+  @MockBean
+  private SupplierLogicClient supplierLogicClient;
 
   @MockBean
   private QuestionTemplateService templateService;
@@ -496,7 +500,7 @@ class LotControllerTest {
   void testAddSupplierToLotByDunsSuccess() throws Exception {
     String dunsNumber = "123456789";
     SupplierSummary summary = setupSupplierSummary();
-    when(businessLogicClient.addSupplierToLotByDuns(AGREEMENT_NUMBER, LOT1_NUMBER, dunsNumber)).thenReturn(summary);
+    when(supplierLogicClient.addSupplierToLotByDuns(AGREEMENT_NUMBER, LOT1_NUMBER, dunsNumber)).thenReturn(summary);
 
     mockMvc.perform(MockMvcRequestBuilders
             .post("/agreements/" + AGREEMENT_NUMBER + "/lots/" + LOT1_NUMBER + "/suppliers/duns/" + dunsNumber)
@@ -511,7 +515,7 @@ class LotControllerTest {
   @Test
   void testAddSupplierToLotByDunsOrganisationNotFound() throws Exception {
     String dunsNumber = "123456789";
-    when(businessLogicClient.addSupplierToLotByDuns(AGREEMENT_NUMBER, LOT1_NUMBER, dunsNumber))
+    when(supplierLogicClient.addSupplierToLotByDuns(AGREEMENT_NUMBER, LOT1_NUMBER, dunsNumber))
         .thenThrow(new uk.gov.crowncommercial.dts.scale.service.agreements.exception.OrganisationNotFoundException("US-DUNS", dunsNumber));
 
     mockMvc.perform(MockMvcRequestBuilders
@@ -527,7 +531,7 @@ class LotControllerTest {
   @Test
   void testAddSupplierToLotByDunsLotNotFound() throws Exception {
     String dunsNumber = "123456789";
-    when(businessLogicClient.addSupplierToLotByDuns(AGREEMENT_NUMBER, LOT1_NUMBER, dunsNumber))
+    when(supplierLogicClient.addSupplierToLotByDuns(AGREEMENT_NUMBER, LOT1_NUMBER, dunsNumber))
         .thenThrow(new uk.gov.crowncommercial.dts.scale.service.agreements.exception.LotNotFoundException(LOT1_NUMBER, AGREEMENT_NUMBER));
 
     mockMvc.perform(MockMvcRequestBuilders
@@ -544,8 +548,7 @@ class LotControllerTest {
   void testUpdateSupplierStatus_suspend_success() throws Exception {
     String dunsNumber = "123456789";
     String operation = "suspend";
-    // No exception means success
-    org.mockito.Mockito.doNothing().when(businessLogicClient)
+    org.mockito.Mockito.doNothing().when(supplierLogicClient)
         .updateSupplierStatusForLot(AGREEMENT_NUMBER, LOT1_NUMBER, dunsNumber, operation);
 
     mockMvc.perform(MockMvcRequestBuilders
@@ -560,7 +563,7 @@ class LotControllerTest {
   void testUpdateSupplierStatus_unsuspend_success() throws Exception {
     String dunsNumber = "123456789";
     String operation = "unsuspend";
-    org.mockito.Mockito.doNothing().when(businessLogicClient)
+    org.mockito.Mockito.doNothing().when(supplierLogicClient)
         .updateSupplierStatusForLot(AGREEMENT_NUMBER, LOT1_NUMBER, dunsNumber, operation);
 
     mockMvc.perform(MockMvcRequestBuilders
@@ -591,7 +594,7 @@ class LotControllerTest {
     String dunsNumber = "123456789";
     String operation = "suspend";
     org.mockito.Mockito.doThrow(new uk.gov.crowncommercial.dts.scale.service.agreements.exception.OrganisationNotFoundException("US-DUNS", dunsNumber))
-        .when(businessLogicClient).updateSupplierStatusForLot(AGREEMENT_NUMBER, LOT1_NUMBER, dunsNumber, operation);
+        .when(supplierLogicClient).updateSupplierStatusForLot(AGREEMENT_NUMBER, LOT1_NUMBER, dunsNumber, operation);
 
     mockMvc.perform(MockMvcRequestBuilders
             .patch("/agreements/" + AGREEMENT_NUMBER + "/lots/" + LOT1_NUMBER + "/suppliers/duns/" + dunsNumber + "/status")

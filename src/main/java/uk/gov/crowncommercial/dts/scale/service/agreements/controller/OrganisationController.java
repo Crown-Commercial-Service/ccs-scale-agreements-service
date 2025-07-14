@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import uk.gov.crowncommercial.dts.scale.service.agreements.BLL.BusinessLogicClient;
+import uk.gov.crowncommercial.dts.scale.service.agreements.BLL.SupplierLogicClient;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.*;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.Organisation;
 
@@ -18,6 +19,9 @@ import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.Organisa
 public class OrganisationController {
     @Autowired
     private BusinessLogicClient businessLogicClient;
+
+    @Autowired
+    private SupplierLogicClient supplierLogicClient;
 
     @GetMapping("/identifier/{OrganisationName}")
     public OrganizationIdentifier getOrganisation(@PathVariable(value = "OrganisationName") final String OrganisationName) {
@@ -40,6 +44,6 @@ public class OrganisationController {
       @PathVariable String dunsNumber,
       @RequestBody SupplierUpdateRequest updateRequest) {
       log.debug("updateSupplier called with values: dunsNumber={}", dunsNumber);
-      businessLogicClient.updateSupplierByDuns(dunsNumber, updateRequest);
+      supplierLogicClient.updateSupplierByDuns(dunsNumber, updateRequest);
   }
 }
