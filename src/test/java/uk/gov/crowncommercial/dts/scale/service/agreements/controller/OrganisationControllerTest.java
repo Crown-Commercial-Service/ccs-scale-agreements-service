@@ -14,13 +14,14 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.rollbar.notifier.Rollbar;
 
-import uk.gov.crowncommercial.dts.scale.service.agreements.BLL.BusinessLogicClient;
+import uk.gov.crowncommercial.dts.scale.service.agreements.BLL.SupplierLogicClient;
 import uk.gov.crowncommercial.dts.scale.service.agreements.exception.*;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.OrganizationIdentifier;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.Scheme;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.Organisation;
 import uk.gov.crowncommercial.dts.scale.service.agreements.service.SupplierService;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.SupplierUpdateRequest;
+import uk.gov.crowncommercial.dts.scale.service.agreements.BLL.BusinessLogicClient;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.mockito.Mockito.when;
@@ -42,13 +43,17 @@ public class OrganisationControllerTest {
     private OrganisationController controller;
 
     @MockBean
-    private BusinessLogicClient businessLogicClient;
+    private SupplierLogicClient supplierLogicClient;
 
     @MockBean
     private Organisation mockOrganisation;
 
     @MockBean
     private Rollbar rollbar;
+
+    @MockBean
+    private BusinessLogicClient businessLogicClient;
+
 
     private static final Scheme ENTITY = Scheme.GBCHC;
     private static final String ID = "123456789";
@@ -234,7 +239,7 @@ public class OrganisationControllerTest {
         updateRequest.setLocality("Testville");
         updateRequest.setPostalCode("TST123");
 
-        org.mockito.Mockito.doNothing().when(businessLogicClient).updateSupplierByDuns(dunsNumber, updateRequest);
+        org.mockito.Mockito.doNothing().when(supplierLogicClient).updateSupplierByDuns(dunsNumber, updateRequest);
 
         mockMvc.perform(MockMvcRequestBuilders
                 .patch("/organisation/duns/" + dunsNumber)
@@ -257,7 +262,7 @@ public class OrganisationControllerTest {
         updateRequest.setPostalCode("TST123");
 
         org.mockito.Mockito.doThrow(new InvalidOrganisationException("dunsNumber", dunsNumber))
-                .when(businessLogicClient).updateSupplierByDuns(dunsNumber, updateRequest);
+                .when(supplierLogicClient).updateSupplierByDuns(dunsNumber, updateRequest);
 
         mockMvc.perform(MockMvcRequestBuilders
                 .patch("/organisation/duns/" + dunsNumber)

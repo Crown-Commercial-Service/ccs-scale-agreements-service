@@ -2,13 +2,20 @@ package uk.gov.crowncommercial.dts.scale.service.agreements.controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+
 import uk.gov.crowncommercial.dts.scale.service.agreements.BLL.BusinessLogicClient;
+import uk.gov.crowncommercial.dts.scale.service.agreements.BLL.SupplierLogicClient;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.*;
 
 import java.util.Collection;
 import java.util.Set;
+
+import org.springframework.http.ResponseEntity;
+
+import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.SupplierStatusRequest;
 
 /**
  * Lot Controller
@@ -20,6 +27,9 @@ import java.util.Set;
 public class LotController {
   @Autowired
   private BusinessLogicClient businessLogicClient;
+
+  @Autowired
+  private SupplierLogicClient supplierLogicClient;
 
   @GetMapping
   public LotDetail getLot(@PathVariable(value = "agreement-id") final String agreementNumber, @PathVariable(value = "lot-id") final String lotNumber) {
@@ -95,6 +105,20 @@ public class LotController {
       @PathVariable(value = "lot-id") final String lotNumber,
       @PathVariable String dunsNumber) {
     log.debug("addSupplierToLotByDuns called with values: agreementNumber={}, lotNumber={}, dunsNumber={}", agreementNumber, lotNumber, dunsNumber);
-    return businessLogicClient.addSupplierToLotByDuns(agreementNumber, lotNumber, dunsNumber);
+    return supplierLogicClient.addSupplierToLotByDuns(agreementNumber, lotNumber, dunsNumber);
+  }
+
+  @PatchMapping("/suppliers/duns/{dunsNumber}/status")
+  public ResponseEntity<?> updateSupplierStatus(
+      @PathVariable(value = "agreement-id") String agreementNumber,
+      @PathVariable(value = "lot-id") String lotNumber,
+      @PathVariable String dunsNumber,
+      @RequestBody SupplierStatusRequest statusRequest) {
+    if (statusRequest.getOperation() == null || statusRequest.getOperation().trim().isEmpty()) {
+        return ResponseEntity.badRequest().body("Operation must not be blank");
+    }
+    supplierLogicClient.updateSupplierStatusForLot(
+        agreementNumber, lotNumber, dunsNumber, statusRequest.getOperation());
+    return ResponseEntity.ok().build();
   }
 }

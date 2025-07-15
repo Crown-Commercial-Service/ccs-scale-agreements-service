@@ -1,19 +1,32 @@
 package uk.gov.crowncommercial.dts.scale.service.agreements.service;
 
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import uk.gov.crowncommercial.dts.scale.service.agreements.exception.*;
-import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.Scheme;
-import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.SupplierStatus;
-import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.SupplierUpdateRequest;
-import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.*;
-import uk.gov.crowncommercial.dts.scale.service.agreements.repository.*;
-
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import uk.gov.crowncommercial.dts.scale.service.agreements.exception.ContactDetailNotFoundException;
+import uk.gov.crowncommercial.dts.scale.service.agreements.exception.InvalidOrganisationException;
+import uk.gov.crowncommercial.dts.scale.service.agreements.exception.OrganisationNotFoundException;
+import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.SupplierStatus;
+import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.SupplierUpdateRequest;
+import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.ContactDetail;
+import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.ContactPointLotOrgRole;
+import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.ContactPointReason;
+import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.Lot;
+import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.LotOrganisationRole;
+import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.Organisation;
+import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.RoleType;
+import uk.gov.crowncommercial.dts.scale.service.agreements.repository.ContactDetailRepo;
+import uk.gov.crowncommercial.dts.scale.service.agreements.repository.ContactPointLotOrgRoleRepo;
+import uk.gov.crowncommercial.dts.scale.service.agreements.repository.ContactPointReasonRepo;
+import uk.gov.crowncommercial.dts.scale.service.agreements.repository.LotOrganisationRoleRepo;
+import uk.gov.crowncommercial.dts.scale.service.agreements.repository.OrganisationRepo;
+import uk.gov.crowncommercial.dts.scale.service.agreements.repository.RoleTypeRepo;
 
 /**
  * Supplier Service.
@@ -234,5 +247,14 @@ public class SupplierService {
             contact.setPostalCode(updateRequest.getPostalCode());
             contactDetailRepo.save(contact);
         }
+    }
+    
+    public void updateSupplierStatusForLot(Lot lot, Organisation organisation, SupplierStatus status) {
+        RoleType supplierRoleType = roleTypeRepo.findById(2);
+        LotOrganisationRole lor = lotOrganisationRoleRepo
+            .findByLotIdAndOrganisationIdAndRoleType(lot.getId(), organisation.getId(), supplierRoleType)
+            .orElseThrow(() -> new RuntimeException("Supplier relationship not found"));
+        lor.setStatus(SupplierStatus.getChar(status));
+        lotOrganisationRoleRepo.saveAndFlush(lor);
     }
 }

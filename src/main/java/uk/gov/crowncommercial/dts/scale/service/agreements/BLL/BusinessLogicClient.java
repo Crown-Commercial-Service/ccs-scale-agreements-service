@@ -423,17 +423,4 @@ public class BusinessLogicClient {
 
         return getOrganisation(orgName);
     }
-
-    public void updateSupplierByDuns(String dunsNumber, SupplierUpdateRequest updateRequest) {
-        supplierService.updateSupplierAndContactByDuns(dunsNumber, updateRequest);
-    }
-
-    public SupplierSummary addSupplierToLotByDuns(String agreementId, String lotId, String dunsNumber) {
-
-        Organisation organisation = supplierService.findOrganisationBySchemeAndEntityId("US-DUNS", dunsNumber);
-        Lot lot = agreementService.findLotByAgreementNumberAndLotNumber(agreementId, lotId);
-        supplierService.addSupplierRelationship(lot, organisation, null, "api", SupplierStatus.ACTIVE);
-        int supplierCount = getLotSuppliers(agreementId, lotId).size();
-        return new SupplierSummary(java.time.LocalDate.now(), "api", supplierCount);
-    }
 }
