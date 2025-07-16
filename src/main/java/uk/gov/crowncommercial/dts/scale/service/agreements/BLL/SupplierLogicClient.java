@@ -70,5 +70,9 @@ public class SupplierLogicClient {
         supplierService.updateSupplierStatusForLot(lot, organisation, status);
     }
 
+    public Organisation createOrUpdateOrganisation(Organisation organisation) {
+        return supplierService.createOrUpdateOrganisation(organisation);
+    }
+
 
 } 

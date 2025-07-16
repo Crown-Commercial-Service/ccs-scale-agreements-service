@@ -277,6 +277,92 @@ public class OrganisationControllerTest {
                 .andExpect(jsonPath("$.description", is(GlobalErrorHandler.ERR_MSG_VALIDATION_DESCRIPTION)));
     }
 
+    @Test
+    void testCreateOrganisationSuccess() throws Exception {
+        Organisation input = new Organisation();
+        input.setLegalName("Test Supplier");
+        input.setRegistryCode("GB-CHC");
+        input.setEntityId("123456789");
+        input.setIncorporationDate(java.time.LocalDate.of(2020, 1, 1));
+        input.setIncorporationCountry("GB");
+        input.setCountryName("United Kingdom");
+        input.setIsActive(true);
+
+        Organisation output = new Organisation();
+        output.setLegalName("Test Supplier");
+        output.setRegistryCode("GB-CHC");
+        output.setEntityId("123456789");
+        output.setIncorporationDate(java.time.LocalDate.of(2020, 1, 1));
+        output.setIncorporationCountry("GB");
+        output.setCountryName("United Kingdom");
+        output.setIsActive(true);
+        output.setId(1);
+
+        when(supplierLogicClient.createOrUpdateOrganisation(input)).thenReturn(output);
+
+        mockMvc.perform(MockMvcRequestBuilders
+                .post("/suppliers")
+                .content(asJsonString(input))
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.legalName", is("Test Supplier")))
+                .andExpect(jsonPath("$.registryCode", is("GB-CHC")))
+                .andExpect(jsonPath("$.entityId", is("123456789")))
+                .andExpect(jsonPath("$.incorporationDate", is("2020-01-01")))
+                .andExpect(jsonPath("$.incorporationCountry", is("GB")))
+                .andExpect(jsonPath("$.countryName", is("United Kingdom")))
+                .andExpect(jsonPath("$.active", is(true)))
+                .andExpect(jsonPath("$.id", is(1)));
+    }
+
+    @Test
+    void testCreateOrganisationValidationError() throws Exception {
+        Organisation input = new Organisation();
+        // Missing legalName, which is required
+        input.setRegistryCode("GB-CHC");
+        input.setEntityId("123456789");
+        input.setIncorporationDate(java.time.LocalDate.of(2020, 1, 1));
+        input.setIncorporationCountry("GB");
+        input.setCountryName("United Kingdom");
+        input.setIsActive(true);
+
+        when(supplierLogicClient.createOrUpdateOrganisation(input)).thenThrow(new InvalidOrganisationException("legalName"));
+
+        mockMvc.perform(MockMvcRequestBuilders
+                .post("/suppliers")
+                .content(asJsonString(input))
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.errors[0].status", is(HttpStatus.BAD_REQUEST.toString())))
+                .andExpect(jsonPath("$.errors[0].title", is(GlobalErrorHandler.ERR_MSG_VALIDATION_TITLE)))
+                .andExpect(jsonPath("$.errors[0].detail", is(String.format(InvalidOrganisationException.ERROR_MSG_TEMPLATE, "legalName"))))
+                .andExpect(jsonPath("$.description", is(GlobalErrorHandler.ERR_MSG_VALIDATION_DESCRIPTION)));
+    }
+
+    @Test
+    void testCreateOrganisationServiceThrows() throws Exception {
+        Organisation input = new Organisation();
+        input.setLegalName("Test Supplier");
+        input.setRegistryCode("GB-CHC");
+        input.setEntityId("123456789");
+        input.setIncorporationDate(java.time.LocalDate.of(2020, 1, 1));
+        input.setIncorporationCountry("GB");
+        input.setCountryName("United Kingdom");
+        input.setIsActive(true);
+
+        when(supplierLogicClient.createOrUpdateOrganisation(input)).thenThrow(new RuntimeException("Unexpected error"));
+
+        mockMvc.perform(MockMvcRequestBuilders
+                .post("/suppliers")
+                .content(asJsonString(input))
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isInternalServerError())
+                .andExpect(jsonPath("$.description", is(GlobalErrorHandler.ERR_MSG_DEFAULT_DESCRIPTION)));
+    }
+
     public static String asJsonString(final Object obj) {
         try {
             ObjectMapper objectMapper = new ObjectMapper();
