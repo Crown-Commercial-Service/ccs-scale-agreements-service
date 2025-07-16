@@ -301,7 +301,7 @@ public class OrganisationControllerTest {
         when(supplierLogicClient.createOrUpdateOrganisation(input)).thenReturn(output);
 
         mockMvc.perform(MockMvcRequestBuilders
-                .post("/suppliers")
+                .post("/organisation/suppliers")
                 .content(asJsonString(input))
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))
@@ -312,7 +312,7 @@ public class OrganisationControllerTest {
                 .andExpect(jsonPath("$.incorporationDate", is("2020-01-01")))
                 .andExpect(jsonPath("$.incorporationCountry", is("GB")))
                 .andExpect(jsonPath("$.countryName", is("United Kingdom")))
-                .andExpect(jsonPath("$.active", is(true)))
+                .andExpect(jsonPath("$.isActive", is(true)))
                 .andExpect(jsonPath("$.id", is(1)));
     }
 
@@ -330,7 +330,7 @@ public class OrganisationControllerTest {
         when(supplierLogicClient.createOrUpdateOrganisation(input)).thenThrow(new InvalidOrganisationException("legalName"));
 
         mockMvc.perform(MockMvcRequestBuilders
-                .post("/suppliers")
+                .post("/organisation/suppliers")
                 .content(asJsonString(input))
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))
