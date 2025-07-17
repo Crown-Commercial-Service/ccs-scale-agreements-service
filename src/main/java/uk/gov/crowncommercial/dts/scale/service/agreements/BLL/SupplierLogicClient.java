@@ -14,6 +14,8 @@ import uk.gov.crowncommercial.dts.scale.service.agreements.service.SupplierServi
 import uk.gov.crowncommercial.dts.scale.service.agreements.service.AgreementService;
 import java.util.*;
 import java.util.stream.Collectors;
+import uk.gov.crowncommercial.dts.scale.service.agreements.exception.InvalidOperationException;
+
 
 @Component
 public class SupplierLogicClient {
@@ -65,9 +67,13 @@ public class SupplierLogicClient {
         } else if ("unsuspend".equalsIgnoreCase(operation)) {
             status = SupplierStatus.ACTIVE;
         } else {
-            throw new IllegalArgumentException("Invalid operation: " + operation);
+            throw new InvalidOperationException(operation);
         }
         supplierService.updateSupplierStatusForLot(lot, organisation, status);
+    }
+
+    public Organisation createOrUpdateOrganisation(Organisation organisation) {
+        return supplierService.createOrUpdateOrganisation(organisation);
     }
 
 

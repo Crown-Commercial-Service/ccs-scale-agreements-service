@@ -46,4 +46,10 @@ public class OrganisationController {
       log.debug("updateSupplier called with values: dunsNumber={}", dunsNumber);
       supplierLogicClient.updateSupplierByDuns(dunsNumber, updateRequest);
   }
+
+    @PostMapping("/suppliers")
+    public Organisation createOrUpdateOrganisation(@RequestBody Organisation organisation) {
+        log.debug("createOrUpdateOrganisation called with values: {}", organisation);
+        return supplierLogicClient.createOrUpdateOrganisation(organisation);
+    }
 }

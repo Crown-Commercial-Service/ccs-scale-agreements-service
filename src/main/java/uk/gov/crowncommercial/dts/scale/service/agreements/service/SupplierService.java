@@ -88,6 +88,7 @@ public class SupplierService {
      * @return Organisation
      */
     public Organisation createOrUpdateOrganisation(final Organisation newOrganisation) {
+        newOrganisation.isValid();
         return organisationRepo.findByLegalName(newOrganisation.getLegalName())
                 .map(organisation -> {
                     organisation.setEntityId            (newOrganisation.getEntityId());

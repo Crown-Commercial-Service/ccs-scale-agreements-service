@@ -39,7 +39,7 @@ public class GlobalErrorHandler implements ErrorController {
 
   @ResponseStatus(HttpStatus.BAD_REQUEST)
   @ExceptionHandler({ValidationException.class, HttpMessageNotReadableException.class,
-      MethodArgumentTypeMismatchException.class, InvalidAgreementException.class, InvalidLotException.class, InvalidSchemeExpection.class, InvalidOrganisationException.class, InvalidContactDetailExpection.class, InvalidRegulationException.class,  InvalidAgreementTypeException.class})
+      MethodArgumentTypeMismatchException.class, InvalidAgreementException.class, InvalidLotException.class, InvalidSchemeExpection.class, InvalidOrganisationException.class, InvalidContactDetailExpection.class, InvalidRegulationException.class,  InvalidAgreementTypeException.class, InvalidOperationException.class})
   public ApiErrors handleValidationException(final Exception exception) {
 
     rollbar.warning(exception, "Request validation exception");
