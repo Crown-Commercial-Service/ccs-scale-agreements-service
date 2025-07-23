@@ -31,6 +31,10 @@
 		<lombok.version>1.18.38</lombok.version>
 		<h2.version>2.3.232</h2.version>
 		<jackson.version>2.19.2</jackson.version>
+		<springdoc.version>2.8.9</springdoc.version>
+		<mockito.version>5.2.0</mockito.version>
+		<tomcat.version>10.1.43</tomcat.version>
+
 	</properties>
 
 	<dependencies>
@@ -114,7 +118,7 @@
 		<dependency>
 			<groupId>org.apache.tomcat.embed</groupId>
 			<artifactId>tomcat-embed-core</artifactId>
-			<version>10.1.43</version>
+			<version>${tomcat.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.json</groupId>
@@ -205,18 +209,18 @@
 		<dependency>
 			<groupId>org.springdoc</groupId>
 			<artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
-			<version>2.8.9</version>
+			<version>${springdoc.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.mockito</groupId>
 			<artifactId>mockito-core</artifactId>
-			<version>5.2.0</version>
+			<version>${mockito.version}</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.mockito</groupId>
 			<artifactId>mockito-junit-jupiter</artifactId>
-			<version>5.2.0</version>
+			<version>${mockito.version}</version>
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
