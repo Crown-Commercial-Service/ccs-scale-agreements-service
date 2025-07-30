@@ -25,27 +25,28 @@ public class OrganisationController {
 
     @GetMapping("/identifier/{OrganisationName}")
     public OrganizationIdentifier getOrganisation(@PathVariable(value = "OrganisationName") final String OrganisationName) {
-    log.debug("getOrganisation called with values: OrganisationName={}", OrganisationName);
+      log.debug("getOrganisation called with values: OrganisationName={}", OrganisationName);
 
-    OrganizationIdentifier model = businessLogicClient.getOrganisation(OrganisationName);
+        return businessLogicClient.getOrganisation(OrganisationName);
+    }
 
-    return model;
-  }
+    @PatchMapping("/identifier/{OrganisationName}")
+    public OrganizationIdentifier partialUpdateOrganisation(@PathVariable(value = "OrganisationName") final String OrganisationName, @RequestBody OrganizationIdentifier organizationIdentifier) {
+      log.debug("partialUpdateOrganisation called with values: OrganisationName={}", OrganisationName);
 
-  @PatchMapping("/identifier/{OrganisationName}")
-  public OrganizationIdentifier partialUpdateOrganisation(@PathVariable(value = "OrganisationName") final String OrganisationName, @RequestBody OrganizationIdentifier organizationIdentifier) {
-    log.debug("partialUpdateOrganisation called with values: OrganisationName={}", OrganisationName);
+      return businessLogicClient.partialSaveOrganisation(OrganisationName, organizationIdentifier);
+    }
 
-    return businessLogicClient.partialSaveOrganisation(OrganisationName, organizationIdentifier);
-  }
+    @GetMapping("/duns/{DunsNumber}")
+    public OrganizationIdentifier getOrganisationByDuns(@PathVariable(value = "DunsNumber") final String dunsNumber) {
+        return supplierLogicClient.getSupplierByDuns(dunsNumber);
+    }
 
-  @PatchMapping("/duns/{dunsNumber}")
-  public void updateSupplier(
-      @PathVariable String dunsNumber,
-      @RequestBody SupplierUpdateRequest updateRequest) {
-      log.debug("updateSupplier called with values: dunsNumber={}", dunsNumber);
-      supplierLogicClient.updateSupplierByDuns(dunsNumber, updateRequest);
-  }
+    @PatchMapping("/duns/{dunsNumber}")
+    public void updateSupplier(@PathVariable String dunsNumber, @RequestBody SupplierUpdateRequest updateRequest) {
+        log.debug("updateSupplier called with values: dunsNumber={}", dunsNumber);
+        supplierLogicClient.updateSupplierByDuns(dunsNumber, updateRequest);
+    }
 
     @PostMapping("/suppliers")
     public Organisation createOrUpdateOrganisation(@RequestBody Organisation organisation) {

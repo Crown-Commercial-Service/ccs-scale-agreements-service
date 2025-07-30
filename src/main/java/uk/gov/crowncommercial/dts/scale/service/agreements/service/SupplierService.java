@@ -82,6 +82,14 @@ public class SupplierService {
     }
 
     /**
+     * Finds an organisation by its DUNS number
+     */
+    public Organisation findOrganisationByDuns(final String dunsNumber) {
+        return organisationRepo.findByRegistryCodeAndEntityId("US-DUNS", dunsNumber)
+                .orElseThrow(() -> new OrganisationNotFoundException("US-DUNS", dunsNumber));
+    }
+
+    /**
      * Create or update the Organisation that is passed in
      *
      * @param newOrganisation Organisation
