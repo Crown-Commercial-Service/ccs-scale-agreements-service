@@ -3,13 +3,11 @@ package uk.gov.crowncommercial.dts.scale.service.agreements.BLL;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;
-import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.LotSupplier;
-import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.SupplierUpdateRequest;
-import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.SupplierSummary;
+import uk.gov.crowncommercial.dts.scale.service.agreements.config.Constants;
+import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.*;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.Lot;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.LotOrganisationRole;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.Organisation;
-import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.SupplierStatus;
 import uk.gov.crowncommercial.dts.scale.service.agreements.service.SupplierService;
 import uk.gov.crowncommercial.dts.scale.service.agreements.service.AgreementService;
 import java.util.*;
@@ -41,6 +39,27 @@ public class SupplierLogicClient {
         if (lotOrgRoles != null) {
             // Now convert the items we've found into the format we want to return
             model = lotOrgRoles.stream().map(mappingService::mapLotOrganisationRoleToLotSupplier).collect(Collectors.toList());
+        }
+
+        return model;
+    }
+
+    /**
+     * Returns a representation of a given supplier according to their DUNS number
+     */
+    @Cacheable(value = "getLotSuppliers", key="#supplier + #dunsNumber")
+    public OrganizationIdentifier getSupplierByDuns(String dunsNumber) {
+        OrganizationIdentifier model = null;
+
+        // Clean up the DUNS number before we try to use it - in case it has the prefix attached (we don't really want to throw it out if so)
+        dunsNumber = dunsNumber.replace(Constants.DUNS_PREFIX, "");
+
+        // First, grab the organisation
+        Organisation organisation = supplierService.findOrganisationByDuns(dunsNumber);
+
+        if (organisation != null) {
+            // We've found the org, so map it to the model we want to output
+            model = mappingService.mapOrganisationToOrganizationIdentifier(organisation);
         }
 
         return model;
