@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import uk.gov.crowncommercial.dts.scale.service.agreements.BLL.BusinessLogicClient;
@@ -16,6 +17,7 @@ import java.util.Set;
 import org.springframework.http.ResponseEntity;
 
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.SupplierStatusRequest;
+import uk.gov.crowncommercial.dts.scale.service.agreements.util.OcdsRequirementsCsvExporter;
 
 /**
  * Lot Controller
@@ -30,6 +32,9 @@ public class LotController {
 
   @Autowired
   private SupplierLogicClient supplierLogicClient;
+
+  @Autowired
+  private OcdsRequirementsCsvExporter ocdsRequirementsCsvExporter;
 
   @GetMapping
   public LotDetail getLot(@PathVariable(value = "agreement-id") final String agreementNumber, @PathVariable(value = "lot-id") final String lotNumber) {
@@ -74,6 +79,30 @@ public class LotController {
     Collection<ProcurementDataTemplate> model = businessLogicClient.getEventDataTemplates(agreementNumber, lotNumber, eventType);
 
     return model;
+  }
+
+  @GetMapping("/event-types/{event-type}/data-templates/ocds-requirements/csv")
+  public ResponseEntity<String> getOcdsRequirementsAsCsv(@PathVariable(value = "agreement-id") final String agreementNumber, @PathVariable(value = "lot-id") final String lotNumber, @PathVariable(value = "event-type") final String eventType) {
+    log.debug("getOcdsRequirementsAsCsv called with values: agreementNumber={}, lotNumber={}, eventType={}", agreementNumber, lotNumber, eventType);
+
+    try {
+      Collection<ProcurementDataTemplate> dataTemplates = businessLogicClient.getEventDataTemplates(agreementNumber, lotNumber, eventType);
+      
+      if (dataTemplates == null || dataTemplates.isEmpty()) {
+        return ResponseEntity.notFound().build();
+      }
+
+      String csvData = ocdsRequirementsCsvExporter.exportToCsv(dataTemplates);
+      
+      return ResponseEntity.ok()
+          .header("Content-Type", "text/csv")
+          .header("Content-Disposition", "attachment; filename=\"ocds-requirements-" + agreementNumber + "-" + lotNumber + "-" + eventType + ".csv\"")
+          .body(csvData);
+          
+    } catch (Exception e) {
+      log.error("Error generating OCDS requirements CSV for agreement={}, lot={}, eventType={}: {}", agreementNumber, lotNumber, eventType, e.getMessage());
+      return ResponseEntity.internalServerError().body("Error generating CSV: " + e.getMessage());
+    }
   }
 
   @GetMapping("/event-types/{event-type}/document-templates")
