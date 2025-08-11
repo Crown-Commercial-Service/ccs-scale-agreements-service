@@ -33,6 +33,7 @@ import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.*;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.*;
 import uk.gov.crowncommercial.dts.scale.service.agreements.service.AgreementService;
 import uk.gov.crowncommercial.dts.scale.service.agreements.service.QuestionTemplateService;
+import uk.gov.crowncommercial.dts.scale.service.agreements.util.OcdsRequirementsCsvExporter;
 
 @WebMvcTest(LotController.class)
 @Import(GlobalErrorHandler.class)
@@ -91,6 +92,9 @@ class LotControllerTest {
 
   @MockBean
   private Rollbar rollbar;
+
+  @MockBean
+  private OcdsRequirementsCsvExporter ocdsRequirementsCsvExporter;
 
   @Test
   void testGetLotSuccess() throws Exception {
