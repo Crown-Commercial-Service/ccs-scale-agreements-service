@@ -7,6 +7,7 @@ import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Component;
+import uk.gov.crowncommercial.dts.scale.service.agreements.config.Constants;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.*;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.*;
 import uk.gov.crowncommercial.dts.scale.service.agreements.service.*;
@@ -255,6 +256,26 @@ public class BusinessLogicClient {
         }
 
         return model;
+    }
+
+    /**
+     * Triggers the creation or update of an event type with provided information
+     */
+    @CacheEvict(value = "getLotEventTypes", allEntries = true)
+    public void manageEventTypeConfig(LotEventTypeUpdate model) {
+        if (model != null && model.getType() != null) {
+            // First of all we want to start by trying to grab the Event Type to see if it already exists
+            ProcurementEventType procurementEventType = agreementService.findEventTypeByName(model.getType().trim().toUpperCase());
+
+            if (procurementEventType != null) {
+                // TODO: Update event type
+            } else {
+                // TODO: Create event type
+            }
+        }
+
+        // If we've gotten to here, the request model looks invalid - throw an error
+        throw new IllegalArgumentException(Constants.ERR_MSG_INVALID_REQUEST_EVENT_TYPE_MGMT);
     }
 
     /**
