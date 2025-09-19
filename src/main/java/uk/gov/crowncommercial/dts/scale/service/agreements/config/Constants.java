@@ -12,6 +12,7 @@ public class Constants {
   // Prefix for DUNs numbers replacement
   public static final String DUNS_PREFIX = "US-DUNS-";
 
-  // Error messages
+    // Error messages
     public static final String ERR_MSG_INVALID_REQUEST_EVENT_TYPE_MGMT = "Invalid request - required data missing for event type management";
+    public static final String ERR_MSG_EVENT_TYPE_CREATION_FAILURE = "Failed to create event type";
 }

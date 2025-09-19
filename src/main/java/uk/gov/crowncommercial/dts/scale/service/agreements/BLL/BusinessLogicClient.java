@@ -262,20 +262,22 @@ public class BusinessLogicClient {
      * Triggers the creation or update of an event type with provided information
      */
     @CacheEvict(value = "getLotEventTypes", allEntries = true)
-    public void manageEventTypeConfig(LotEventTypeUpdate model) {
+    public void manageEventTypeConfig(LotEventTypeUpdate model) throws Exception {
         if (model != null && model.getType() != null) {
             // First of all we want to start by trying to grab the Event Type to see if it already exists
             ProcurementEventType procurementEventType = agreementService.findEventTypeByName(model.getType().trim().toUpperCase());
 
-            if (procurementEventType != null) {
-                // TODO: Update event type
-            } else {
-                // TODO: Create event type
+            if (procurementEventType == null) {
+                // Looks like the event type doesn't exist yet, so we want to create it.  Map our data to the relevant model and then do that
+                procurementEventType = mappingService.mapLotEventTypeUpdateToProcurementEventType(model);
             }
-        }
 
-        // If we've gotten to here, the request model looks invalid - throw an error
-        throw new IllegalArgumentException(Constants.ERR_MSG_INVALID_REQUEST_EVENT_TYPE_MGMT);
+            // Now we should have our event type ready to save - either as existing or spooled up to create - so trigger that
+            agreementService.createOrUpdateEventType(procurementEventType);
+        } else {
+            // If we've gotten to here, the request model looks invalid - throw an error
+            throw new IllegalArgumentException(Constants.ERR_MSG_INVALID_REQUEST_EVENT_TYPE_MGMT);
+        }
     }
 
     /**

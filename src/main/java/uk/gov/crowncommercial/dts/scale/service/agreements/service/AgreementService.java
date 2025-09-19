@@ -5,10 +5,13 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
+import com.rollbar.notifier.Rollbar;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.transaction.annotation.Transactional;
+import uk.gov.crowncommercial.dts.scale.service.agreements.config.Constants;
 import uk.gov.crowncommercial.dts.scale.service.agreements.exception.AgreementNotFoundException;
 import uk.gov.crowncommercial.dts.scale.service.agreements.exception.LotNotFoundException;
 import uk.gov.crowncommercial.dts.scale.service.agreements.exception.ProcurementQuestionTemplateNotFoundException;
@@ -24,6 +27,9 @@ import uk.gov.crowncommercial.dts.scale.service.agreements.repository.*;
 @RequiredArgsConstructor
 @Slf4j
 public class AgreementService {
+    @Autowired
+    private Rollbar rollbar;
+
 
   private final CommercialAgreementRepo commercialAgreementRepo;
   private final LotRepo lotRepo;
@@ -160,6 +166,18 @@ public class AgreementService {
     log.debug("findEventTypeByName by name: {}", procurementEventTypeName);
     return procurementEventTypeRepo.findByName(procurementEventTypeName);
   }
+
+    /**
+     * Create new Event Type or update an existing one
+     */
+    public void createOrUpdateEventType(final ProcurementEventType model) throws Exception {
+        try {
+            procurementEventTypeRepo.saveAndFlush(model);
+        } catch (Exception ex) {
+            rollbar.error(ex, "Error creating new event type");
+            throw new Exception(Constants.ERR_MSG_EVENT_TYPE_CREATION_FAILURE);
+        }
+    }
 
   /**
    * Find all lot supplier organisation roles

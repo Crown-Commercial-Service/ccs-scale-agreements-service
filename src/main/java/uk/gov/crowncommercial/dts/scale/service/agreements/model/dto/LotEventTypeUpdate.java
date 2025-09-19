@@ -9,6 +9,8 @@ public class LotEventTypeUpdate {
 
   private String type;
 
+  private String name;
+
   private Boolean mandatoryEvent;
 
   private Boolean repeatableEvent;

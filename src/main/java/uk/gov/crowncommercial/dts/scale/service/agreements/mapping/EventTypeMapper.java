@@ -4,6 +4,7 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Named;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.EventType;
+import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.LotEventTypeUpdate;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.QuestionTemplate;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.*;
 
@@ -77,4 +78,9 @@ public abstract class EventTypeMapper {
 
         return null;
     }
+
+    @Mapping(source = "type", target = "name")
+    @Mapping(source = "name", target = "description")
+    @Mapping(source = "repeatableEvent", target = "preMarketActivity")
+    public abstract ProcurementEventType lotEventTypeUpdateToProcurementEventType(LotEventTypeUpdate model);
 }

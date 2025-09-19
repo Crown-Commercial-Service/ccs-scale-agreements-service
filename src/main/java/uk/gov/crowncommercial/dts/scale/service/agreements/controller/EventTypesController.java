@@ -24,7 +24,7 @@ public class EventTypesController {
      * Creates a new event type or amends an existing event type that can then be used separately to attach to events
      */
     @PutMapping("/event-types/manage-type")
-    public ResponseEntity<?> manageEventTypeConfiguration(@RequestBody final LotEventTypeUpdate model) {
+    public ResponseEntity<?> manageEventTypeConfiguration(@RequestBody final LotEventTypeUpdate model) throws Exception {
         businessLogicClient.manageEventTypeConfig(model);
 
         // Operation should be complete now, so return ok (errors would have been thrown above)

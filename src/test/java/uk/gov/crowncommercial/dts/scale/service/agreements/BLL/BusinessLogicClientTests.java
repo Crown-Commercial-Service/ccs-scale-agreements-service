@@ -2,6 +2,7 @@ package uk.gov.crowncommercial.dts.scale.service.agreements.BLL;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentMatchers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.core.AutoConfigureCache;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -13,10 +14,7 @@ import uk.gov.crowncommercial.dts.scale.service.agreements.controller.GlobalErro
 import uk.gov.crowncommercial.dts.scale.service.agreements.exception.*;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.*;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.*;
-import uk.gov.crowncommercial.dts.scale.service.agreements.service.AgreementService;
-import uk.gov.crowncommercial.dts.scale.service.agreements.service.QuestionTemplateService;
-import uk.gov.crowncommercial.dts.scale.service.agreements.service.SupplierService;
-import uk.gov.crowncommercial.dts.scale.service.agreements.service.WordpressService;
+import uk.gov.crowncommercial.dts.scale.service.agreements.service.*;
 
 import java.math.BigDecimal;
 import java.time.Instant;
@@ -63,11 +61,11 @@ public class BusinessLogicClientTests {
     @MockitoBean
     private QuestionTemplateService questionTemplateService;
 
-    @Autowired
-    private BusinessLogicClient businessLogicClient;
-
     @MockitoBean
     private SupplierService supplierService;
+
+    @Autowired
+    private BusinessLogicClient businessLogicClient;
 
     private static final String AGREEMENT_NUMBER = "RM3733";
     private static final String LOT_NUMBER = "Lot 1";
@@ -493,7 +491,7 @@ public class BusinessLogicClientTests {
         Lot lot = new Lot("1", "Lot 1 Name", "Some description", "PRODUCT", java.time.LocalDate.now(), java.time.LocalDate.now().plusDays(2), mockCommercialAgreement);
         Lot lot1 = new Lot("2", "Lot 2 Name", "Some description", "SERVICE", java.time.LocalDate.now(), java.time.LocalDate.now().plusDays(2), mockCommercialAgreement);
 
-        Collection<LotDetail> lotDetailSet  = new HashSet<LotDetail>(List.of(lotDetail, lotDetail1));
+        Collection<LotDetail> lotDetailSet  = new HashSet<>(List.of(lotDetail, lotDetail1));
 
         Lot lotClass = mock(Lot.class);
         when(agreementService.findAgreementByNumber(mockCommercialAgreement.getNumber())).thenReturn(mockCommercialAgreement);
@@ -512,7 +510,7 @@ public class BusinessLogicClientTests {
 
         lotDetail1.setDescription(null);
 
-        Collection<LotDetail> lotDetailSet  = new HashSet<LotDetail>(List.of(lotDetail, lotDetail1));
+        Collection<LotDetail> lotDetailSet  = new HashSet<>(List.of(lotDetail, lotDetail1));
 
         Lot lotClass = mock(Lot.class);
         when(agreementService.findAgreementByNumber(mockCommercialAgreement.getNumber())).thenReturn(mockCommercialAgreement);
@@ -651,5 +649,29 @@ public class BusinessLogicClientTests {
         IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () -> businessLogicClient.manageEventTypeConfig(mockModel));
 
         assertTrue(ex.getMessage().contains(Constants.ERR_MSG_INVALID_REQUEST_EVENT_TYPE_MGMT));
+    }
+
+    @Test
+    void testManageEventTypeConfigWithNoExistingRecordWorksCorrectly() throws Exception {
+        LotEventTypeUpdate mockModel = new LotEventTypeUpdate();
+        mockModel.setType("ABC");
+
+        when(agreementService.findEventTypeByName(anyString())).thenReturn(null);
+
+        businessLogicClient.manageEventTypeConfig(mockModel);
+
+        verify(agreementService, times(1)).createOrUpdateEventType(ArgumentMatchers.any(ProcurementEventType.class));
+    }
+
+    @Test
+    void testManageEventTypeConfigWithExistingRecordWorksCorrectly() throws Exception {
+        LotEventTypeUpdate mockModel = new LotEventTypeUpdate();
+        mockModel.setType("ABC");
+
+        when(agreementService.findEventTypeByName(anyString())).thenReturn(null);
+
+        businessLogicClient.manageEventTypeConfig(mockModel);
+
+        verify(agreementService, times(1)).createOrUpdateEventType(ArgumentMatchers.any(ProcurementEventType.class));
     }
 }
