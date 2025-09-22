@@ -140,7 +140,7 @@ public class MappingService {
     /**
      * Map a LotEventTypeUpdate object to a ProcurementEventType
      */
-    public ProcurementEventType mapLotEventTypeUpdateToProcurementEventType(LotEventTypeUpdate sourceModel) {
-        return eventTypeMapper.lotEventTypeUpdateToProcurementEventType(sourceModel);
+    public ProcurementEventType mapLotEventTypeUpdateToProcurementEventType(LotEventTypeUpdate sourceModel, int assignableId) {
+        return eventTypeMapper.lotEventTypeUpdateToProcurementEventType(sourceModel, assignableId);
     }
 }

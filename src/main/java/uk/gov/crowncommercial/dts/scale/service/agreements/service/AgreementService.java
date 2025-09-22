@@ -174,12 +174,25 @@ public class AgreementService {
         try {
             procurementEventTypeRepo.saveAndFlush(model);
         } catch (Exception ex) {
-            rollbar.error(ex, "Error creating new event type");
+            rollbar.error(ex, "Error creating or updating event type");
             throw new Exception(Constants.ERR_MSG_EVENT_TYPE_CREATION_FAILURE);
         }
     }
 
-  /**
+    /**
+     * Fetches the available Event Type ID which can be used in a create / update operation
+     */
+    public int findAssignableEventTypeId() {
+        List<ProcurementEventType> model = procurementEventTypeRepo.findAll();
+
+        if (!model.isEmpty()) {
+            return model.getLast().getId() + 1;
+        } else {
+            return 1;
+        }
+    }
+
+    /**
    * Find all lot supplier organisation roles
    *
    * @param agreementNumber Commercial Agreement number

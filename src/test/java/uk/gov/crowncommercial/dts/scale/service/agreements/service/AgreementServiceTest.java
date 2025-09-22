@@ -458,6 +458,7 @@ class AgreementServiceTest {
     @Test
     public void testCreateOrUpdateEventTypeDoesNotError() throws Exception {
         ProcurementEventType mockModel = new ProcurementEventType();
+        mockModel.setId(99);
         mockModel.setDescription("Testing");
         mockModel.setName("PA");
         mockModel.setPreMarketActivity(true);

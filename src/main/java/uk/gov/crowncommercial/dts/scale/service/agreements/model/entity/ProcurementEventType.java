@@ -11,7 +11,6 @@ import lombok.experimental.FieldDefaults;
  * Procurement Event Type.
  */
 @Entity
-@Immutable
 @Table(name = "procurement_event_types")
 @Data
 @FieldDefaults(level = AccessLevel.PRIVATE)
@@ -19,7 +18,6 @@ public class ProcurementEventType {
 
   @Id
   @Column(name = "procurement_event_type_id")
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
   Integer id;
 
   @Column(name = "procurement_event_type_name")

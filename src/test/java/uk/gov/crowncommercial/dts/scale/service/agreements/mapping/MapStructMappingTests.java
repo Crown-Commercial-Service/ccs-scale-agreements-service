@@ -609,9 +609,10 @@ public class MapStructMappingTests {
         sourceModel.setName("Test event name");
         sourceModel.setRepeatableEvent(true);
 
-        ProcurementEventType outputModel = eventTypeMapper.lotEventTypeUpdateToProcurementEventType(sourceModel);
+        ProcurementEventType outputModel = eventTypeMapper.lotEventTypeUpdateToProcurementEventType(sourceModel, 1);
 
         assertNotNull(outputModel);
+        assertEquals(1, outputModel.getId());
         assertEquals(sourceModel.getType(), outputModel.getName());
         assertEquals(sourceModel.getName(), outputModel.getDescription());
         assertEquals(sourceModel.getRepeatableEvent(), outputModel.getPreMarketActivity());

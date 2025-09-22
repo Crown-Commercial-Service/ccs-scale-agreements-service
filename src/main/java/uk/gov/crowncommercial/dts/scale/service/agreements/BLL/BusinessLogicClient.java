@@ -269,7 +269,13 @@ public class BusinessLogicClient {
 
             if (procurementEventType == null) {
                 // Looks like the event type doesn't exist yet, so we want to create it.  Map our data to the relevant model and then do that
-                procurementEventType = mappingService.mapLotEventTypeUpdateToProcurementEventType(model);
+                int assignableId = agreementService.findAssignableEventTypeId();
+
+                procurementEventType = mappingService.mapLotEventTypeUpdateToProcurementEventType(model, assignableId);
+            } else {
+                // The event type already exists, so we just need to update changed values
+                procurementEventType.setDescription(model.getName());
+                procurementEventType.setPreMarketActivity(model.getRepeatableEvent());
             }
 
             // Now we should have our event type ready to save - either as existing or spooled up to create - so trigger that

@@ -79,8 +79,9 @@ public abstract class EventTypeMapper {
         return null;
     }
 
-    @Mapping(source = "type", target = "name")
-    @Mapping(source = "name", target = "description")
-    @Mapping(source = "repeatableEvent", target = "preMarketActivity")
-    public abstract ProcurementEventType lotEventTypeUpdateToProcurementEventType(LotEventTypeUpdate model);
+    @Mapping(source = "assignableId", target = "id")
+    @Mapping(source = "model.type", target = "name")
+    @Mapping(source = "model.name", target = "description")
+    @Mapping(source = "model.repeatableEvent", target = "preMarketActivity")
+    public abstract ProcurementEventType lotEventTypeUpdateToProcurementEventType(LotEventTypeUpdate model, int assignableId);
 }
