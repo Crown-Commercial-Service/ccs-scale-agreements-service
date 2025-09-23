@@ -2,20 +2,19 @@ package uk.gov.crowncommercial.dts.scale.service.agreements.BLL;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentMatchers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.core.AutoConfigureCache;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import uk.gov.crowncommercial.dts.scale.service.agreements.config.Constants;
 import uk.gov.crowncommercial.dts.scale.service.agreements.config.EhcacheConfig;
 import uk.gov.crowncommercial.dts.scale.service.agreements.controller.GlobalErrorHandler;
 import uk.gov.crowncommercial.dts.scale.service.agreements.exception.*;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.*;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.*;
-import uk.gov.crowncommercial.dts.scale.service.agreements.service.AgreementService;
-import uk.gov.crowncommercial.dts.scale.service.agreements.service.QuestionTemplateService;
-import uk.gov.crowncommercial.dts.scale.service.agreements.service.SupplierService;
-import uk.gov.crowncommercial.dts.scale.service.agreements.service.WordpressService;
+import uk.gov.crowncommercial.dts.scale.service.agreements.service.*;
 
 import java.math.BigDecimal;
 import java.time.Instant;
@@ -32,41 +31,41 @@ import static org.mockito.Mockito.*;
 @ActiveProfiles("test")
 @AutoConfigureCache
 public class BusinessLogicClientTests {
-    @MockBean
+    @MockitoBean
     private EhcacheConfig cacheConfig;
 
-    @MockBean
+    @MockitoBean
     private AgreementService agreementService;
 
-    @MockBean
+    @MockitoBean
     private CommercialAgreement mockCommercialAgreement;
 
-    @MockBean
+    @MockitoBean
     private Lot mockLot;
 
-    @MockBean
+    @MockitoBean
     private Organisation mockOrganisation;
     
-    @MockBean
+    @MockitoBean
     private OrganizationIdentifier mockOrganizationIdentifier;
 
-    @MockBean
+    @MockitoBean
     private LotOrganisationRole lotOrganisationRole;
 
-    @MockBean
+    @MockitoBean
     private Set<LotProcurementQuestionTemplate> lotProcurementQuestionTemplates;
 
-    @MockBean
+    @MockitoBean
     private WordpressService wordpressService;
 
-    @MockBean
+    @MockitoBean
     private QuestionTemplateService questionTemplateService;
+
+    @MockitoBean
+    private SupplierService supplierService;
 
     @Autowired
     private BusinessLogicClient businessLogicClient;
-
-    @MockBean
-    private SupplierService supplierService;
 
     private static final String AGREEMENT_NUMBER = "RM3733";
     private static final String LOT_NUMBER = "Lot 1";
@@ -97,7 +96,7 @@ public class BusinessLogicClientTests {
     private static final String LEGAL_NAME = "New Company";
 
     @Test
-    void testGetAgreementsList() throws Exception {
+    void testGetAgreementsList() {
         when(agreementService.getAgreements()).thenReturn(Arrays.asList(mockCommercialAgreement));
 
         List<AgreementSummary> result = businessLogicClient.getAgreementsList();
@@ -106,7 +105,7 @@ public class BusinessLogicClientTests {
     }
 
     @Test
-    void testGetAgreementDetailWithValidId() throws Exception {
+    void testGetAgreementDetailWithValidId() {
         final AgreementDetail agreement = new AgreementDetail();
         agreement.setNumber(AGREEMENT_NUMBER);
 
@@ -119,7 +118,7 @@ public class BusinessLogicClientTests {
     }
 
     @Test
-    void testGetAgreementDetailWithInvalidId() throws Exception {
+    void testGetAgreementDetailWithInvalidId() {
         when(agreementService.findAgreementByNumber(AGREEMENT_NUMBER)).thenThrow(new AgreementNotFoundException(AGREEMENT_NUMBER));
 
         AgreementNotFoundException thrown = Assertions.assertThrows(
@@ -132,7 +131,7 @@ public class BusinessLogicClientTests {
     }
 
     @Test
-    void testGetLotsForAgreementWithValidIdNoBuyingMethod() throws Exception {
+    void testGetLotsForAgreementWithValidIdNoBuyingMethod() {
         final LotDetail lot = new LotDetail();
         lot.setNumber(LOT_NUMBER);
 
@@ -185,7 +184,7 @@ public class BusinessLogicClientTests {
     }
 
     @Test
-    void testGetLotsForAgreementWithValidIdAndBuyingMethodFiltersResultsWithResults() throws Exception {
+    void testGetLotsForAgreementWithValidIdAndBuyingMethodFiltersResultsWithResults() {
         when(agreementService.findAgreementByNumber(AGREEMENT_NUMBER)).thenReturn(getCommercialAgreementWithLot());
 
         Collection<LotDetail> result = businessLogicClient.getLotsForAgreement(AGREEMENT_NUMBER, BuyingMethod.DIRECT_AWARD);
@@ -195,7 +194,7 @@ public class BusinessLogicClientTests {
     }
 
     @Test
-    void testGetLotsForAgreementWithValidIdAndBuyingMethodFiltersResultsWithNoResults() throws Exception {
+    void testGetLotsForAgreementWithValidIdAndBuyingMethodFiltersResultsWithNoResults() {
         when(agreementService.findAgreementByNumber(AGREEMENT_NUMBER)).thenReturn(getCommercialAgreementWithLot());
 
         Collection<LotDetail> result = businessLogicClient.getLotsForAgreement(AGREEMENT_NUMBER, BuyingMethod.E_AUCTION);
@@ -205,7 +204,7 @@ public class BusinessLogicClientTests {
     }
 
     @Test
-    void testGetLotsForAgreementWithInvalidId() throws Exception {
+    void testGetLotsForAgreementWithInvalidId() {
         when(agreementService.findAgreementByNumber(AGREEMENT_NUMBER)).thenThrow(new AgreementNotFoundException(AGREEMENT_NUMBER));
 
         AgreementNotFoundException thrown = Assertions.assertThrows(
@@ -218,7 +217,7 @@ public class BusinessLogicClientTests {
     }
 
     @Test
-    void testGetDocumentsForAgreementWithValidId() throws Exception {
+    void testGetDocumentsForAgreementWithValidId() {
         final AgreementDetail agreement = new AgreementDetail();
         agreement.setNumber(AGREEMENT_NUMBER);
 
@@ -240,7 +239,7 @@ public class BusinessLogicClientTests {
     }
 
     @Test
-    void testGetDocumentsForAgreementWithInvalidId() throws Exception {
+    void testGetDocumentsForAgreementWithInvalidId() {
         when(agreementService.findAgreementByNumber(AGREEMENT_NUMBER)).thenThrow(new AgreementNotFoundException(AGREEMENT_NUMBER));
 
         AgreementNotFoundException thrown = Assertions.assertThrows(
@@ -253,7 +252,7 @@ public class BusinessLogicClientTests {
     }
 
     @Test
-    void testGetUpdatesForAgreementWithValidId() throws Exception {
+    void testGetUpdatesForAgreementWithValidId() {
         final AgreementDetail agreement = new AgreementDetail();
         agreement.setNumber(AGREEMENT_NUMBER);
 
@@ -268,7 +267,7 @@ public class BusinessLogicClientTests {
     }
 
     @Test
-    void testGetUpdatesForAgreementWithInvalidId() throws Exception {
+    void testGetUpdatesForAgreementWithInvalidId() {
         when(agreementService.findAgreementByNumber(AGREEMENT_NUMBER)).thenThrow(new AgreementNotFoundException(AGREEMENT_NUMBER));
 
         AgreementNotFoundException thrown = Assertions.assertThrows(
@@ -281,7 +280,7 @@ public class BusinessLogicClientTests {
     }
 
     @Test
-    void testGetLotDetailWithValidId() throws Exception {
+    void testGetLotDetailWithValidId() {
         final LotDetail lot = new LotDetail();
         lot.setNumber(LOT_NUMBER);
 
@@ -294,7 +293,7 @@ public class BusinessLogicClientTests {
     }
 
     @Test
-    void testGetLotDetailWithInvalidId() throws Exception {
+    void testGetLotDetailWithInvalidId() {
         when(agreementService.findLotByAgreementNumberAndLotNumber(AGREEMENT_NUMBER, LOT_NUMBER)).thenThrow(new LotNotFoundException(AGREEMENT_NUMBER, LOT_NUMBER));
 
         LotNotFoundException thrown = Assertions.assertThrows(
@@ -307,7 +306,7 @@ public class BusinessLogicClientTests {
     }
 
     @Test
-    void testGetLotSuppliersWithValidId() throws Exception {
+    void testGetLotSuppliersWithValidId() {
         final Set<LotOrganisationRole> lotOrgRoles = Collections.singleton(lotOrganisationRole);
 
         final var org = new Organization();
@@ -330,7 +329,7 @@ public class BusinessLogicClientTests {
     }
 
     @Test
-    void testGetLotSuppliersWithInvalidId() throws Exception {
+    void testGetLotSuppliersWithInvalidId() {
         when(agreementService.findLotSupplierOrgRolesByAgreementNumberAndLotNumber(AGREEMENT_NUMBER, LOT_NUMBER)).thenThrow(new LotNotFoundException(AGREEMENT_NUMBER, LOT_NUMBER));
 
         LotNotFoundException thrown = Assertions.assertThrows(
@@ -343,7 +342,7 @@ public class BusinessLogicClientTests {
     }
 
     @Test
-    void testGetLotEventTypesWithValidId() throws Exception {
+    void testGetLotEventTypesWithValidId() {
         final LotDetail lot = new LotDetail();
         lot.setNumber(LOT_NUMBER);
 
@@ -359,7 +358,7 @@ public class BusinessLogicClientTests {
     }
 
     @Test
-    void testGetLotEventTypesWithInvalidId() throws Exception {
+    void testGetLotEventTypesWithInvalidId() {
         when(agreementService.findLotByAgreementNumberAndLotNumber(AGREEMENT_NUMBER, LOT_NUMBER)).thenThrow(new LotNotFoundException(AGREEMENT_NUMBER, LOT_NUMBER));
 
         LotNotFoundException thrown = Assertions.assertThrows(
@@ -372,7 +371,7 @@ public class BusinessLogicClientTests {
     }
 
     @Test
-    void testGetEventDataTemplatesWithValidId() throws Exception {
+    void testGetEventDataTemplatesWithValidId() {
         final LotDetail lot = new LotDetail();
         lot.setNumber(LOT_NUMBER);
 
@@ -388,7 +387,7 @@ public class BusinessLogicClientTests {
     }
 
     @Test
-    void testGetEventDataTemplatesWithInvalidId() throws Exception {
+    void testGetEventDataTemplatesWithInvalidId() {
         when(agreementService.findLotByAgreementNumberAndLotNumber(AGREEMENT_NUMBER, LOT_NUMBER)).thenThrow(new LotNotFoundException(AGREEMENT_NUMBER, LOT_NUMBER));
 
         LotNotFoundException thrown = Assertions.assertThrows(
@@ -401,7 +400,7 @@ public class BusinessLogicClientTests {
     }
 
     @Test
-    void testGetEventDocumentTemplatesWithValidId() throws Exception {
+    void testGetEventDocumentTemplatesWithValidId() {
         final LotDetail lot = new LotDetail();
         lot.setNumber(LOT_NUMBER);
 
@@ -417,7 +416,7 @@ public class BusinessLogicClientTests {
     }
 
     @Test
-    void testGetEventDocumentTemplatesWithInvalidId() throws Exception {
+    void testGetEventDocumentTemplatesWithInvalidId() {
         when(agreementService.findLotByAgreementNumberAndLotNumber(AGREEMENT_NUMBER, LOT_NUMBER)).thenThrow(new LotNotFoundException(AGREEMENT_NUMBER, LOT_NUMBER));
 
         LotNotFoundException thrown = Assertions.assertThrows(
@@ -430,7 +429,7 @@ public class BusinessLogicClientTests {
     }
 
     @Test
-    void testSaveAgreementWithValidAgreement() throws Exception {
+    void testSaveAgreementWithValidAgreement() {
         AgreementDetail ad = new AgreementDetail("Technology Products 2", "Short textual description of the commercial agreement", "CCS", java.time.LocalDate.now(), java.time.LocalDate.now().plusDays(5), "URL", true);
         CommercialAgreement ca = new CommercialAgreement("RM1045", "Technology Products 2", "CCS", "Short textual description of the commercial agreement", java.time.LocalDate.now(), java.time.LocalDate.now().plusDays(5), "URL", true);
 
@@ -441,7 +440,7 @@ public class BusinessLogicClientTests {
     }
 
     @Test
-    void testSaveAgreementWithInvalidAgreement() throws Exception {
+    void testSaveAgreementWithInvalidAgreement() {
         AgreementDetail ad = new AgreementDetail("Technology Products 2", "", "CCS", java.time.LocalDate.now(), java.time.LocalDate.now().plusDays(5), "URL", true);
 
         when(agreementService.createOrUpdateAgreement(mockCommercialAgreement)).thenThrow(new InvalidAgreementException("description"));
@@ -456,7 +455,7 @@ public class BusinessLogicClientTests {
     }
 
     @Test
-    void testSaveLotWithValidLot() throws Exception {
+    void testSaveLotWithValidLot() {
         LotDetail lotDetail = new LotDetail("11", "Lot 11 Name", java.time.LocalDate.now(), java.time.LocalDate.now().plusDays(2), "Some description",  LotType.PRODUCT);
         Lot lot = new Lot("11", "Lot 11 Name", "Some description", "PRODUCT", java.time.LocalDate.now(), java.time.LocalDate.now().plusDays(2), mockCommercialAgreement);
 
@@ -468,7 +467,7 @@ public class BusinessLogicClientTests {
     }
 
     @Test
-    void testSaveLotWithInvalidLot() throws Exception {
+    void testSaveLotWithInvalidLot() {
         LotDetail lotDetail = new LotDetail("11", "Lot 11 Name", java.time.LocalDate.now(), java.time.LocalDate.now().plusDays(2), "Some description",  LotType.PRODUCT);
         lotDetail.setDescription(null);
 
@@ -485,14 +484,14 @@ public class BusinessLogicClientTests {
     }
 
     @Test
-    void testSaveLotsWithAllValidLots() throws Exception {
+    void testSaveLotsWithAllValidLots() {
         LotDetail lotDetail = new LotDetail("1", "Lot 1 Name", java.time.LocalDate.now(), java.time.LocalDate.now().plusDays(2), "Some description",  LotType.PRODUCT);
         LotDetail lotDetail1 = new LotDetail("2", "Lot 2 Name", java.time.LocalDate.now(), java.time.LocalDate.now().plusDays(2), "Some description",  LotType.SERVICE);
 
         Lot lot = new Lot("1", "Lot 1 Name", "Some description", "PRODUCT", java.time.LocalDate.now(), java.time.LocalDate.now().plusDays(2), mockCommercialAgreement);
         Lot lot1 = new Lot("2", "Lot 2 Name", "Some description", "SERVICE", java.time.LocalDate.now(), java.time.LocalDate.now().plusDays(2), mockCommercialAgreement);
 
-        Collection<LotDetail> lotDetailSet  = new HashSet<LotDetail>(List.of(lotDetail, lotDetail1));
+        Collection<LotDetail> lotDetailSet  = new HashSet<>(List.of(lotDetail, lotDetail1));
 
         Lot lotClass = mock(Lot.class);
         when(agreementService.findAgreementByNumber(mockCommercialAgreement.getNumber())).thenReturn(mockCommercialAgreement);
@@ -505,13 +504,13 @@ public class BusinessLogicClientTests {
     }
 
     @Test
-    void testSaveLotsWithAnInvalidLot() throws Exception {
+    void testSaveLotsWithAnInvalidLot() {
         LotDetail lotDetail = new LotDetail("1", "Lot 1 Name", java.time.LocalDate.now(), java.time.LocalDate.now().plusDays(2), "Some description",  LotType.PRODUCT);
         LotDetail lotDetail1 = new LotDetail("2", "Lot 2 Name", java.time.LocalDate.now(), java.time.LocalDate.now().plusDays(2), "Some description",  LotType.SERVICE);
 
         lotDetail1.setDescription(null);
 
-        Collection<LotDetail> lotDetailSet  = new HashSet<LotDetail>(List.of(lotDetail, lotDetail1));
+        Collection<LotDetail> lotDetailSet  = new HashSet<>(List.of(lotDetail, lotDetail1));
 
         Lot lotClass = mock(Lot.class);
         when(agreementService.findAgreementByNumber(mockCommercialAgreement.getNumber())).thenReturn(mockCommercialAgreement);
@@ -563,7 +562,7 @@ public class BusinessLogicClientTests {
     }
 
     @Test
-    void testAddValidSingleSupplier() throws Exception {
+    void testAddValidSingleSupplier() {
         final Set<LotSupplier> lotSupplierSet = Collections.singleton(setupLotSupplier());
 
         when(agreementService.findLotByAgreementNumberAndLotNumber(AGREEMENT_NUMBER, LOT_NUMBER)).thenReturn(mockLot);
@@ -573,7 +572,7 @@ public class BusinessLogicClientTests {
     }
 
     @Test
-    void testAddInvalidSingleSupplier() throws Exception {
+    void testAddInvalidSingleSupplier() {
         LotSupplier ls = setupLotSupplier();
         ls.getOrganization().getIdentifier().setLegalName(null);
         final Set<LotSupplier> lotSupplierSet = Collections.singleton(ls);
@@ -591,7 +590,7 @@ public class BusinessLogicClientTests {
     }
 
     @Test
-    void testGetOrganisationWithValidName() throws Exception {
+    void testGetOrganisationWithValidName() {
         final OrganizationIdentifier organizationIdentifier = new OrganizationIdentifier();
         organizationIdentifier.setLegalName(LEGAL_NAME);
 
@@ -603,7 +602,7 @@ public class BusinessLogicClientTests {
     }
 
     @Test
-    void testGetOrganisationWithInvalidName() throws Exception {
+    void testGetOrganisationWithInvalidName() {
         when(supplierService.findOrganisationByLegalName(LEGAL_NAME)).thenThrow(new OrganisationNotFoundException(LEGAL_NAME));
 
         OrganisationNotFoundException thrown = Assertions.assertThrows(
@@ -616,7 +615,7 @@ public class BusinessLogicClientTests {
     }
 
     @Test
-    void testUpdateOrganisationAllValid() throws Exception {
+    void testUpdateOrganisationAllValid() {
 
         OrganizationIdentifier output = new OrganizationIdentifier();
         output.setLegalName(LEGAL_NAME);
@@ -632,7 +631,7 @@ public class BusinessLogicClientTests {
     }
 
     @Test
-    void testUpdateOrganisationWithInvalidName() throws Exception {
+    void testUpdateOrganisationWithInvalidName() {
    
         InvalidOrganisationException thrown = Assertions.assertThrows(
             InvalidOrganisationException.class,
@@ -641,5 +640,38 @@ public class BusinessLogicClientTests {
         );
         
         assertTrue(thrown.getMessage().contains(EXCEPTION_EMPTY_ORGANISATION_NAME_OR_SCHEME_WITH_ID));
+    }
+
+    @Test
+    void testManageEventTypeConfigReturnsErrorWithInvalidModel() {
+        LotEventTypeUpdate mockModel = new LotEventTypeUpdate();
+
+        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () -> businessLogicClient.manageEventTypeConfig(mockModel));
+
+        assertTrue(ex.getMessage().contains(Constants.ERR_MSG_INVALID_REQUEST_EVENT_TYPE_MGMT));
+    }
+
+    @Test
+    void testManageEventTypeConfigWithNoExistingRecordWorksCorrectly() throws Exception {
+        LotEventTypeUpdate mockModel = new LotEventTypeUpdate();
+        mockModel.setType("ABC");
+
+        when(agreementService.findEventTypeByName(anyString())).thenReturn(null);
+
+        businessLogicClient.manageEventTypeConfig(mockModel);
+
+        verify(agreementService, times(1)).createOrUpdateEventType(ArgumentMatchers.any(ProcurementEventType.class));
+    }
+
+    @Test
+    void testManageEventTypeConfigWithExistingRecordWorksCorrectly() throws Exception {
+        LotEventTypeUpdate mockModel = new LotEventTypeUpdate();
+        mockModel.setType("ABC");
+
+        when(agreementService.findEventTypeByName(anyString())).thenReturn(null);
+
+        businessLogicClient.manageEventTypeConfig(mockModel);
+
+        verify(agreementService, times(1)).createOrUpdateEventType(ArgumentMatchers.any(ProcurementEventType.class));
     }
 }

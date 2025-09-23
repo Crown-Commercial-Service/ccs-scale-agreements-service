@@ -7,6 +7,7 @@ import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Component;
+import uk.gov.crowncommercial.dts.scale.service.agreements.config.Constants;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.*;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.*;
 import uk.gov.crowncommercial.dts.scale.service.agreements.service.*;
@@ -255,6 +256,34 @@ public class BusinessLogicClient {
         }
 
         return model;
+    }
+
+    /**
+     * Triggers the creation or update of an event type with provided information
+     */
+    @CacheEvict(value = "getLotEventTypes", allEntries = true)
+    public void manageEventTypeConfig(LotEventTypeUpdate model) throws Exception {
+        if (model != null && model.getType() != null) {
+            // First of all we want to start by trying to grab the Event Type to see if it already exists
+            ProcurementEventType procurementEventType = agreementService.findEventTypeByName(model.getType().trim().toUpperCase());
+
+            if (procurementEventType == null) {
+                // Looks like the event type doesn't exist yet, so we want to create it.  Map our data to the relevant model and then do that
+                int assignableId = agreementService.findAssignableEventTypeId();
+
+                procurementEventType = mappingService.mapLotEventTypeUpdateToProcurementEventType(model, assignableId);
+            } else {
+                // The event type already exists, so we just need to update changed values
+                procurementEventType.setDescription(model.getName());
+                procurementEventType.setPreMarketActivity(model.getRepeatableEvent());
+            }
+
+            // Now we should have our event type ready to save - either as existing or spooled up to create - so trigger that
+            agreementService.createOrUpdateEventType(procurementEventType);
+        } else {
+            // If we've gotten to here, the request model looks invalid - throw an error
+            throw new IllegalArgumentException(Constants.ERR_MSG_INVALID_REQUEST_EVENT_TYPE_MGMT);
+        }
     }
 
     /**

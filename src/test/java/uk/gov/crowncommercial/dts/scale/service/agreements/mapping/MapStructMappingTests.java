@@ -601,4 +601,20 @@ public class MapStructMappingTests {
         assertEquals(sourceModel.getId(), outputModel.getEntityId());
         assertEquals(sourceModel.getScheme().getName(), outputModel.getRegistryCode());
     }
+
+    @Test
+    public void testLotEventTypeUpdateToProcurementEventType() {
+        LotEventTypeUpdate sourceModel = new LotEventTypeUpdate();
+        sourceModel.setType("ABC");
+        sourceModel.setName("Test event name");
+        sourceModel.setRepeatableEvent(true);
+
+        ProcurementEventType outputModel = eventTypeMapper.lotEventTypeUpdateToProcurementEventType(sourceModel, 1);
+
+        assertNotNull(outputModel);
+        assertEquals(1, outputModel.getId());
+        assertEquals(sourceModel.getType(), outputModel.getName());
+        assertEquals(sourceModel.getName(), outputModel.getDescription());
+        assertEquals(sourceModel.getRepeatableEvent(), outputModel.getPreMarketActivity());
+    }
 }
