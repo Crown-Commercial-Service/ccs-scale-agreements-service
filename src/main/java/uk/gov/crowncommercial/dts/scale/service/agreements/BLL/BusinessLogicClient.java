@@ -263,7 +263,7 @@ public class BusinessLogicClient {
      */
     @CacheEvict(value = "getLotEventTypes", allEntries = true)
     public void manageEventTypeConfig(LotEventTypeUpdate model) throws Exception {
-        if (model != null && model.getType() != null) {
+        if (model != null && model.getType() != null && !model.getType().isEmpty() && model.getName() != null && !model.getName().isEmpty() && model.getRepeatableEvent() != null) {
             // First of all we want to start by trying to grab the Event Type to see if it already exists
             ProcurementEventType procurementEventType = agreementService.findEventTypeByName(model.getType().trim().toUpperCase());
 
