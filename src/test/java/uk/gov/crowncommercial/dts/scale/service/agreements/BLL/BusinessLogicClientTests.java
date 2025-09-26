@@ -649,12 +649,22 @@ public class BusinessLogicClientTests {
         IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () -> businessLogicClient.manageEventTypeConfig(mockModel));
 
         assertTrue(ex.getMessage().contains(Constants.ERR_MSG_INVALID_REQUEST_EVENT_TYPE_MGMT));
+
+        // Also test if description is missing
+        mockModel.setType("PA");
+        mockModel.setName("");
+
+        ex = assertThrows(IllegalArgumentException.class, () -> businessLogicClient.manageEventTypeConfig(mockModel));
+
+        assertTrue(ex.getMessage().contains(Constants.ERR_MSG_INVALID_REQUEST_EVENT_TYPE_MGMT));
     }
 
     @Test
     void testManageEventTypeConfigWithNoExistingRecordWorksCorrectly() throws Exception {
         LotEventTypeUpdate mockModel = new LotEventTypeUpdate();
         mockModel.setType("ABC");
+        mockModel.setName("Test name");
+        mockModel.setRepeatableEvent(false);
 
         when(agreementService.findEventTypeByName(anyString())).thenReturn(null);
 
@@ -667,6 +677,8 @@ public class BusinessLogicClientTests {
     void testManageEventTypeConfigWithExistingRecordWorksCorrectly() throws Exception {
         LotEventTypeUpdate mockModel = new LotEventTypeUpdate();
         mockModel.setType("ABC");
+        mockModel.setName("Test name");
+        mockModel.setRepeatableEvent(true);
 
         when(agreementService.findEventTypeByName(anyString())).thenReturn(null);
 
