@@ -225,7 +225,7 @@ public class SupplierServiceTest {
 
         when(mockLotOrganisationRoleRepo.findByLotIdAndOrganisationIdAndRoleType(any(), any(), any())).thenReturn(Optional.of(lor));
 
-        when(mockContactPointLotOrgRoleRepo.findFirstByLotOrganisationRoleIdAndContactPointReasonOrderByIdAsc(any(), any())).thenReturn(Optional.empty());
+        when(mockContactPointLotOrgRoleRepo.findFirstByLotOrganisationRoleIdAndContactPointReasonOrderByIdAsc(anyInt(), any(ContactPointReason.class))).thenReturn(Optional.empty());
 
         supplierService.addSupplierRelationship(mockLot, org, cd, "Local Test", SupplierStatus.ACTIVE);
 
@@ -247,7 +247,7 @@ public class SupplierServiceTest {
 
         when(mockLotOrganisationRoleRepo.findByLotIdAndOrganisationIdAndRoleType(any(), any(), any())).thenReturn(Optional.of(lor));
 
-        when(mockContactPointLotOrgRoleRepo.findFirstByLotOrganisationRoleIdAndContactPointReasonOrderByIdAsc(eq(1234), any())).thenReturn(Optional.of(cplor));
+        when(mockContactPointLotOrgRoleRepo.findFirstByLotOrganisationRoleIdAndContactPointReasonOrderByIdAsc(eq(1234), any(ContactPointReason.class))).thenReturn(Optional.of(cplor));
 
         supplierService.addSupplierRelationship(mockLot, org, cd, "Local Test", SupplierStatus.ACTIVE);
 
