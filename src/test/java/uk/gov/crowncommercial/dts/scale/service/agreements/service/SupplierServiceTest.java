@@ -2,12 +2,6 @@ package uk.gov.crowncommercial.dts.scale.service.agreements.service;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentMatchers;
-
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.core.AutoConfigureCache;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -30,7 +24,6 @@ import static org.mockito.Mockito.*;
 @SpringBootTest
 @ActiveProfiles("test")
 @AutoConfigureCache
-@ExtendWith(MockitoExtension.class)
 public class SupplierServiceTest {
     @MockBean
     private EhcacheConfig cacheConfig;
@@ -193,7 +186,7 @@ public class SupplierServiceTest {
         Organisation org = setupOrg();
         commonSupplierMocks(org);
 
-        when(mockLotOrganisationRoleRepo.findByLotIdAndOrganisationIdAndRoleType(any(), any(), any())).thenReturn(Optional.empty());
+        when(mockLotOrganisationRoleRepo.findByLotIdAndOrganisationIdAndRoleType(any(Integer.class), any(Integer.class), any(RoleType.class))).thenReturn(Optional.empty());
 
         supplierService.addSupplierRelationship(mockLot, org, null, "Local Test", SupplierStatus.ACTIVE);
 
@@ -206,7 +199,7 @@ public class SupplierServiceTest {
         Organisation org = setupOrg();
         commonSupplierMocks(org);
 
-        when(mockLotOrganisationRoleRepo.findByLotIdAndOrganisationIdAndRoleType(any(), any(), any())).thenReturn(Optional.of(new LotOrganisationRole()));
+        when(mockLotOrganisationRoleRepo.findByLotIdAndOrganisationIdAndRoleType(any(Integer.class), any(Integer.class), any(RoleType.class))).thenReturn(Optional.of(new LotOrganisationRole()));
 
         supplierService.addSupplierRelationship(mockLot, org, null, "Local Test", SupplierStatus.ACTIVE);
 
@@ -223,9 +216,9 @@ public class SupplierServiceTest {
 
         commonSupplierMocks(org);
 
-        when(mockLotOrganisationRoleRepo.findByLotIdAndOrganisationIdAndRoleType(any(), any(), any())).thenReturn(Optional.of(lor));
+        when(mockLotOrganisationRoleRepo.findByLotIdAndOrganisationIdAndRoleType(any(Integer.class), any(Integer.class), any(RoleType.class))).thenReturn(Optional.of(lor));
 
-        when(mockContactPointLotOrgRoleRepo.findFirstByLotOrganisationRoleIdAndContactPointReasonOrderByIdAsc(anyInt(), any(ContactPointReason.class))).thenReturn(Optional.empty());
+        when(mockContactPointLotOrgRoleRepo.findFirstByLotOrganisationRoleIdAndContactPointReasonOrderByIdAsc(any(Integer.class), any(ContactPointReason.class))).thenReturn(Optional.empty());
 
         supplierService.addSupplierRelationship(mockLot, org, cd, "Local Test", SupplierStatus.ACTIVE);
 
@@ -245,7 +238,7 @@ public class SupplierServiceTest {
 
         commonSupplierMocks(org);
 
-        when(mockLotOrganisationRoleRepo.findByLotIdAndOrganisationIdAndRoleType(any(), any(), any())).thenReturn(Optional.of(lor));
+        when(mockLotOrganisationRoleRepo.findByLotIdAndOrganisationIdAndRoleType(any(Integer.class), any(Integer.class), any(RoleType.class))).thenReturn(Optional.of(lor));
 
         when(mockContactPointLotOrgRoleRepo.findFirstByLotOrganisationRoleIdAndContactPointReasonOrderByIdAsc(eq(1234), any(ContactPointReason.class))).thenReturn(Optional.of(cplor));
 
