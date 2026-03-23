@@ -97,27 +97,25 @@ public class SupplierService {
      */
     public Organisation createOrUpdateOrganisation(final Organisation newOrganisation) {
         newOrganisation.isValid();
-        return organisationRepo.findByLegalName(newOrganisation.getLegalName())
-                .map(organisation -> {
-                    organisation.setEntityId            (newOrganisation.getEntityId());
-                    organisation.setRegistryCode        (newOrganisation.getRegistryCode());
-                    organisation.setLegalName           (newOrganisation.getLegalName());
-                    organisation.setBusinessType        (newOrganisation.getBusinessType());
-                    organisation.setUri                 (newOrganisation.getUri());
-                    organisation.setStatus              (newOrganisation.getStatus());
-                    organisation.setIncorporationDate   (newOrganisation.getIncorporationDate());
-                    organisation.setIncorporationCountry(newOrganisation.getIncorporationCountry());
-                    organisation.setCountryName         (newOrganisation.getCountryName());
-                    organisation.setIsSme               (newOrganisation.getIsSme());
-                    organisation.setIsVcse              (newOrganisation.getIsVcse());
-                    organisation.setIsActive            (newOrganisation.getIsActive());
 
-                    organisationRepo.saveAndFlush(organisation);
-                    return findOrganisationByLegalName(organisation.getLegalName());
-                }).orElseGet(() -> {
-                    organisationRepo.saveAndFlush(newOrganisation);
-                    return findOrganisationByLegalName(newOrganisation.getLegalName());
-                });
+        return organisationRepo.findByEntityIdAndRegistryCode(newOrganisation.getEntityId(), newOrganisation.getRegistryCode()).map(existing -> {
+                    // Don't overwrite identity fields
+                    // existing.setEntityId(...)
+                    // existing.setRegistryCode(...)
+                    existing.setLegalName           (newOrganisation.getLegalName());
+                    existing.setBusinessType        (newOrganisation.getBusinessType());
+                    existing.setUri                 (newOrganisation.getUri());
+                    existing.setStatus              (newOrganisation.getStatus());
+                    existing.setIncorporationDate   (newOrganisation.getIncorporationDate());
+                    existing.setIncorporationCountry(newOrganisation.getIncorporationCountry());
+                    existing.setCountryName         (newOrganisation.getCountryName());
+                    existing.setIsSme               (newOrganisation.getIsSme());
+                    existing.setIsVcse              (newOrganisation.getIsVcse());
+                    existing.setIsActive            (newOrganisation.getIsActive());
+
+                    return organisationRepo.saveAndFlush(existing);
+                })
+                .orElseGet(() -> organisationRepo.saveAndFlush(newOrganisation));
     }
 
     /**

@@ -2,12 +2,6 @@ package uk.gov.crowncommercial.dts.scale.service.agreements.service;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentMatchers;
-
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.core.AutoConfigureCache;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -30,7 +24,6 @@ import static org.mockito.Mockito.*;
 @SpringBootTest
 @ActiveProfiles("test")
 @AutoConfigureCache
-@ExtendWith(MockitoExtension.class)
 public class SupplierServiceTest {
     @MockBean
     private EhcacheConfig cacheConfig;
@@ -64,6 +57,14 @@ public class SupplierServiceTest {
 
     @MockBean
     private ContactDetailRepo mockContactDetailRepo;
+
+    @MockBean
+    private ContactPointReasonRepo contactPointReasonRepo;
+
+    private void mockSaveAndFlush() {
+        when(mockOrganisationRepo.saveAndFlush(any(Organisation.class)))
+                .thenAnswer(invocation -> invocation.getArgument(0));
+    }
 
     @Test
     void testGetOrganisation() throws Exception {
@@ -113,7 +114,8 @@ public class SupplierServiceTest {
         org.setIncorporationDate(LocalDate.now());
         org.setIncorporationCountry("GB");
 
-        when(mockOrganisationRepo.findByLegalName(COMPANY_NAME)).thenReturn(Optional.ofNullable(null)).thenReturn(Optional.ofNullable(org));
+        when(mockOrganisationRepo.findByEntityIdAndRegistryCode("123456", Scheme.GBCHC.getName())).thenReturn(Optional.empty());
+        mockSaveAndFlush();
 
         Organisation result = supplierService.createOrUpdateOrganisation(org);
         assertEquals(result.getLegalName(), org.getLegalName());
@@ -153,7 +155,8 @@ public class SupplierServiceTest {
 
         Organisation org = setupOrg();
 
-        when(mockOrganisationRepo.findByLegalName(COMPANY_NAME)).thenReturn(Optional.ofNullable(org)).thenReturn(Optional.ofNullable(org));
+        when(mockOrganisationRepo.findByEntityIdAndRegistryCode(org.getEntityId(), org.getRegistryCode())).thenReturn(Optional.of(org));
+        mockSaveAndFlush();
 
         Organisation result = supplierService.createOrUpdateOrganisation(org);
         assertEquals(result.getLegalName(), org.getLegalName());
@@ -164,30 +167,43 @@ public class SupplierServiceTest {
         assertEquals(result.getIsActive(), org.getIsActive());
     }
 
+    private void commonSupplierMocks(Organisation org) {
+        when(mockOrganisationRepo.findByEntityIdAndRegistryCode(org.getEntityId(), org.getRegistryCode()))
+                .thenReturn(Optional.of(org));
+
+        mockSaveAndFlush();
+
+        RoleType roleType = new RoleType();
+        when(mockRoleTypeRepo.findById(2)).thenReturn(roleType);
+
+        ContactPointReason reason = new ContactPointReason();
+        when(contactPointReasonRepo.findById(3)).thenReturn(reason);
+    }
+
     @Test
     void testAddSupplierWithoutContact_createRelationship() throws Exception {
 
         Organisation org = setupOrg();
+        commonSupplierMocks(org);
 
-        when(mockOrganisationRepo.findByLegalName(COMPANY_NAME)).thenReturn(Optional.ofNullable(org)).thenReturn(Optional.ofNullable(org));
-        when(mockLotOrganisationRoleRepo.findByLotIdAndOrganisationIdAndRoleType(mockLot.getId(),org.getId(), null)).thenReturn(Optional.ofNullable(null));
+        when(mockLotOrganisationRoleRepo.findByLotIdAndOrganisationIdAndRoleType(any(Integer.class), any(Integer.class), any(RoleType.class))).thenReturn(Optional.empty());
 
         supplierService.addSupplierRelationship(mockLot, org, null, "Local Test", SupplierStatus.ACTIVE);
 
-        verify(mockLotOrganisationRoleRepo, times(1)).saveAndFlush(ArgumentMatchers.any(LotOrganisationRole.class));
+        verify(mockLotOrganisationRoleRepo, times(1)).saveAndFlush(any(LotOrganisationRole.class));
     }
 
     @Test
     void testAddSupplierWithoutContact_updateRelationship() throws Exception {
 
         Organisation org = setupOrg();
+        commonSupplierMocks(org);
 
-        when(mockOrganisationRepo.findByLegalName(COMPANY_NAME)).thenReturn(Optional.ofNullable(org)).thenReturn(Optional.ofNullable(org));
-        when(mockLotOrganisationRoleRepo.findByLotIdAndOrganisationIdAndRoleType(mockLot.getId(),org.getId(), null)).thenReturn(Optional.ofNullable(new LotOrganisationRole()));
+        when(mockLotOrganisationRoleRepo.findByLotIdAndOrganisationIdAndRoleType(any(Integer.class), any(Integer.class), any(RoleType.class))).thenReturn(Optional.of(new LotOrganisationRole()));
 
         supplierService.addSupplierRelationship(mockLot, org, null, "Local Test", SupplierStatus.ACTIVE);
 
-        verify(mockLotOrganisationRoleRepo, times(1)).saveAndFlush(ArgumentMatchers.any(LotOrganisationRole.class));
+        verify(mockLotOrganisationRoleRepo, times(1)).saveAndFlush(any(LotOrganisationRole.class));
     }
 
     @Test
@@ -198,13 +214,15 @@ public class SupplierServiceTest {
         LotOrganisationRole lor = new LotOrganisationRole();
         lor.setId(1234);
 
-        when(mockOrganisationRepo.findByLegalName(COMPANY_NAME)).thenReturn(Optional.ofNullable(org)).thenReturn(Optional.ofNullable(org));
-        when(mockLotOrganisationRoleRepo.findByLotIdAndOrganisationIdAndRoleType(mockLot.getId(),org.getId(), null)).thenReturn(Optional.ofNullable(lor));
-        when(mockContactPointLotOrgRoleRepo.findFirstByLotOrganisationRoleIdAndContactPointReasonOrderByIdAsc(ArgumentMatchers.any(Integer.class), ArgumentMatchers.any(ContactPointReason.class))).thenReturn(null);
+        commonSupplierMocks(org);
+
+        when(mockLotOrganisationRoleRepo.findByLotIdAndOrganisationIdAndRoleType(any(Integer.class), any(Integer.class), any(RoleType.class))).thenReturn(Optional.of(lor));
+
+        when(mockContactPointLotOrgRoleRepo.findFirstByLotOrganisationRoleIdAndContactPointReasonOrderByIdAsc(any(Integer.class), any(ContactPointReason.class))).thenReturn(Optional.empty());
 
         supplierService.addSupplierRelationship(mockLot, org, cd, "Local Test", SupplierStatus.ACTIVE);
 
-        verify(mockContactPointLotOrgRoleRepo, times(1)).saveAndFlush(ArgumentMatchers.any(ContactPointLotOrgRole.class));
+        verify(mockContactPointLotOrgRoleRepo, times(1)).saveAndFlush(any(ContactPointLotOrgRole.class));
     }
 
     @Test
@@ -218,15 +236,15 @@ public class SupplierServiceTest {
         ContactPointLotOrgRole cplor = new ContactPointLotOrgRole();
         cplor.setContactDetail(cd);
 
+        commonSupplierMocks(org);
 
-        when(mockOrganisationRepo.findByLegalName(COMPANY_NAME)).thenReturn(Optional.ofNullable(org)).thenReturn(Optional.ofNullable(org));
-        when(mockLotOrganisationRoleRepo.findByLotIdAndOrganisationIdAndRoleType(mockLot.getId(), org.getId(), null)).thenReturn(Optional.ofNullable(lor));
-        when(mockContactPointLotOrgRoleRepo.findFirstByLotOrganisationRoleIdAndContactPointReasonOrderByIdAsc(1234, null)).thenReturn(Optional.of(cplor));
+        when(mockLotOrganisationRoleRepo.findByLotIdAndOrganisationIdAndRoleType(any(Integer.class), any(Integer.class), any(RoleType.class))).thenReturn(Optional.of(lor));
 
+        when(mockContactPointLotOrgRoleRepo.findFirstByLotOrganisationRoleIdAndContactPointReasonOrderByIdAsc(eq(1234), any(ContactPointReason.class))).thenReturn(Optional.of(cplor));
 
         supplierService.addSupplierRelationship(mockLot, org, cd, "Local Test", SupplierStatus.ACTIVE);
 
-        verify(mockContactPointLotOrgRoleRepo, times(1)).saveAndFlush(ArgumentMatchers.any(ContactPointLotOrgRole.class));
+        verify(mockContactPointLotOrgRoleRepo, times(1)).saveAndFlush(any(ContactPointLotOrgRole.class));
     }
 
     @Test
