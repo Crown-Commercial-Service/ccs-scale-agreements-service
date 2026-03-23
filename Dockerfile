@@ -1,11 +1,5 @@
 FROM maven:3.9.9-amazoncorretto-21 as build
 
-RUN echo "Hello World 1"
-
-RUN sudo yum update -y ca-certificates && update-ca-trust
-
-RUN echo "Hello World 2"
-
 RUN mkdir -p /tmp/build
 
 WORKDIR /tmp/build
@@ -13,8 +7,6 @@ WORKDIR /tmp/build
 COPY . /tmp/build
 
 RUN mvn -B clean package
-
-RUN echo "Hello World 3"
 
 # Use an official Corretto runtime as a base image
 FROM amazoncorretto:21-alpine-jdk
@@ -36,8 +28,6 @@ USER ujava
 
 # Set the working directory inside the container
 WORKDIR /app
-
-RUN echo "Hello World 4"
 
 # Specify the profile to be used when running the application
 ENV SPRING_PROFILES_ACTIVE=prod
