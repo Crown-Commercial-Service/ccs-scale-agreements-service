@@ -1,5 +1,7 @@
 FROM maven:3.9.9-amazoncorretto-21 as build
 
+RUN yum update -y ca-certificates && update-ca-trust
+
 RUN mkdir -p /tmp/build
 
 WORKDIR /tmp/build
