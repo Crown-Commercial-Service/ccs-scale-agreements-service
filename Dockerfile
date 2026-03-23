@@ -6,8 +6,7 @@ WORKDIR /tmp/build
 
 COPY . /tmp/build
 
-RUN mvn clean install
-RUN mvn package
+RUN mvn -B clean package
 
 # Use an official Corretto runtime as a base image
 FROM amazoncorretto:21-alpine-jdk
