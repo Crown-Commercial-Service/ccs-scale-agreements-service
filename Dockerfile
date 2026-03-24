@@ -1,4 +1,4 @@
-FROM maven:3.9.9-amazoncorretto-21 as build
+FROM maven:3.9.9-amazoncorretto-23 as build
 
 RUN mkdir -p /tmp/build
 
@@ -6,10 +6,11 @@ WORKDIR /tmp/build
 
 COPY . /tmp/build
 
-RUN mvn -B clean package
+RUN mvn clean install
+RUN mvn package
 
 # Use an official Corretto runtime as a base image
-FROM amazoncorretto:21-alpine-jdk
+FROM amazoncorretto:23-alpine-jdk
 
 # Set the working directory inside the container and install curl
 WORKDIR /app
