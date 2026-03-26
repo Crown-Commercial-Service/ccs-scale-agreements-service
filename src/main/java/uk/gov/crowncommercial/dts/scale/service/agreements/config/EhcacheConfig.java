@@ -18,13 +18,13 @@ import java.time.Duration;
  */
 @Configuration
 public class EhcacheConfig {
-    @Value("${caching.primary.cacheLength}")
+    @Value("60")
     String primaryCacheLength;
 
     @Value("${caching.primary.heapSize}")
     String primaryCacheSize;
 
-    @Value("${caching.secondary.cacheLength}")
+    @Value("60")
     String secondaryCacheLength;
 
     @Value("${caching.secondary.heapSize}")
