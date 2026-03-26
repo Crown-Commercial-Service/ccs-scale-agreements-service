@@ -39,9 +39,9 @@ management:
 
 logging:
   level:
-    uk.gov.crowncommercial.dts.scale: INFO
-    org.springframework: INFO
-    org.hibernate: INFO
+    uk.gov.crowncommercial.dts.scale: DEBUG
+    org.springframework: DEBUG
+    org.hibernate: DEBUG
 
 spring:
   jackson:
