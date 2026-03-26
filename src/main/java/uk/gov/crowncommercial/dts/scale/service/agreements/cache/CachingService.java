@@ -21,7 +21,7 @@ public class CachingService {
     EntityManager entityManager;
 
     // Note we use a different cache length here than the entities - this is fine, as these are shorter lived
-    @Scheduled(fixedDelayString = "PT15M")
+    @Scheduled(fixedDelayString = "PT1M")
     public void evictAllEntities() {
         try {
 
