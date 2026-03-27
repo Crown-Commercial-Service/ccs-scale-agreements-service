@@ -175,6 +175,7 @@ public class SupplierService {
                         cd.setTelephoneNumber(newContactDetail.getTelephoneNumber());
                         cd.setFaxNumber(newContactDetail.getFaxNumber());
                         cd.setUrl(newContactDetail.getUrl());
+                        cplor.setPrimary(true);
                         if (newContactDetail.getName()!= null && !newContactDetail.getName().isEmpty()) { cplor.setContactPointName(newContactDetail.getName());}
                         contactPointLotOrgRoleRepo.saveAndFlush(cplor);
                         return cplor;
@@ -183,6 +184,7 @@ public class SupplierService {
                         cplor.setLotOrganisationRoleId(saveLor.getId());
                         cplor.setContactPointReason(supplierContactReason);
                         cplor.setContactDetail(newContactDetail);
+                        cplor.setPrimary(true);
                         if (newContactDetail.getName()!= null && !newContactDetail.getName().isEmpty()) { cplor.setContactPointName(newContactDetail.getName());}
                         contactPointLotOrgRoleRepo.saveAndFlush(cplor);
                         return cplor;
