@@ -2,6 +2,7 @@ package uk.gov.crowncommercial.dts.scale.service.agreements.service;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.core.AutoConfigureCache;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -222,7 +223,11 @@ public class SupplierServiceTest {
 
         supplierService.addSupplierRelationship(mockLot, org, cd, "Local Test", SupplierStatus.ACTIVE);
 
-        verify(mockContactPointLotOrgRoleRepo, times(1)).saveAndFlush(any(ContactPointLotOrgRole.class));
+        ArgumentCaptor<ContactPointLotOrgRole> captor = ArgumentCaptor.forClass(ContactPointLotOrgRole.class);
+        verify(mockContactPointLotOrgRoleRepo, times(1)).saveAndFlush(captor.capture());
+
+        ContactPointLotOrgRole savedRole = captor.getValue();
+        assertTrue(savedRole.getPrimary());
     }
 
     @Test
@@ -244,7 +249,11 @@ public class SupplierServiceTest {
 
         supplierService.addSupplierRelationship(mockLot, org, cd, "Local Test", SupplierStatus.ACTIVE);
 
-        verify(mockContactPointLotOrgRoleRepo, times(1)).saveAndFlush(any(ContactPointLotOrgRole.class));
+        ArgumentCaptor<ContactPointLotOrgRole> captor = ArgumentCaptor.forClass(ContactPointLotOrgRole.class);
+        verify(mockContactPointLotOrgRoleRepo, times(1)).saveAndFlush(captor.capture());
+
+        ContactPointLotOrgRole savedRole = captor.getValue();
+        assertTrue(savedRole.getPrimary());
     }
 
     @Test
