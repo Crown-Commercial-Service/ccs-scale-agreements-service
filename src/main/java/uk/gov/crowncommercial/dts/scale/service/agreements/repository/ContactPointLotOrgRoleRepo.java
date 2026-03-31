@@ -14,10 +14,20 @@ public interface ContactPointLotOrgRoleRepo extends JpaRepository<ContactPointLo
 
     Optional<ContactPointLotOrgRole> findFirstByLotOrganisationRoleIdAndContactPointReasonOrderByIdAsc(int lotOrganisationRoleId, ContactPointReason contactPointReason);
 
-    @Query("SELECT cplor.contactDetail FROM ContactPointLotOrgRole cplor " +
-       "JOIN LotOrganisationRole lor ON cplor.lotOrganisationRoleId = lor.id " +
-       "JOIN Organisation o ON lor.organisation.id = o.id " +
-       "WHERE o.registryCode = :registryCode AND o.entityId = :entityId AND cplor.primary = true")
+    @Query(
+        "SELECT cplor FROM ContactPointLotOrgRole cplor " +
+        "JOIN LotOrganisationRole lor ON cplor.lotOrganisationRoleId = lor.id " +
+        "JOIN Organisation o ON lor.organisation.id = o.id " +
+        "WHERE o.registryCode = :registryCode AND o.entityId = :entityId AND cplor.primary = true"
+    )
+    List<ContactPointLotOrgRole> findPrimaryContactPointLotOrgRoleByDuns(@Param("registryCode") String registryCode, @Param("entityId") String entityId);
+
+    @Query(
+        "SELECT cplor.contactDetail FROM ContactPointLotOrgRole cplor " +
+        "JOIN LotOrganisationRole lor ON cplor.lotOrganisationRoleId = lor.id " +
+        "JOIN Organisation o ON lor.organisation.id = o.id " +
+        "WHERE o.registryCode = :registryCode AND o.entityId = :entityId AND cplor.primary = true"
+    )
     List<ContactDetail> findPrimaryContactDetailsByDuns(@Param("registryCode") String registryCode, @Param("entityId") String entityId);
 }
 
