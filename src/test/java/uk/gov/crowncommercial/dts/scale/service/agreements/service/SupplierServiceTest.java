@@ -20,6 +20,8 @@ import java.time.LocalDate;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
 @SpringBootTest
@@ -147,6 +149,13 @@ public class SupplierServiceTest {
         cd.setPostalCode("SW1");
         cd.setCountryCode("GB");
         cd.setCountryName("UK");
+
+        return cd;
+    }
+
+    ContactPointLotOrgRole setupCplor(){
+        ContactPointLotOrgRole cd = new ContactPointLotOrgRole();
+        cd.setContactPointName("Some name");
 
         return cd;
     }
@@ -346,17 +355,23 @@ public class SupplierServiceTest {
         updateRequest.setPostalCode("NEW123");
 
         ContactDetail contact = setupCd();
+        ContactPointLotOrgRole contactPointLotOrgRole = setupCplor();
         contact.setId(1);
+        contactPointLotOrgRole.setId(1);
         java.util.List<ContactDetail> contacts = java.util.Collections.singletonList(contact);
+        java.util.List<ContactPointLotOrgRole> contactPointLotOrgRoles = java.util.Collections.singletonList(contactPointLotOrgRole);
 
         when(mockOrganisationRepo.findByRegistryCodeAndEntityId("US-DUNS", dunsNumber)).thenReturn(java.util.Optional.of(org));
         when(mockContactPointLotOrgRoleRepo.findPrimaryContactDetailsByDuns("US-DUNS", dunsNumber)).thenReturn(contacts);
+        when(mockContactPointLotOrgRoleRepo.findPrimaryContactPointLotOrgRoleByDuns("US-DUNS", dunsNumber)).thenReturn(contactPointLotOrgRoles);
+        when(mockContactPointLotOrgRoleRepo.save(any(ContactPointLotOrgRole.class))).thenReturn(contactPointLotOrgRole);
         when(mockContactDetailRepo.save(any(ContactDetail.class))).thenReturn(contact);
         when(mockOrganisationRepo.save(any(Organisation.class))).thenReturn(org);
 
         assertDoesNotThrow(() -> supplierService.updateSupplierAndContactByDuns(dunsNumber, updateRequest));
         verify(mockOrganisationRepo).save(org);
         verify(mockContactDetailRepo).save(contact);
+        verify(mockContactPointLotOrgRoleRepo).save(contactPointLotOrgRole);
     }
 
     @Test

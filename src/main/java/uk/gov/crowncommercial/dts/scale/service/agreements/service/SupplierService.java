@@ -249,12 +249,18 @@ public class SupplierService {
 
         for (ContactDetail contact : contacts) {
             contact.setEmailAddress(updateRequest.getEmailAddress());
-            contact.setName(updateRequest.getContactPointName());
             contact.setTelephoneNumber(updateRequest.getTelephoneNumber());
             contact.setStreetAddress(updateRequest.getStreetAddress());
             contact.setLocality(updateRequest.getLocality());
             contact.setPostalCode(updateRequest.getPostalCode());
             contactDetailRepo.save(contact);
+        }
+
+        List<ContactPointLotOrgRole> contactLotPointRoles = contactPointLotOrgRoleRepo.findPrimaryContactPointLotOrgRoleByDuns("US-DUNS", dunsNumber);
+
+        for (ContactPointLotOrgRole contactLotPointOrgRole : contactLotPointRoles) {
+            contactLotPointOrgRole.setContactPointName(updateRequest.getContactPointName());
+            contactPointLotOrgRoleRepo.save(contactLotPointOrgRole);
         }
     }
     
