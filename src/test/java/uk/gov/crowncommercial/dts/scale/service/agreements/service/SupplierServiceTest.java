@@ -353,6 +353,8 @@ public class SupplierServiceTest {
         updateRequest.setStreetAddress("New St");
         updateRequest.setLocality("New City");
         updateRequest.setPostalCode("NEW123");
+        updateRequest.setCountryCode("NP");
+        updateRequest.setCountryName("Japan");
 
         ContactDetail contact = setupCd();
         ContactPointLotOrgRole contactPointLotOrgRole = setupCplor();

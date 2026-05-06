@@ -15,4 +15,6 @@ public class SupplierUpdateRequest implements Serializable {
     private String streetAddress;
     private String locality;
     private String postalCode;
+    private String countryCode;
+    private String countryName;
 } 
