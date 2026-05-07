@@ -253,6 +253,8 @@ public class SupplierService {
             contact.setStreetAddress(updateRequest.getStreetAddress());
             contact.setLocality(updateRequest.getLocality());
             contact.setPostalCode(updateRequest.getPostalCode());
+            contact.setCountryCode(updateRequest.getCountryCode());
+            contact.setCountryName(updateRequest.getCountryName());
             contactDetailRepo.save(contact);
         }
 
