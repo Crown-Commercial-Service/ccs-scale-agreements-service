@@ -1,9 +1,9 @@
-CCS Agreements Service API
+GCA Agreements Service API
 ===========
 
 Overview
 --------
-This is the code for the implementation of Crown Commercial Service's (_CCS_)
+This is the code for the implementation of Government Commercial Agency's (_GCA_)
 Agreements Service API, used by various downstream applications.
 
 The specification for the API can be found in the [Open API Specification][].

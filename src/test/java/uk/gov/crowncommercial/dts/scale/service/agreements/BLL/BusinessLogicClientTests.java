@@ -430,8 +430,8 @@ public class BusinessLogicClientTests {
 
     @Test
     void testSaveAgreementWithValidAgreement() {
-        AgreementDetail ad = new AgreementDetail("Technology Products 2", "Short textual description of the commercial agreement", "CCS", java.time.LocalDate.now(), java.time.LocalDate.now().plusDays(5), "URL", true);
-        CommercialAgreement ca = new CommercialAgreement("RM1045", "Technology Products 2", "CCS", "Short textual description of the commercial agreement", java.time.LocalDate.now(), java.time.LocalDate.now().plusDays(5), "URL", true);
+        AgreementDetail ad = new AgreementDetail("Technology Products 2", "Short textual description of the commercial agreement", "GCA", java.time.LocalDate.now(), java.time.LocalDate.now().plusDays(5), "URL", true);
+        CommercialAgreement ca = new CommercialAgreement("RM1045", "Technology Products 2", "GCA", "Short textual description of the commercial agreement", java.time.LocalDate.now(), java.time.LocalDate.now().plusDays(5), "URL", true);
 
         when(agreementService.createOrUpdateAgreement(ca)).thenReturn(ca);
         AgreementDetail result = businessLogicClient.saveAgreement(ad, "RM1045");
@@ -441,7 +441,7 @@ public class BusinessLogicClientTests {
 
     @Test
     void testSaveAgreementWithInvalidAgreement() {
-        AgreementDetail ad = new AgreementDetail("Technology Products 2", "", "CCS", java.time.LocalDate.now(), java.time.LocalDate.now().plusDays(5), "URL", true);
+        AgreementDetail ad = new AgreementDetail("Technology Products 2", "", "GCA", java.time.LocalDate.now(), java.time.LocalDate.now().plusDays(5), "URL", true);
 
         when(agreementService.createOrUpdateAgreement(mockCommercialAgreement)).thenThrow(new InvalidAgreementException("description"));
 

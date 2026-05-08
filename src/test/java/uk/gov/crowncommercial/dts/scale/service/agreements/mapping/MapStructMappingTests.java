@@ -140,7 +140,7 @@ public class MapStructMappingTests {
         sourceModel.setName(AGREEMENT_NAME);
         sourceModel.setNumber(AGREEMENT_NUMBER);
         sourceModel.setDescription(AGREEMENT_DESCRIPTION);
-        sourceModel.setOwnerName("CCS");
+        sourceModel.setOwnerName("GCA");
         sourceModel.setStartDate(java.time.LocalDate.now());
         sourceModel.setEndDate(java.time.LocalDate.now().plusDays(5));
         sourceModel.setPreDefinedLotRequired(true);
@@ -173,7 +173,7 @@ public class MapStructMappingTests {
         sourceModel.setName(AGREEMENT_NAME);
         sourceModel.setNumber(AGREEMENT_NUMBER);
         sourceModel.setDescription(AGREEMENT_DESCRIPTION);
-        sourceModel.setOwnerName("CCS");
+        sourceModel.setOwnerName("GCA");
         sourceModel.setStartDate(java.time.LocalDate.now());
         sourceModel.setEndDate(java.time.LocalDate.now().plusDays(5));
         sourceModel.setPreDefinedLotRequired(true);
@@ -198,7 +198,7 @@ public class MapStructMappingTests {
         sourceModel.setName(AGREEMENT_NAME);
         sourceModel.setNumber(AGREEMENT_NUMBER);
         sourceModel.setDescription(AGREEMENT_DESCRIPTION);
-        sourceModel.setOwnerName("CCS");
+        sourceModel.setOwnerName("GCA");
         sourceModel.setStartDate(java.time.LocalDate.now());
         sourceModel.setEndDate(java.time.LocalDate.now().plusDays(5));
         sourceModel.setPreDefinedLotRequired(true);

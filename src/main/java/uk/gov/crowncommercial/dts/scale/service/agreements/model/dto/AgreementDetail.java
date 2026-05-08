@@ -31,7 +31,7 @@ public class AgreementDetail implements Serializable {
   private String description;
 
   /**
-   * Commercial Agreement Owner e.g. "CCS".
+   * Commercial Agreement Owner e.g. "GCA".
    */
   private String ownerName;
 
