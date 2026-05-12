@@ -308,8 +308,8 @@ class AgreementControllerTest {
   void testCreateAgreementValid() throws Exception {
 
     String agreementNumber = "RM1045";
-    AgreementDetail inputValue = new AgreementDetail("Technology Products 2", "Short textual description of the commercial agreement", "CCS", LocalDate.of(2012, 11, 25), java.time.LocalDate.now().plusDays(5), "URL", true);
-    AgreementDetail result = new AgreementDetail("Technology Products 2", "Short textual description of the commercial agreement", "CCS", LocalDate.of(2012, 11, 25), java.time.LocalDate.now().plusDays(5), "URL", true);
+    AgreementDetail inputValue = new AgreementDetail("Technology Products 2", "Short textual description of the commercial agreement", "GCA", LocalDate.of(2012, 11, 25), java.time.LocalDate.now().plusDays(5), "URL", true);
+    AgreementDetail result = new AgreementDetail("Technology Products 2", "Short textual description of the commercial agreement", "GCA", LocalDate.of(2012, 11, 25), java.time.LocalDate.now().plusDays(5), "URL", true);
 
     result.setNumber(agreementNumber);
     when(businessLogicClient.saveAgreement(inputValue, agreementNumber)).thenReturn(result);
@@ -331,7 +331,7 @@ class AgreementControllerTest {
   void testCreateAgreementInValidEmptyAgreementName() throws Exception {
 
     String agreementNumber = "RM1045";
-    AgreementDetail inputValue = new AgreementDetail("Technology Products 2", "Short textual description of the commercial agreement", "CCS", java.time.LocalDate.now(), java.time.LocalDate.now().plusDays(5), "URL", true);
+    AgreementDetail inputValue = new AgreementDetail("Technology Products 2", "Short textual description of the commercial agreement", "GCA", java.time.LocalDate.now(), java.time.LocalDate.now().plusDays(5), "URL", true);
     inputValue.setName(null);
 
     when(businessLogicClient.saveAgreement(inputValue, agreementNumber)).thenThrow(new InvalidAgreementException("name"));

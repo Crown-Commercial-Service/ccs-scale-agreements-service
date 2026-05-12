@@ -1,6 +1,7 @@
 package uk.gov.crowncommercial.dts.scale.service.agreements.service;
 
 import com.rollbar.notifier.Rollbar;
+import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.json.JSONObject;
 import org.json.JSONTokener;
@@ -16,7 +17,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
@@ -27,8 +27,13 @@ public class WordpressService {
     @Autowired
     private Rollbar rollbar;
 
-    @Value("${wordpressURL:https://webdev-cms.crowncommercial.gov.uk/}")
+    @Value("${wordpressURL:https://webdev-cms.gca.gov.uk/}")
     private String wordpressBaseURL;
+
+    @PostConstruct
+    public void init() {
+        log.info("WordpressService initialized with url: {}", wordpressBaseURL);
+    }
 
     /**
      * Performs a request against a specified Wordpress endpoint
@@ -53,10 +58,8 @@ public class WordpressService {
 
                 connection.disconnect();
             }
-        } catch (MalformedURLException ex) {
-            rollbar.error(ex, "MalformedURLException when connecting to WordPress API");
         } catch (IOException ex) {
-            rollbar.error(ex, "IOException when connecting to WordPress API");
+            rollbar.error(ex, "Exception when connecting to WordPress API endpoint "+ endpoint);
         }
 
         return jsonObjectFromWordpress;

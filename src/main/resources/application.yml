@@ -1,8 +1,8 @@
 # App info (for Actuator)
 info:
   app:
-    name: CCS Agreements Service
-    description: The Agreements Service API provided by Crown Commercial Service
+    name: GCA Agreements Service
+    description: The Agreements Service API provided by Government Commercial Agency
     version: 2.2
 
 server:
