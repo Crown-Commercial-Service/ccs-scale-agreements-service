@@ -4,10 +4,10 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.core.AutoConfigureCache;
+import org.springframework.boot.cache.test.autoconfigure.AutoConfigureCache;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import uk.gov.crowncommercial.dts.scale.service.agreements.config.EhcacheConfig;
 import uk.gov.crowncommercial.dts.scale.service.agreements.exception.InvalidOrganisationException;
 import uk.gov.crowncommercial.dts.scale.service.agreements.exception.OrganisationNotFoundException;
@@ -28,7 +28,7 @@ import static org.mockito.Mockito.*;
 @ActiveProfiles("test")
 @AutoConfigureCache
 public class SupplierServiceTest {
-    @MockBean
+    @MockitoBean
     private EhcacheConfig cacheConfig;
 
     private static final String AGREEMENT_NUMBER = "RM1000";
@@ -40,28 +40,28 @@ public class SupplierServiceTest {
     @Autowired
     SupplierService supplierService;
 
-    @MockBean
+    @MockitoBean
     private OrganisationRepo mockOrganisationRepo;
 
-    @MockBean
+    @MockitoBean
     private LotOrganisationRoleRepo mockLotOrganisationRoleRepo;
 
-    @MockBean
+    @MockitoBean
     private ContactPointLotOrgRoleRepo mockContactPointLotOrgRoleRepo;
 
-    @MockBean
+    @MockitoBean
     private RoleTypeRepo mockRoleTypeRepo;
 
-    @MockBean
+    @MockitoBean
     private Organisation mockOrganisation;
 
-    @MockBean
+    @MockitoBean
     private Lot mockLot;
 
-    @MockBean
+    @MockitoBean
     private ContactDetailRepo mockContactDetailRepo;
 
-    @MockBean
+    @MockitoBean
     private ContactPointReasonRepo contactPointReasonRepo;
 
     private void mockSaveAndFlush() {

@@ -2,7 +2,7 @@ package uk.gov.crowncommercial.dts.scale.service.agreements.model.entity;
 
 import lombok.*;
 import lombok.experimental.FieldDefaults;
-import org.hibernate.annotations.Where;
+import org.hibernate.annotations.SQLRestriction;
 
 import jakarta.persistence.*;
 import java.util.Set;
@@ -37,6 +37,6 @@ public class SimpleLot {
     @ToString.Exclude
     @OneToMany(fetch = FetchType.LAZY)
     @JoinColumn(name = "lot_id", insertable = false, updatable = false)
-    @Where(clause="role_type_id = '2' and organisation_status = 'A'")
+    @SQLRestriction("role_type_id = '2' and organisation_status = 'A'")
     Set<LotOrganisationRole> activeOrganisationRoles;
 }

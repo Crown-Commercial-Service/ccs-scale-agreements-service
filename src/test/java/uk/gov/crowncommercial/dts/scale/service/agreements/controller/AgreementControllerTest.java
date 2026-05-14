@@ -16,12 +16,12 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 import com.rollbar.notifier.Rollbar;
@@ -31,7 +31,6 @@ import uk.gov.crowncommercial.dts.scale.service.agreements.BLL.BusinessLogicClie
 import uk.gov.crowncommercial.dts.scale.service.agreements.exception.AgreementNotFoundException;
 import uk.gov.crowncommercial.dts.scale.service.agreements.exception.InvalidAgreementException;
 import uk.gov.crowncommercial.dts.scale.service.agreements.exception.InvalidLotException;
-import uk.gov.crowncommercial.dts.scale.service.agreements.exception.InvalidProcurementQuestionTemplateException;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.*;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.*;
 import uk.gov.crowncommercial.dts.scale.service.agreements.service.AgreementService;
@@ -66,31 +65,31 @@ class AgreementControllerTest {
   @Autowired
   private MockMvc mockMvc;
 
-  @MockBean
+  @MockitoBean
   private BusinessLogicClient businessLogicClient;
 
-  @MockBean
+  @MockitoBean
   private AgreementService service;
   
   @Autowired
   private AgreementController controller;
 
-  @MockBean
+  @MockitoBean
   private CommercialAgreement mockCommercialAgreement;
 
-  @MockBean
+  @MockitoBean
   private Lot mockLot;
   
-  @MockBean 
+  @MockitoBean
   private Rollbar rollbar;
 
-  @MockBean
+  @MockitoBean
   private CommercialAgreementDocument mockCommercialAgreementDocument;
 
-  @MockBean
+  @MockitoBean
   private CommercialAgreementUpdate mockCommercialAgreementUpdate;
 
-  @MockBean
+  @MockitoBean
   private LotOrganisationRole lotOrganisationRole;
 
   @Test
