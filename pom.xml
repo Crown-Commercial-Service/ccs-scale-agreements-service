@@ -23,7 +23,7 @@
 		<compiler.version>3.14.1</compiler.version>
 		<snakeyaml.version>2.6</snakeyaml.version>
 		<json.version>20251224</json.version>
-		<rollbar.version>2.1.0</rollbar.version>
+		<rollbar.version>2.2.0</rollbar.version>
 		<commons.version>3.20.0</commons.version>
 		<ehcache.version>3.11.1</ehcache.version>
 		<postgres.version>42.7.11</postgres.version>
