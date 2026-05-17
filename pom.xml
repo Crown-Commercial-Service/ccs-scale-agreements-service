@@ -17,7 +17,7 @@
 
 	<properties>
 		<java.version>23</java.version>
-		<hibernate.version>7.3.4.Final</hibernate.version>
+		<hibernate.version>7.3.5.Final</hibernate.version>
 		<mapstruct.version>1.6.3</mapstruct.version>
 		<compiler.version>3.15.0</compiler.version>
 		<snakeyaml.version>2.6</snakeyaml.version>
