@@ -31,7 +31,7 @@
 		<h2.version>2.4.240</h2.version>
 		<jackson.version>3.1.4</jackson.version>
         <jackson-annotations.version>2.22</jackson-annotations.version>
-		<jackson-datatype.version>2.21.4</jackson-datatype.version>
+		<jackson-datatype.version>2.22.0</jackson-datatype.version>
 		<springdoc.version>3.0.3</springdoc.version>
 		<mockito.version>5.23.0</mockito.version>
 		<tomcat.version>11.0.22</tomcat.version>
