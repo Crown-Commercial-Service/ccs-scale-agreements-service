@@ -36,7 +36,7 @@
 		<mockito.version>5.23.0</mockito.version>
 		<tomcat.version>11.0.22</tomcat.version>
 		<spring.version>7.0.8</spring.version>
-		<springboot.version>4.0.6</springboot.version>
+		<springboot.version>4.1.0</springboot.version>
 		<springjcl.version>6.2.18</springjcl.version>
 	</properties>
 
