@@ -37,7 +37,7 @@
 		<tomcat.version>11.0.23</tomcat.version>
 		<spring.version>7.0.8</spring.version>
 		<springboot.version>4.1.0</springboot.version>
-		<springjcl.version>6.2.18</springjcl.version>
+		<springjcl.version>6.2.19</springjcl.version>
 	</properties>
 
 	<dependencies>
