@@ -34,7 +34,7 @@
 		<jackson-datatype.version>2.22.1</jackson-datatype.version>
 		<springdoc.version>3.0.3</springdoc.version>
 		<mockito.version>5.23.0</mockito.version>
-		<tomcat.version>11.0.24</tomcat.version>
+		<tomcat.version>11.0.25</tomcat.version>
 		<spring.version>7.0.8</spring.version>
 		<springboot.version>4.1.0</springboot.version>
 		<springjcl.version>6.2.19</springjcl.version>
