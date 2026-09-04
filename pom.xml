@@ -6,7 +6,7 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>4.1.0</version>
+		<version>4.1.1</version>
 		<relativePath/>
 	</parent>
 	<groupId>uk.gov.crowncommercial.dts</groupId>
@@ -17,11 +17,11 @@
 
 	<properties>
 		<java.version>23</java.version>
-		<hibernate.version>7.4.5.Final</hibernate.version>
+		<hibernate.version>7.4.6.Final</hibernate.version>
 		<mapstruct.version>1.6.3</mapstruct.version>
 		<compiler.version>3.15.0</compiler.version>
 		<snakeyaml.version>2.6</snakeyaml.version>
-		<json.version>20260719</json.version>
+		<json.version>20260814</json.version>
 		<rollbar.version>2.3.1</rollbar.version>
 		<commons.version>3.20.0</commons.version>
 		<ehcache.version>3.12.0</ehcache.version>
@@ -29,14 +29,14 @@
 		<jakarta.version>6.1.0</jakarta.version>
 		<lombok.version>1.18.46</lombok.version>
 		<h2.version>2.4.240</h2.version>
-		<jackson.version>3.2.1</jackson.version>
-        <jackson-annotations.version>2.22</jackson-annotations.version>
-		<jackson-datatype.version>2.22.1</jackson-datatype.version>
+		<jackson.version>3.2.2</jackson.version>
+    <jackson-annotations.version>2.22</jackson-annotations.version>
+		<jackson-datatype.version>2.22.2</jackson-datatype.version>
 		<springdoc.version>3.1.0</springdoc.version>
 		<mockito.version>5.23.0</mockito.version>
-		<tomcat.version>11.0.24</tomcat.version>
+		<tomcat.version>11.0.25</tomcat.version>
 		<spring.version>7.0.8</spring.version>
-		<springboot.version>4.1.0</springboot.version>
+		<springboot.version>4.1.1</springboot.version>
 		<springjcl.version>6.2.19</springjcl.version>
 	</properties>
 
