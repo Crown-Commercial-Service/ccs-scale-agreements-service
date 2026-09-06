@@ -20,7 +20,7 @@
 		<hibernate.version>7.4.6.Final</hibernate.version>
 		<mapstruct.version>1.6.3</mapstruct.version>
 		<compiler.version>3.15.0</compiler.version>
-		<snakeyaml.version>2.6</snakeyaml.version>
+		<snakeyaml.version>2.7</snakeyaml.version>
 		<json.version>20260814</json.version>
 		<rollbar.version>2.3.1</rollbar.version>
 		<commons.version>3.20.0</commons.version>
