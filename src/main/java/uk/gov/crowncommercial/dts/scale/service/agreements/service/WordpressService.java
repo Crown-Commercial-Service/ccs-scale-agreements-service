@@ -14,7 +14,6 @@ import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.Commerci
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.entity.Lot;
 
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -58,8 +57,8 @@ public class WordpressService {
 
                 connection.disconnect();
             }
-        } catch (IOException ex) {
-            rollbar.error(ex, "Exception when connecting to WordPress API endpoint "+ endpoint);
+        } catch (Exception ex) {
+            rollbar.error(ex, "Exception connecting to or processing response from WordPress API endpoint "+ endpoint);
         }
 
         return jsonObjectFromWordpress;
