@@ -58,7 +58,7 @@ public class WordpressService {
                 connection.disconnect();
             }
         } catch (Exception ex) {
-            rollbar.error(ex, "Exception when connecting to WordPress API endpoint "+ endpoint);
+            rollbar.error(ex, "Exception connecting to or processing response from WordPress API endpoint "+ endpoint);
         }
 
         return jsonObjectFromWordpress;
