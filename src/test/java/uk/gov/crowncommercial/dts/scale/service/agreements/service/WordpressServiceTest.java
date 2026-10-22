@@ -91,7 +91,7 @@ class WordpressServiceTest {
         assertNull(result, "Expected result to be null when IOException is caught");
         verify(rollbar).error(
                 any(IOException.class),
-                eq("Exception when connecting to WordPress API endpoint " + invalidEndpoint)
+                eq("Exception connecting to or processing response from WordPress API endpoint " + invalidEndpoint)
         );
     }
 
@@ -115,7 +115,7 @@ class WordpressServiceTest {
                 assertNull(result);
             });
 
-            verify(rollbar).error(any(JSONException.class), eq("Exception when connecting to WordPress API endpoint " + endpoint));
+            verify(rollbar).error(any(JSONException.class), eq("Exception connecting to or processing response from WordPress API endpoint " + endpoint));
         } finally {
             server.stop(0);
         }
