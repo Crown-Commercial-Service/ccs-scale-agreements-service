@@ -49,7 +49,7 @@ class LotControllerTest {
       "/agreements/{agreement-id}/lots/{lot-id}/event-types/{event-type}/document-templates";
 
   private static final String AGREEMENT_NUMBER = "RM3733";
-  private static final String LOT1_NUMBER = "Lot 1";
+  private static final String LOT1_NUMBER = "1";
   private static final String EVENT_TYPE_RFI = "RFI";
   private static final String RUNTIME_EXCEPTION_TEXT = "Something is amiss";
 
