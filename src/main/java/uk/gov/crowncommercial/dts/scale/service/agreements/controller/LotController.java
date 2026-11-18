@@ -8,10 +8,13 @@ import org.springframework.web.bind.annotation.*;
 
 import uk.gov.crowncommercial.dts.scale.service.agreements.BLL.BusinessLogicClient;
 import uk.gov.crowncommercial.dts.scale.service.agreements.BLL.SupplierLogicClient;
+import uk.gov.crowncommercial.dts.scale.service.agreements.exception.AgreementNotFoundException;
+import uk.gov.crowncommercial.dts.scale.service.agreements.exception.LotNotFoundException;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.*;
 
 import java.util.Collection;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 import org.springframework.http.ResponseEntity;
 
@@ -31,10 +34,23 @@ public class LotController {
   @Autowired
   private SupplierLogicClient supplierLogicClient;
 
+  private static final Pattern AGREEMENT_ID_PATTERN = Pattern.compile("^(RM[0-9]{1,10}(?:\\.[0-9]{1,5})?)$");
+  private static final Pattern LOT_ID_PATTERN = Pattern.compile("^([0-9]{1,5}[a-zA-Z]?)$");
+
   @GetMapping
   public LotDetail getLot(@PathVariable(value = "agreement-id") final String agreementNumber, @PathVariable(value = "lot-id") final String lotNumber) {
     log.debug("getLot called with values: agreementNumber={}, lotNumber={}", agreementNumber, lotNumber);
 
+    // First check if the Agreement ID and Lot ID passed to us are in a valid format
+    if (agreementNumber == null || !AGREEMENT_ID_PATTERN.matcher(agreementNumber).matches()) {
+      throw new AgreementNotFoundException(agreementNumber);
+    }
+
+    if (lotNumber == null || !LOT_ID_PATTERN.matcher(lotNumber).matches()) {
+      throw new LotNotFoundException(lotNumber, agreementNumber);
+    }
+
+    // They are valid, so proceed with lookup
     LotDetail model = businessLogicClient.getLotDetail(agreementNumber, lotNumber);
 
     return model;

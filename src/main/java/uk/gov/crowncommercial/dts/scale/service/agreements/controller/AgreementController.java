@@ -3,6 +3,7 @@ package uk.gov.crowncommercial.dts.scale.service.agreements.controller;
 import java.util.Collection;
 import java.util.Optional;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import uk.gov.crowncommercial.dts.scale.service.agreements.BLL.BusinessLogicClient;
+import uk.gov.crowncommercial.dts.scale.service.agreements.exception.AgreementNotFoundException;
 import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.*;
 
 /**
@@ -24,6 +26,8 @@ import uk.gov.crowncommercial.dts.scale.service.agreements.model.dto.*;
 public class AgreementController {
     @Autowired
     private BusinessLogicClient businessLogicClient;
+
+    private static final Pattern AGREEMENT_ID_PATTERN = Pattern.compile("^(RM[0-9]{1,10}(?:\\.[0-9]{1,5})?)$");
 
     @GetMapping(value={"", "/"})
     public Collection<AgreementSummary> getAgreements() {
@@ -38,6 +42,12 @@ public class AgreementController {
     public AgreementDetail getAgreementDetail(@PathVariable(value = "agreement-id") final String agreementNumber) {
         log.debug("getAgreement called with ID: {}", agreementNumber);
 
+        // First check if the Agreement ID passed to us is in a valid format
+        if (agreementNumber == null || !AGREEMENT_ID_PATTERN.matcher(agreementNumber).matches()) {
+            throw new AgreementNotFoundException(agreementNumber);
+        }
+
+        // It is valid, so proceed with lookup
         AgreementDetail model = businessLogicClient.getAgreementDetail(agreementNumber);
 
         return model;
