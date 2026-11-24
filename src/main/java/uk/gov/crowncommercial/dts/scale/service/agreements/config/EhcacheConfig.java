@@ -5,11 +5,11 @@ import org.ehcache.config.builders.ExpiryPolicyBuilder;
 import org.ehcache.config.builders.ResourcePoolsBuilder;
 import org.ehcache.jsr107.Eh107Configuration;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.CachingConfigurer;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import javax.cache.CacheManager;
 import javax.cache.Caching;
 import javax.cache.spi.CachingProvider;
 import java.time.Duration;
@@ -19,7 +19,7 @@ import java.time.Duration;
  */
 @Configuration
 @EnableCaching
-public class EhcacheConfig {
+public class EhcacheConfig implements CachingConfigurer {
     @Value("${caching.primary.cacheLength}")
     String primaryCacheLength;
 
@@ -36,9 +36,9 @@ public class EhcacheConfig {
      * Initialise the caches we want to use based on life configuration settings
      */
     @Bean
-    public CacheManager ehCacheManager() {
+    public org.springframework.cache.CacheManager ehCacheManager() {
         CachingProvider provider = Caching.getCachingProvider();
-        CacheManager cacheManager = provider.getCacheManager();
+        javax.cache.CacheManager cacheManager = provider.getCacheManager();
 
         javax.cache.configuration.Configuration<String, Object> primaryCacheConfig = getCacheConfigForSpecifiedLifespan(primaryCacheLength, primaryCacheSize);
         javax.cache.configuration.Configuration<String, Object> secondaryCacheConfig = getCacheConfigForSpecifiedLifespan(secondaryCacheLength, secondaryCacheSize);
@@ -58,7 +58,7 @@ public class EhcacheConfig {
         // Establish secondary caches
         cacheManager.createCache("getLotSuppliers", secondaryCacheConfig);
 
-        return cacheManager;
+        return new org.springframework.cache.jcache.JCacheCacheManager(cacheManager);
     }
 
     /**

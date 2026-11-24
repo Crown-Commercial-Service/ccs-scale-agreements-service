@@ -4,10 +4,13 @@ import com.rollbar.notifier.Rollbar;
 import com.sun.net.httpserver.HttpServer;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.cache.test.autoconfigure.AutoConfigureCache;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.cache.Cache;
+import org.springframework.cache.CacheManager;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import uk.gov.crowncommercial.dts.scale.service.agreements.config.EhcacheConfig;
@@ -18,8 +21,9 @@ import java.nio.charset.StandardCharsets;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 
 @SpringBootTest
 @ActiveProfiles("test")
@@ -31,12 +35,21 @@ class WordpressServiceTest {
     @MockitoBean
     private EhcacheConfig cacheConfig;
 
+    @MockitoBean
+    private CacheManager cacheManager;
+
     @Autowired
     WordpressService service;
 
     private String CA_NUMBER = "RM1234";
     private String VALID_SUMMARY = "This is a dummy summary for RM1234";
     private String VALID_END_DATE = "This is a dummy end date for RM1234";
+
+    @BeforeEach
+    void setUp() {
+        Cache mockCache = mock(Cache.class);
+        when(cacheManager.getCache(anyString())).thenReturn(mockCache);
+    }
 
     @Test
     public void testValidateWordpressDataToExtractDataFromValidJSON() throws Exception {

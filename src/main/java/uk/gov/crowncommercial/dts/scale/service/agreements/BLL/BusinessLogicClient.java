@@ -156,7 +156,6 @@ public class BusinessLogicClient {
     /**
      * Returns a list of LotSupplier objects which relate to a specified lot / agreement
      */
-    @Cacheable(value = "getLotSuppliers", key="#agreementId + #lotId")
     public Collection<LotSupplier> getLotSuppliers(String agreementId, String lotId) {
         Collection<LotSupplier> model = null;
 
@@ -425,7 +424,6 @@ public class BusinessLogicClient {
     /**
      * Returns a specific Organization object based on a requested name
     */
-    @Cacheable(value = "getOrganizationIdentifier")
     public OrganizationIdentifier getOrganisation(String organisationName) {
         OrganizationIdentifier model = null;
 

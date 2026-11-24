@@ -1,11 +1,14 @@
 package uk.gov.crowncommercial.dts.scale.service.agreements.service;
 
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.cache.test.autoconfigure.AutoConfigureCache;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.cache.Cache;
+import org.springframework.cache.CacheManager;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import uk.gov.crowncommercial.dts.scale.service.agreements.config.EhcacheConfig;
@@ -30,6 +33,9 @@ import static org.mockito.Mockito.*;
 public class SupplierServiceTest {
     @MockitoBean
     private EhcacheConfig cacheConfig;
+
+    @MockitoBean
+    private CacheManager cacheManager;
 
     private static final String AGREEMENT_NUMBER = "RM1000";
     private static final String LOT_NUMBER = "Lot 1";
@@ -63,6 +69,12 @@ public class SupplierServiceTest {
 
     @MockitoBean
     private ContactPointReasonRepo contactPointReasonRepo;
+
+    @BeforeEach
+    void setUp() {
+        Cache mockCache = mock(Cache.class);
+        when(cacheManager.getCache(anyString())).thenReturn(mockCache);
+    }
 
     private void mockSaveAndFlush() {
         when(mockOrganisationRepo.saveAndFlush(any(Organisation.class)))
