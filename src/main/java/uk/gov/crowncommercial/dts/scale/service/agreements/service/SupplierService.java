@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
@@ -62,6 +63,7 @@ public class SupplierService {
      * @param legalName Legal name of the organisation
      * @return Organisation
      */
+    @Cacheable(value = "getOrganizationIdentifier")
     public Organisation findOrganisationByLegalName(final String legalName) {
         log.debug("findOrganisationByLegalName: {}", legalName);
 

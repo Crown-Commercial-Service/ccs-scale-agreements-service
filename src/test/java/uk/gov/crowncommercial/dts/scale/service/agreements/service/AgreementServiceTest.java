@@ -11,6 +11,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.cache.test.autoconfigure.AutoConfigureCache;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.cache.CacheManager;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import uk.gov.crowncommercial.dts.scale.service.agreements.config.EhcacheConfig;
@@ -31,6 +32,9 @@ class AgreementServiceTest {
 
     @MockitoBean
     private EhcacheConfig cacheConfig;
+
+    @MockitoBean
+    private CacheManager cacheManager;
 
   @MockitoBean
   private CommercialAgreementRepo mockCommercialAgreementRepo;

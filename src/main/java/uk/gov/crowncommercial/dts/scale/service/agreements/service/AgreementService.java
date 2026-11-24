@@ -7,6 +7,7 @@ import java.util.Optional;
 
 import com.rollbar.notifier.Rollbar;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -200,6 +201,7 @@ public class AgreementService {
    * @return collection of lot supplier org roles
    * @throws LotNotFoundException if CA or lot not found
    * */
+    @Cacheable(value = "getLotSuppliers", key="#agreementNumber + #lotNumber")
   public Collection<LotOrganisationRole> findLotSupplierOrgRolesByAgreementNumberAndLotNumber(
       final String agreementNumber, final String lotNumber) {
 
